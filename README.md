@@ -25,8 +25,8 @@ surfaces, one voice:
 
 | Surface | Showcase | Tokens |
 |---|---|---|
-| **GUI** (web, desktop and mobile) | `showcase/gui.html` · [claude.ai](https://claude.ai/artifact/PELwp9DNkNjuiURKXmFZQY) | `tokens/tokens.css` |
-| **TUI** (terminal) | `showcase/tui.html` · [claude.ai](https://claude.ai/artifact/QUMmvjRv58NTwvYETHy56A) | `tokens/tokens.toml` |
+| **GUI** (web, desktop and mobile) | `showcase/gui.html` | `tokens/tokens.css` |
+| **TUI** (terminal) | `showcase/tui.html` | `tokens/tokens.toml` |
 
 Warm near-black field, gold for focus, stamp red for decisions, box-drawing frames
 whose weight carries state, Cyrillic labels paired with English. An optional **paper**
