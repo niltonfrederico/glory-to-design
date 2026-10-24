@@ -16,6 +16,13 @@
   }
   body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--g2-bg); }
   * { box-sizing: border-box; }
+  /* scrollbars: flat, square, in the bureau's colours (Firefox + WebKit) */
+  * { scrollbar-width: thin; scrollbar-color: var(--g2-border) var(--g2-well); }
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: var(--g2-well); }
+  ::-webkit-scrollbar-thumb { background: var(--g2-border); border: 2px solid var(--g2-well); }
+  ::-webkit-scrollbar-thumb:hover { background: var(--g2-accent); }
+  ::-webkit-scrollbar-corner { background: var(--g2-well); }
   h1, h2, h3 { margin: 0; text-wrap: balance; color: var(--g2-fg-bright); font-weight: 700; }
   p { margin: 0; max-width: var(--g2-measure); }
   a { color: var(--g2-accent); text-decoration-color: var(--g2-border); text-underline-offset: 0.15em; }
@@ -50,7 +57,7 @@
   .toggle .btn[aria-pressed="true"] { background: var(--g2-accent); color: var(--g2-accent-ink); }
 
   .index { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--g2-bg); border-bottom: var(--g2-rule) solid var(--g2-border); margin: 0 calc(-1 * max(16px, env(safe-area-inset-left, 0px))); padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
-  .index ul { list-style: none; margin: 0 auto; padding: 0; max-width: var(--sheet); display: flex; gap: 2px; overflow-x: auto; scrollbar-width: thin; }
+  .index ul { list-style: none; margin: 0 auto; padding: 0; max-width: var(--sheet); display: flex; flex-wrap: wrap; gap: 2px; }
   .index a { display: block; height: var(--tab-h); padding: 0 0.9rem; line-height: var(--tab-h); white-space: nowrap; font-family: var(--g2-font-mono); font-size: var(--g2-text-xs); letter-spacing: var(--g2-tracking-label); text-transform: uppercase; color: var(--g2-muted); text-decoration: none; border: var(--g2-rule) solid transparent; border-bottom: 0; }
   .index a:hover { color: var(--g2-fg-bright); }
   .index a.is-active { color: var(--g2-accent); border-color: var(--g2-border); background: var(--g2-panel); }
@@ -95,6 +102,7 @@
   .term .cur { background: var(--g2-fg); color: var(--g2-bg); }
   .term .sig { background: var(--g2-signal-bg); }
   .term .dim { opacity: 0.55; }
+  .term .g { display: inline-block; width: 1ch; text-align: center; font-style: normal; overflow: visible; }
   .caption { font-family: var(--g2-font-mono); font-size: var(--g2-text-xs); color: var(--g2-muted); margin-top: 0.4rem; }
   figure { margin: 0; min-width: 0; }
 
@@ -110,6 +118,7 @@
   @media (max-width: 720px) {
     .masthead { grid-template-columns: 1fr; padding-top: 3rem; }
     .masthead .term-logo { display: none; }
+    .index ul { flex-wrap: nowrap; overflow-x: auto; }
     .corner { top: 0.5rem; right: 0.5rem; font-size: 0.62rem; }
     .nono .row { grid-template-columns: 1.2rem 1fr; } .nono .yes { grid-column: 2; }
     .term { font-size: 11.5px; }
@@ -124,7 +133,7 @@
     <span class="corner">ДСП · Экз. № 1</span>
     <div>
       <div class="logo">СТАНДАРТ</div>
-      <div class="star">★</div>
+      <div class="star"><i class="g">★</i></div>
       <h1>Bureau of Computational Technology · Design Standard, TUI surface</h1>
       <div class="meta"><span class="muted">Нирская Вычислительная Техника</span></div>
       <div class="meta"><span class="muted">Директор:</span> Норман <span class="muted">· Дата:</span> 2026-10-24 <span class="muted">· Scope:</span> ratatui, Rich, Textual, tuicr</div>
@@ -137,9 +146,9 @@
       </div>
     </div>
 <pre class="term term-logo" aria-hidden="true"><span class="b">╔══════════════════════════════╗</span>
-<span class="b">║</span>  <span class="a">П Р О Т О К О Л</span>  <span class="h">★</span>  <span class="m">v0.4.0</span>  <span class="b">║</span>
+<span class="b">║</span>  <span class="a">П Р О Т О К О Л</span>  <span class="h"><i class="g">★</i></span>  <span class="m">v0.4.0</span>  <span class="b">║</span>
 <span class="b">║</span>  <span class="h">BUREAU OF COMP. TECHNOLOGY</span>  <span class="b">║</span>
-<span class="b">║</span>  <span class="m">Директор: Норман · 2026-10-24</span> <span class="b">║</span>
+<span class="b">║</span> <span class="m">Директор: Норман · 2026-10-24</span><span class="b">║</span>
 <span class="b">╚══════════════════════════════╝</span></pre>
   </header>
 
@@ -268,12 +277,12 @@
         </table>
       </div>
       <figure>
-<pre class="term"><span class="b">┌─ rest ──────────────┐</span>  <span class="a">┏━ FOCUS ━━━━━━━━━━━━━┓</span>  <span class="ab">╔═ AUTHORITY ═════════╗</span>
+<pre class="term"><span class="b">┌─ rest ──────────────┐</span>  <span class="a">┏━ FOCUS ━━━━━━━━━━━━━┓</span>  <span class="ab">╔═ AUTHORITY ══════════╗</span>
 <span class="b">│</span> secondary pane      <span class="b">│</span>  <span class="a">┃</span> the pane with focus <span class="a">┃</span>  <span class="ab">║</span> the bureau speaking  <span class="ab">║</span>
-<span class="b">│</span> <span class="m">hints in muted</span>      <span class="b">│</span>  <span class="a">┃</span><span class="sel"> <span class="a">▸</span> row under cursor  </span><span class="a">┃</span>  <span class="ab">║</span> <span class="h">▌ section</span>  <span class="ok">✓</span> <span class="bad">✗</span> <span class="info">!</span> <span class="warn">?</span>  <span class="ab">║</span>
+<span class="b">│</span> <span class="m">hints in muted</span>      <span class="b">│</span>  <span class="a">┃</span><span class="sel"> <span class="a"><i class="g">▸</i></span> row under cursor  </span><span class="a">┃</span>  <span class="ab">║</span> <span class="h">▌ section</span>  <span class="ok"><i class="g">✓</i></span> <span class="bad"><i class="g">✗</i></span> <span class="info">!</span> <span class="warn">?</span>   <span class="ab">║</span>
 <span class="b">└─────────────────────┘</span>  <span class="a">┗━━━━━━━━━━━━━━━━━━━━━┛</span>  <span class="ab">╚══════════════════════╝</span>
 
-<span class="m">progress</span>  <span class="a">████████████</span><span class="f">░░░░░░░░</span>  <span class="m">12/20</span>     <span class="m">in flight</span>  <span class="a">■</span><span class="f">■</span><span class="a">■</span><span class="f">■</span><span class="a">■</span>
+<span class="m">progress</span>  <span class="a">████████████</span><span class="f">░░░░░░░░</span>  <span class="m">12/20</span>     <span class="m">in flight</span>  <span class="a"><i class="g">■</i></span><span class="f"><i class="g">■</i></span><span class="a"><i class="g">■</i></span><span class="f"><i class="g">■</i></span><span class="a"><i class="g">■</i></span>
 <span class="m">redacted</span>  the finance <span class="f">▓▓▓▓▓▓▓▓▓</span> vault         <span class="m">leader</span>     документ № ........: <span class="fb">003</span></pre>
         <figcaption class="caption">Three weights side by side. Only the focused frame may be heavy; only the bureau may be double.</figcaption>
       </figure>
@@ -291,7 +300,7 @@
       <figure>
 <pre class="term"><span class="ab">╔═</span> <span class="a">ГЕНСЕК</span> <span class="m">· 2026-10-24 · github 2m · jira 5m · ru</span> <span class="ab">═══════════════════╗</span>
 <span class="ab">║</span>                                                                    <span class="ab">║</span>
-<span class="ab">║</span>   <span class="a">Г Е Н С Е К</span>   <span class="h">★</span>   <span class="h">PERSONAL COMMAND CENTER</span>                        <span class="ab">║</span>
+<span class="ab">║</span>   <span class="a">Г Е Н С Е К</span>   <span class="h"><i class="g">★</i></span>   <span class="h">PERSONAL COMMAND CENTER</span>                        <span class="ab">║</span>
 <span class="ab">║</span>   <span class="m">Директор: Норман · Сессия: #0417 · Store: 3.1 MB</span>                 <span class="ab">║</span>
 <span class="ab">║</span>                                                                    <span class="ab">║</span>
 <span class="ab">╚════════════════════════════════════════════════════════════════════╝</span></pre>
@@ -306,7 +315,7 @@
 <span class="a">█▀█ █▀█ █▀█ ▀█▀ █▀█ █▀▀ █▀█ █  </span>
 <span class="a">█▀▀ █▀▄ █ █  █  █ █ █   █ █ █  </span>
 <span class="a">▀   ▀ ▀ ▀▀▀  ▀  ▀▀▀ ▀▀▀ ▀▀▀ ▀▀▀</span>
-<span class="h">            ★ BUREAU OF COMPUTATIONAL TECHNOLOGY</span></pre>
+<span class="h">            <i class="g">★</i> BUREAU OF COMPUTATIONAL TECHNOLOGY</span></pre>
         <figcaption class="caption">Narrow band, and the half-block logo protocol prints when there is no alt-screen.</figcaption>
       </figure>
     </div>
@@ -320,49 +329,49 @@
       <p>Gensek's two screens, drawn to the standard. Panels are numbered in their title so <kbd>g1</kbd>…<kbd>g3</kbd> jump to them. The focused panel is heavy and uppercase; the others rest. Section markers <code>▌</code> are red; the cursor row is washed in <code>selection</code>; notes are washed in <code>note_bg</code> with their label in sage.</p>
     </header>
     <figure>
-<pre class="term"><span class="ab">╔═</span> <span class="a">ГЕНСЕК</span> <span class="m">· 2026-10-24 · github 2m · jira 5m</span> <span class="ab">════════════════════════════════╗</span>
-<span class="a">┏━ 1 ATTENTION (7) ━━━━━━━━━━━━━━━━━━━━━━━━━━━┓</span><span class="b">┌─ 3 preview ─────────────────────┐</span>
-<span class="a">┃</span> <span class="h">▌ asked for your review</span> <span class="m">(3)</span>                <span class="a">┃</span><span class="b">│</span> <span class="fb">feat(auth): refresh token</span>       <span class="b">│</span>
-<span class="a">┃</span><span class="sel"> <span class="a">▸</span> acme/api #412 feat(auth): refresh…  <span class="m">2h</span> </span><span class="a">┃</span><span class="b">│</span> <span class="m">marina · acme/api · 3 files</span>     <span class="b">│</span>
-<span class="a">┃</span>   acme/api #409 fix: null org on invite <span class="m">1d</span> <span class="a">┃</span><span class="b">│</span>                                 <span class="b">│</span>
-<span class="a">┃</span>   acme/web #230 docs: design standard   <span class="m">6h</span> <span class="a">┃</span><span class="b">│</span> Rotates the refresh token on    <span class="b">│</span>
-<span class="a">┃</span> <span class="h">▌ yours, blocked</span> <span class="m">(2)</span>                       <span class="a">┃</span><span class="b">│</span> every use and invalidates the   <span class="b">│</span>
-<span class="a">┃</span>   acme/api #401 CI <span class="bad">✗</span> tests/auth         <span class="m">5h</span> <span class="a">┃</span><span class="b">│</span> old one. Closes PROJ-118.       <span class="b">│</span>
-<span class="a">┃</span>   acme/web #228 <span class="warn">?</span> awaiting Gensek       <span class="m">9d</span> <span class="a">┃</span><span class="b">│</span>                                 <span class="b">│</span>
-<span class="a">┃</span> <span class="h">▌ directives</span> <span class="m">(1)</span>                           <span class="a">┃</span><span class="b">│</span> <span class="m">checks</span>  <span class="ok">✓</span> lint  <span class="ok">✓</span> test  <span class="bad">✗</span> e2e  <span class="b">│</span>
-<span class="a">┃</span>   #4711 <span class="info">!</span> immediate execution           <span class="m">15m</span> <span class="a">┃</span><span class="b">│</span> <span class="m">review</span>  <span class="warn">?</span> 1 requested           <span class="b">│</span>
-<span class="a">┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛</span><span class="b">└─────────────────────────────────┘</span>
+<pre class="term"><span class="ab">╔═</span> <span class="a">ГЕНСЕК</span> <span class="m">· 2026-10-24 · github 2m · jira 5m</span> <span class="ab">══════════════════════════════════╗</span>
+<span class="a">┏━ 1 ATTENTION (7) ━━━━━━━━━━━━━━━━━━━━━━━━━━━┓</span><span class="b">┌─ 3 preview ───────────────────┐</span>
+<span class="a">┃</span> <span class="h">▌ asked for your review</span> <span class="m">(3)</span>                 <span class="a">┃</span><span class="b">│</span> <span class="fb">feat(auth): refresh token</span>     <span class="b">│</span>
+<span class="a">┃</span><span class="sel"> <span class="a"><i class="g">▸</i></span> acme/api #412 feat(auth): refresh…  <span class="m">2h</span>    </span><span class="a">┃</span><span class="b">│</span> <span class="m">marina · acme/api · 3 files</span>   <span class="b">│</span>
+<span class="a">┃</span>   acme/api #409 fix: null org on invite <span class="m">1d</span>  <span class="a">┃</span><span class="b">│</span>                               <span class="b">│</span>
+<span class="a">┃</span>   acme/web #230 docs: design standard   <span class="m">6h</span>  <span class="a">┃</span><span class="b">│</span> Rotates the refresh token on  <span class="b">│</span>
+<span class="a">┃</span> <span class="h">▌ yours, blocked</span> <span class="m">(2)</span>                        <span class="a">┃</span><span class="b">│</span> every use and invalidates the <span class="b">│</span>
+<span class="a">┃</span>   acme/api #401 CI <span class="bad"><i class="g">✗</i></span> tests/auth         <span class="m">5h</span>  <span class="a">┃</span><span class="b">│</span> old one. Closes PROJ-118.     <span class="b">│</span>
+<span class="a">┃</span>   acme/web #228 <span class="warn">?</span> awaiting Gensek       <span class="m">9d</span>  <span class="a">┃</span><span class="b">│</span>                               <span class="b">│</span>
+<span class="a">┃</span> <span class="h">▌ directives</span> <span class="m">(1)</span>                            <span class="a">┃</span><span class="b">│</span> <span class="m">checks</span>  <span class="ok"><i class="g">✓</i></span> lint  <span class="ok"><i class="g">✓</i></span> test  <span class="bad"><i class="g">✗</i></span> e2e <span class="b">│</span>
+<span class="a">┃</span>   #4711 <span class="info">!</span> immediate execution           <span class="m">15m</span> <span class="a">┃</span><span class="b">│</span> <span class="m">review</span>  <span class="warn">?</span> 1 requested         <span class="b">│</span>
+<span class="a">┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛</span><span class="b">└───────────────────────────────┘</span>
 <span class="b">┌─ 2 conversation (6 · 2 notes) ───────────────────────────────────────────────┐</span>
 <span class="b">│</span> <span class="a">marina</span> <span class="m">· 40m</span>  rebased on main, CI green except e2e                           <span class="b">│</span>
 <span class="b">│</span><span class="nb"> <span class="n">▌ note</span> <span class="m">· 09:12</span>  check token expiry on mobile before approving                </span><span class="b">│</span>
 <span class="b">│</span> <span class="a">dmitri</span> <span class="m">· 12m</span>  e2e flake is known, see #398                                   <span class="b">│</span>
 <span class="b">└──────────────────────────────────────────────────────────────────────────────┘</span>
-<span class="key"> F1 </span><span class="m">help </span><span class="key"> n </span><span class="m">note </span><span class="key"> c </span><span class="m">comment </span><span class="key"> r </span><span class="m">review </span><span class="key"> : </span><span class="m">cmd </span><span class="key"> ? </span><span class="m">keys </span>                 <span class="m">en · pt-br ·</span> <span class="a">ru</span>  <span class="ok">●</span> <span class="m">synced</span></pre>
+<span class="key"> F1 </span><span class="m">help </span><span class="key"> n </span><span class="m">note </span><span class="key"> c </span><span class="m">comment </span><span class="key"> r </span><span class="m">review </span><span class="key"> : </span><span class="m">cmd </span><span class="key"> ? </span><span class="m">keys </span>                 <span class="m">en · pt-br ·</span> <span class="a">ru</span>  <span class="ok"><i class="g">●</i></span> <span class="m">synced</span></pre>
       <figcaption class="caption">Dashboard, 80 columns. Panel 1 has focus. One red star, one gold frame, red only on section markers and one failed check.</figcaption>
     </figure>
     <div class="grid">
       <figure>
 <pre class="term"><span class="a">┏━ 2 CONVERSATION (6 · 2 notes) ━━━━━━━━━━━━━┓</span>
 <span class="a">┃</span> <span class="a">marina</span> <span class="m">· 40m</span>  rebased on main              <span class="a">┃</span>
-<span class="a">┃</span><span class="sel"> <span class="a">▸</span> <span class="a">dmitri</span> <span class="m">· 12m</span>  e2e flake is known        </span><span class="a">┃</span>
-<span class="a">┃</span> <span class="b">┌─ note on L32-47 ─────────────────────┐</span>  <span class="a">┃</span>
-<span class="a">┃</span> <span class="b">│</span> <span class="m">-- INSERT --</span>                           <span class="b">│</span>  <span class="a">┃</span>
-<span class="a">┃</span> <span class="b">│</span> The refresh path logs the old token<span class="cur"> </span>  <span class="b">│</span>  <span class="a">┃</span>
-<span class="a">┃</span> <span class="b">│</span>                                       <span class="b">│</span>  <span class="a">┃</span>
-<span class="a">┃</span> <span class="b">└─ </span><span class="key">esc</span><span class="m"> normal · </span><span class="key">⏎⏎</span><span class="m"> save · </span><span class="key">^c</span><span class="m"> cancel </span><span class="b">──┘</span>  <span class="a">┃</span>
+<span class="a">┃</span><span class="sel"> <span class="a"><i class="g">▸</i></span> <span class="a">dmitri</span> <span class="m">· 12m</span>  e2e flake is known         </span><span class="a">┃</span>
+<span class="a">┃</span> <span class="b">┌─ note on L32-47 ─────────────────────┐</span>   <span class="a">┃</span>
+<span class="a">┃</span> <span class="b">│</span> <span class="m">-- INSERT --</span>                         <span class="b">│</span>   <span class="a">┃</span>
+<span class="a">┃</span> <span class="b">│</span> The refresh path logs the old token<span class="cur"> </span> <span class="b">│</span>   <span class="a">┃</span>
+<span class="a">┃</span> <span class="b">│</span>                                      <span class="b">│</span>   <span class="a">┃</span>
+<span class="a">┃</span> <span class="b">└─ </span><span class="key">esc</span><span class="m"> normal · </span><span class="key"><i class="g">⏎</i><i class="g">⏎</i></span><span class="m"> save · </span><span class="key">^c</span><span class="m"> cancel </span><span class="b">───┘</span>   <span class="a">┃</span>
 <span class="a">┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛</span></pre>
         <figcaption class="caption">Inline edit box under the cursor, never <code>$EDITOR</code>. Vim mode starts in INSERT.</figcaption>
       </figure>
       <figure>
 <pre class="term"><span class="b">┌─ </span><span class="h">! description</span><span class="b"> ─ </span><span class="m">@ links (4)</span><span class="b"> ─────────────────┐</span>
-<span class="b">│</span> <span class="fb">Refresh token rotation</span>                       <span class="b">│</span>
-<span class="b">│</span>                                              <span class="b">│</span>
-<span class="b">│</span> Rotates on <span class="h">every use</span> and invalidates the    <span class="b">│</span>
-<span class="b">│</span> previous one. Adds a <span class="key">token_version</span> column.  <span class="b">│</span>
-<span class="b">│</span>                                              <span class="b">│</span>
-<span class="b">│</span> <span class="m">- [x]</span> migration     <span class="m">- [ ]</span> mobile client     <span class="b">│</span>
-<span class="b">│</span> <span class="m">&gt;</span> <span class="m dim">Closes PROJ-118. Supersedes #388.</span>          <span class="b">│</span>
-<span class="b">└──────────────────────────────────────────────┘</span></pre>
+<span class="b">│</span> <span class="fb">Refresh token rotation</span>                        <span class="b">│</span>
+<span class="b">│</span>                                               <span class="b">│</span>
+<span class="b">│</span> Rotates on <span class="h">every use</span> and invalidates the      <span class="b">│</span>
+<span class="b">│</span> previous one. Adds a <span class="key">token_version</span> column.    <span class="b">│</span>
+<span class="b">│</span>                                               <span class="b">│</span>
+<span class="b">│</span> <span class="m">- [x]</span> migration     <span class="m">- [ ]</span> mobile client       <span class="b">│</span>
+<span class="b">│</span> <span class="m">&gt;</span> <span class="m dim">Closes PROJ-118. Supersedes #388.</span>           <span class="b">│</span>
+<span class="b">└───────────────────────────────────────────────┘</span></pre>
         <figcaption class="caption">Markdown painted in place: bold takes the heading red, code takes a key wash, quotes dim.</figcaption>
       </figure>
     </div>
@@ -377,8 +386,8 @@
     </header>
     <figure>
 <pre class="term"><span class="ok">┏━━━━━━━━━━━━━━━━━━━━━━━━━━━┓</span>  <span class="bad">┏━━━━━━━━━━━━━━━━━━━━━━━━━━━┓</span>  <span class="info">┏━━━━━━━━━━━━━━━━━━━━━━━━━━━┓</span>  <span class="warn">┏━━━━━━━━━━━━━━━━━━━━━━━━━━━┓</span>
-<span class="ok">┃</span>  <span class="ok">✓  ОДОБРЕНО</span>               <span class="ok">┃</span>  <span class="bad">┃</span>  <span class="bad">✗  ОТКАЗАНО</span>               <span class="bad">┃</span>  <span class="info">┃</span>  <span class="info">!  ПРИКАЗ</span>                 <span class="info">┃</span>  <span class="warn">┃</span>  <span class="warn">?  К СВЕДЕНИЮ</span>             <span class="warn">┃</span>
-<span class="ok">┃</span>     <span class="ok">APPROVED</span>               <span class="ok">┃</span>  <span class="bad">┃</span>     <span class="bad">REJECTED</span>               <span class="bad">┃</span>  <span class="info">┃</span>     <span class="info">DIRECT ORDER</span>           <span class="info">┃</span>  <span class="warn">┃</span>     <span class="warn">FOR REVIEW</span>             <span class="warn">┃</span>
+<span class="ok">┃</span>  <span class="ok"><i class="g">✓</i>  ОДОБРЕНО</span>              <span class="ok">┃</span>  <span class="bad">┃</span>  <span class="bad"><i class="g">✗</i>  ОТКАЗАНО</span>              <span class="bad">┃</span>  <span class="info">┃</span>  <span class="info">!  ПРИКАЗ</span>                <span class="info">┃</span>  <span class="warn">┃</span>  <span class="warn">?  К СВЕДЕНИЮ</span>            <span class="warn">┃</span>
+<span class="ok">┃</span>     <span class="ok">APPROVED</span>              <span class="ok">┃</span>  <span class="bad">┃</span>     <span class="bad">REJECTED</span>              <span class="bad">┃</span>  <span class="info">┃</span>     <span class="info">DIRECT ORDER</span>          <span class="info">┃</span>  <span class="warn">┃</span>     <span class="warn">FOR REVIEW</span>            <span class="warn">┃</span>
 <span class="ok">┃</span>  <span class="m">Q2 budget · audit clean</span>  <span class="ok">┃</span>  <span class="bad">┃</span>  <span class="m">#4711 · out of scope</span>     <span class="bad">┃</span>  <span class="info">┃</span>  <span class="m">team 3 · immediate</span>       <span class="info">┃</span>  <span class="warn">┃</span>  <span class="m">report · awaiting Gensek</span> <span class="warn">┃</span>
 <span class="ok">┗━━━━━━━━━━━━━━━━━━━━━━━━━━━┛</span>  <span class="bad">┗━━━━━━━━━━━━━━━━━━━━━━━━━━━┛</span>  <span class="info">┗━━━━━━━━━━━━━━━━━━━━━━━━━━━┛</span>  <span class="warn">┗━━━━━━━━━━━━━━━━━━━━━━━━━━━┛</span></pre>
       <figcaption class="caption">The four stamps, 29 columns each. Reject always carries a reason in the detail line.</figcaption>
@@ -386,7 +395,7 @@
     <div class="grid">
       <figure>
 <pre class="term"><span class="ab">╔══════════════════════════════════════════════╗</span>
-<span class="ab">║</span>  <span class="h">★</span>  <span class="a">ДОСТОЯНИЕ НАРОДА · PROPERTY OF THE PEOPLE</span> <span class="ab">║</span>
+<span class="ab">║</span>  <span class="h"><i class="g">★</i></span>  <span class="a">ДОСТОЯНИЕ НАРОДА · PROPERTY OF THE PEOPLE</span><span class="ab">║</span>
 <span class="ab">║</span>     <span class="m">glory-to-protocol · AGPL-3.0-or-later</span>    <span class="ab">║</span>
 <span class="ab">╚══════════════════════════════════════════════╝</span></pre>
         <figcaption class="caption">The seal, as a one-line authority band. Used once, at the end of <code>--help</code> or a release note.</figcaption>
@@ -413,19 +422,19 @@
     <div class="grid">
       <figure>
 <pre class="term"><span class="b">┌─ status ─────────────────────────────────────────────────────┐</span>
-<span class="b">│</span> <span class="m">ДОКУМЕНТ № .....:</span> <span class="fb">0042</span>                                        <span class="b">│</span>
-<span class="b">│</span> <span class="m">CITIZEN ........:</span> Volkov, Marina                              <span class="b">│</span>
-<span class="b">│</span> <span class="m">DIRECTORATE ....:</span> Public Works <span class="m">(Общественные Работы)</span>          <span class="b">│</span>
-<span class="b">│</span> <span class="m">CLASSIFICATION .:</span> <span class="h">ДСП</span>                                         <span class="b">│</span>
-<span class="b">│</span> <span class="m">FILED ..........:</span> 2026-10-24 16:04                            <span class="b">│</span>
+<span class="b">│</span> <span class="m">ДОКУМЕНТ № .....:</span> <span class="fb">0042</span>                                       <span class="b">│</span>
+<span class="b">│</span> <span class="m">CITIZEN ........:</span> Volkov, Marina                             <span class="b">│</span>
+<span class="b">│</span> <span class="m">DIRECTORATE ....:</span> Public Works <span class="m">(Общественные Работы)</span>         <span class="b">│</span>
+<span class="b">│</span> <span class="m">CLASSIFICATION .:</span> <span class="h">ДСП</span>                                        <span class="b">│</span>
+<span class="b">│</span> <span class="m">FILED ..........:</span> 2026-10-24 16:04                           <span class="b">│</span>
 <span class="b">│</span>                                                              <span class="b">│</span>
-<span class="b">│</span> All systems nominal. The queue holds seven requests.        <span class="b">│</span>
+<span class="b">│</span> All systems nominal. The queue holds seven requests.         <span class="b">│</span>
 <span class="b">│</span>                                                              <span class="b">│</span>
-<span class="b">│</span>                              <span class="ok">┏━━━━━━━━━━━━━━━━━━━━━━━━━━━┓</span> <span class="b">│</span>
-<span class="b">│</span>                              <span class="ok">┃</span>  <span class="ok">✓  ОДОБРЕНО</span>               <span class="ok">┃</span> <span class="b">│</span>
-<span class="b">│</span>                              <span class="ok">┃</span>     <span class="ok">APPROVED</span>               <span class="ok">┃</span> <span class="b">│</span>
-<span class="b">│</span>                              <span class="ok">┃</span>  <span class="m">status check · audit</span>     <span class="ok">┃</span> <span class="b">│</span>
-<span class="b">│</span>                              <span class="ok">┗━━━━━━━━━━━━━━━━━━━━━━━━━━━┛</span> <span class="b">│</span>
+<span class="b">│</span>                              <span class="ok">┏━━━━━━━━━━━━━━━━━━━━━━━━━━━┓</span>   <span class="b">│</span>
+<span class="b">│</span>                              <span class="ok">┃</span>  <span class="ok"><i class="g">✓</i>  ОДОБРЕНО</span>              <span class="ok">┃</span>   <span class="b">│</span>
+<span class="b">│</span>                              <span class="ok">┃</span>     <span class="ok">APPROVED</span>              <span class="ok">┃</span>   <span class="b">│</span>
+<span class="b">│</span>                              <span class="ok">┃</span>  <span class="m">status check · audit</span>     <span class="ok">┃</span>   <span class="b">│</span>
+<span class="b">│</span>                              <span class="ok">┗━━━━━━━━━━━━━━━━━━━━━━━━━━━┛</span>   <span class="b">│</span>
 <span class="b">└──────────────────────────────────────────────────────────────┘</span>
 <span class="f">С честью, Генсек</span></pre>
         <figcaption class="caption">A protocol <code>Form</code> with a ledger, a line and a stamp. The signature is <code>faint</code>, italic where the terminal can.</figcaption>
@@ -433,24 +442,38 @@
       <div style="display:grid;gap:1rem">
         <figure>
 <pre class="term"><span class="ab">╔═ ПОДТВЕРЖДЕНИЕ · confirm ═══════════════════╗</span>
-<span class="ab">║</span> <span class="m">ДЕЙСТВИЕ ....:</span> <span class="fb">comment on acme/api #412</span>      <span class="ab">║</span>
-<span class="ab">║</span> <span class="m">PUBLIC ......:</span> <span class="h">ДА · yes</span>                      <span class="ab">║</span>
-<span class="ab">║</span> <span class="m">QUOTES ......:</span> L32-47                        <span class="ab">║</span>
-<span class="ab">║</span>                                              <span class="ab">║</span>
-<span class="ab">║</span>   <span class="inv"> y </span> <span class="m">post it</span>      <span class="key"> n </span> <span class="m">keep as note</span>           <span class="ab">║</span>
-<span class="ab">╚══════════════════════════════════════════════╝</span></pre>
+<span class="ab">║</span> <span class="m">ДЕЙСТВИЕ ....:</span> <span class="fb">comment on acme/api #412</span>     <span class="ab">║</span>
+<span class="ab">║</span> <span class="m">PUBLIC ......:</span> <span class="h">ДА · yes</span>                     <span class="ab">║</span>
+<span class="ab">║</span> <span class="m">QUOTES ......:</span> L32-47                       <span class="ab">║</span>
+<span class="ab">║</span>                                             <span class="ab">║</span>
+<span class="ab">║</span>   <span class="inv"> y </span> <span class="m">post it</span>      <span class="key"> n </span> <span class="m">keep as note</span>         <span class="ab">║</span>
+<span class="ab">╚═════════════════════════════════════════════╝</span></pre>
           <figcaption class="caption">A confirm names the target and whether it is public. Default key is inverted.</figcaption>
         </figure>
+      <figure>
+<pre class="term"><span class="a dim">┏━ 1 ATTENTION (7) ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓</span>
+<span class="a dim">┃</span> <span class="h dim">▌ asked for your review</span> <span class="m dim">(3)</span>                                 <span class="a dim">┃</span>
+<span class="a dim">┃</span><span class="sel dim"> <span class="a"><i class="g">▸</i></span> acme/api #412 feat(auth): refresh token           <span class="m">2h</span>      </span><span class="a dim">┃</span>
+<span class="a dim">┃</span>   <span class="dim">acme/api</span> <span class="ab">╔═ ПОДТВЕРЖДЕНИЕ · confirm ═══════════════╗</span>  <span class="m dim">1d</span>  <span class="a dim">┃</span>
+<span class="a dim">┃</span>   <span class="dim">acme/web</span> <span class="ab">║</span> <span class="m">ДЕЙСТВИЕ ..:</span> <span class="fb">comment on acme/api #412</span>   <span class="ab">║</span>  <span class="m dim">6h</span>  <span class="a dim">┃</span>
+<span class="a dim">┃</span> <span class="h dim">▌ yours, b</span> <span class="ab">║</span> <span class="m">PUBLIC ....:</span> <span class="h">ДА · yes</span>                   <span class="ab">║</span>      <span class="a dim">┃</span>
+<span class="a dim">┃</span>   <span class="dim">acme/api</span> <span class="ab">║</span>                                         <span class="ab">║</span>  <span class="m dim">5h</span>  <span class="a dim">┃</span>
+<span class="a dim">┃</span>   <span class="dim">acme/web</span> <span class="ab">║</span>   <span class="inv"> y </span> <span class="m">post it</span>     <span class="key"> n </span> <span class="m">keep as note</span>      <span class="ab">║</span>  <span class="m dim">9d</span>  <span class="a dim">┃</span>
+<span class="a dim">┃</span> <span class="h dim">▌ directiv</span> <span class="ab">╚═════════════════════════════════════════╝</span>      <span class="a dim">┃</span>
+<span class="a dim">┃</span>   <span class="dim">#4711 ! immediate execution</span>                          <span class="m dim">15m</span>  <span class="a dim">┃</span>
+<span class="a dim">┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛</span></pre>
+        <figcaption class="caption">A modal: the screen behind dims to 55%, the confirm sits centered in a double frame, keyboard goes to it. <kbd>esc</kbd> always closes.</figcaption>
+      </figure>
         <figure>
 <pre class="term"><span class="ab">╔═ ДИРЕКТИВА · help ═══════════════════════════╗</span>
 <span class="ab">║</span> <span class="h">▌ navigation</span>                                 <span class="ab">║</span>
 <span class="ab">║</span>   <span class="key"> g1 </span><span class="key"> g2 </span><span class="key"> g3 </span>  <span class="m">jump to panel</span>                <span class="ab">║</span>
-<span class="ab">║</span>   <span class="key"> tab </span>          <span class="m">cycle focus</span>                  <span class="ab">║</span>
+<span class="ab">║</span>   <span class="key"> tab </span>          <span class="m">cycle focus</span>                 <span class="ab">║</span>
 <span class="ab">║</span> <span class="h">▌ actions</span>                                    <span class="ab">║</span>
-<span class="ab">║</span>   <span class="key"> n </span>  <span class="m">note</span>   <span class="key"> c </span>  <span class="m">comment</span>   <span class="key"> r </span>  <span class="m">review</span>   <span class="ab">║</span>
+<span class="ab">║</span>   <span class="key"> n </span>  <span class="m">note</span>   <span class="key"> c </span>  <span class="m">comment</span>   <span class="key"> r </span>  <span class="m">review</span>     <span class="ab">║</span>
 <span class="ab">║</span> <span class="h">▌ command line</span>                               <span class="ab">║</span>
-<span class="ab">║</span>   <span class="key"> : </span>  <span class="m">:theme :lang :keys :snooze :log</span>      <span class="ab">║</span>
-<span class="ab">║</span>                      <span class="f">esc closes · Слава НИРВЫТЕХ</span> <span class="ab">║</span>
+<span class="ab">║</span>   <span class="key"> : </span>  <span class="m">:theme :lang :keys :snooze :log</span>       <span class="ab">║</span>
+<span class="ab">║</span>                  <span class="f">esc closes · Слава НИРВЫТЕХ</span> <span class="ab">║</span>
 <span class="ab">╚══════════════════════════════════════════════╝</span></pre>
           <figcaption class="caption">Help as a directive: the live keymap, grouped under red section markers.</figcaption>
         </figure>
@@ -470,16 +493,16 @@
 <span class="key"> F1 </span><span class="m">help </span><span class="key"> F2 </span><span class="m">menu </span><span class="key"> F3 </span><span class="m">view </span><span class="key"> F4 </span><span class="m">edit </span><span class="key"> F5 </span><span class="m">copy </span><span class="key"> F6 </span><span class="m">move </span><span class="key"> F7 </span><span class="m">new </span><span class="key"> F8 </span><span class="m">del </span><span class="key"> F9 </span><span class="m">theme </span><span class="key"> F10 </span><span class="m">quit </span>
 
 <span class="m">footer · gensek</span>
-<span class="key"> F1 </span><span class="m">help </span><span class="key"> n </span><span class="m">note </span><span class="key"> c </span><span class="m">comment </span><span class="key"> r </span><span class="m">review </span><span class="key"> : </span><span class="m">cmd </span><span class="key"> ? </span><span class="m">keys </span>                        <span class="m">en · pt-br ·</span> <span class="a">ru</span>  <span class="ok">●</span> <span class="m">github 2m</span>
+<span class="key"> F1 </span><span class="m">help </span><span class="key"> n </span><span class="m">note </span><span class="key"> c </span><span class="m">comment </span><span class="key"> r </span><span class="m">review </span><span class="key"> : </span><span class="m">cmd </span><span class="key"> ? </span><span class="m">keys </span>                        <span class="m">en · pt-br ·</span> <span class="a">ru</span>  <span class="ok"><i class="g">●</i></span> <span class="m">github 2m</span>
 
 <span class="m">command line (replaces the footer)</span>
 <span class="a">:</span>theme bureau<span class="cur"> </span>                                                   <span class="m">bureau · paper · fosforo · hacker</span>
 
 <span class="m">ticker · a job in flight</span>
-<span class="a">■</span><span class="h">■</span><span class="n">■</span><span class="f">■</span><span class="f">■</span> <span class="m">refresh github</span> <span class="fb">3/7</span> <span class="m">· 00:12 · acme/api</span>                                     <span class="warn">!</span> <span class="m">jira offline, cached 5m</span>
+<span class="a"><i class="g">■</i></span><span class="h"><i class="g">■</i></span><span class="n"><i class="g">■</i></span><span class="f"><i class="g">■</i></span><span class="f"><i class="g">■</i></span> <span class="m">refresh github</span> <span class="fb">3/7</span> <span class="m">· 00:12 · acme/api</span>                                     <span class="warn">!</span> <span class="m">jira offline, cached 5m</span>
 
 <span class="m">status · offline</span>
-<span class="sig"> <span class="bad">✗</span> <span class="h">OFFLINE</span> <span class="m">· showing the store as of 15:58 · retry in 40s · </span><span class="key"> R </span><span class="m"> now                                      </span></span></pre>
+<span class="sig"> <span class="bad"><i class="g">✗</i></span> <span class="h">OFFLINE</span> <span class="m">· showing the store as of 15:58 · retry in 40s · </span><span class="key"> R </span><span class="m"> now                                      </span></span></pre>
       <figcaption class="caption">Footer variants. Offline is a red wash across the whole line with the time of the last good read.</figcaption>
     </figure>
   </section>
@@ -494,9 +517,9 @@
     <div class="grid">
       <figure>
 <pre class="term"><span class="m">  REQUEST          CITIZEN       DIRECTORATE     AGE  DECISION</span>
-<span class="sel"><span class="a">▸</span> <span class="a">acme/api #412</span>    Volkov, M.    Public Works     <span class="m">2h</span>  <span class="warn">? к сведению</span> </span>
-  <span class="a">acme/api #409</span>    Petrova, I.   Public Works     <span class="m">1d</span>  <span class="ok">✓ одобрено</span>
-<span class="sig">  <span class="a">acme/api #401</span>    Sokolov, D.   Internal Affairs <span class="m">5h</span>  <span class="bad">✗ отказано</span>   </span>
+<span class="sel"><span class="a"><i class="g">▸</i></span> <span class="a">acme/api #412</span>    Volkov, M.    Public Works     <span class="m">2h</span>  <span class="warn">? к сведению</span> </span>
+  <span class="a">acme/api #409</span>    Petrova, I.   Public Works     <span class="m">1d</span>  <span class="ok"><i class="g">✓</i> одобрено</span>
+<span class="sig">  <span class="a">acme/api #401</span>    Sokolov, D.   Internal Affairs <span class="m">5h</span>  <span class="bad"><i class="g">✗</i> отказано</span>   </span>
   <span class="a">acme/web #230</span>    Volkov, M.    Standards        <span class="m">6h</span>  <span class="info">! приказ</span>
   <span class="f">acme/web #228    —             —                9d  не подано</span></pre>
         <figcaption class="caption">Table. A rejected row takes the red wash; a draft row is faint throughout.</figcaption>
@@ -527,41 +550,41 @@
     </header>
     <div class="grid">
       <figure>
-<pre class="term" style="--g2-bg:#0e0a05;--g2-fg:#e8c887;--g2-accent:#d4af37;--g2-signal-text:#d54d3d;--g2-muted:#8b7954;--g2-border:#5e4d1c;--g2-note:#6fa86f;--g2-note-bg:#191a0f;--g2-selection:#2b230e;--g2-ok:#758137;--g2-bad:#d54d3d;--g2-panel-alt:#251e12;--g2-accent-bright:#fcd663"><span class="ab">╔═</span> <span class="a">ГЕНСЕК</span> <span class="m">· bureau</span> <span class="ab">═══════════════╗</span>
+<pre class="term" style="--g2-bg:#0e0a05;--g2-fg:#e8c887;--g2-accent:#d4af37;--g2-signal-text:#d54d3d;--g2-muted:#8b7954;--g2-border:#5e4d1c;--g2-note:#6fa86f;--g2-note-bg:#191a0f;--g2-selection:#2b230e;--g2-ok:#758137;--g2-bad:#d54d3d;--g2-panel-alt:#251e12;--g2-accent-bright:#fcd663"><span class="ab">╔═</span> <span class="a">ГЕНСЕК</span> <span class="m">· bureau</span> <span class="ab">════════════════╗</span>
 <span class="a">┏━ 1 ATTENTION (7) ━━━━━━━━━━━━━━━━┓</span>
 <span class="a">┃</span> <span class="h">▌ asked for review</span> <span class="m">(3)</span>           <span class="a">┃</span>
-<span class="a">┃</span><span class="sel"> <span class="a">▸</span> acme/api #412 refresh…   <span class="m">2h</span> </span><span class="a">┃</span>
-<span class="a">┃</span>   acme/api #401 CI <span class="bad">✗</span> auth   <span class="m">5h</span>  <span class="a">┃</span>
+<span class="a">┃</span><span class="sel"> <span class="a"><i class="g">▸</i></span> acme/api #412 refresh…   <span class="m">2h</span>    </span><span class="a">┃</span>
+<span class="a">┃</span>   acme/api #401 CI <span class="bad"><i class="g">✗</i></span> auth   <span class="m">5h</span>   <span class="a">┃</span>
 <span class="a">┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛</span>
 <span class="nb"> <span class="n">▌ note</span> <span class="m">· 09:12</span>  check expiry     </span></pre>
         <figcaption class="caption"><strong>bureau</strong> · canonical. Warm black, cream, gold, stamp red, sage.</figcaption>
       </figure>
       <figure>
-<pre class="term" style="--g2-bg:#e8dcbf;--g2-fg:#1c1407;--g2-accent:#6e5010;--g2-signal-text:#a32616;--g2-muted:#6a5f4c;--g2-border:#b09b72;--g2-note:#345f34;--g2-note-bg:#d3ceaf;--g2-selection:#d1c1a0;--g2-ok:#4f5a1c;--g2-bad:#a32616;--g2-panel-alt:#cabfa4;--g2-accent-bright:#4c3000"><span class="ab">╔═</span> <span class="a">ГЕНСЕК</span> <span class="m">· paper</span> <span class="ab">════════════════╗</span>
+<pre class="term" style="--g2-bg:#e8dcbf;--g2-fg:#1c1407;--g2-accent:#6e5010;--g2-signal-text:#a32616;--g2-muted:#6a5f4c;--g2-border:#b09b72;--g2-note:#345f34;--g2-note-bg:#d3ceaf;--g2-selection:#d1c1a0;--g2-ok:#4f5a1c;--g2-bad:#a32616;--g2-panel-alt:#cabfa4;--g2-accent-bright:#4c3000"><span class="ab">╔═</span> <span class="a">ГЕНСЕК</span> <span class="m">· paper</span> <span class="ab">═════════════════╗</span>
 <span class="a">┏━ 1 ATTENTION (7) ━━━━━━━━━━━━━━━━┓</span>
 <span class="a">┃</span> <span class="h">▌ asked for review</span> <span class="m">(3)</span>           <span class="a">┃</span>
-<span class="a">┃</span><span class="sel"> <span class="a">▸</span> acme/api #412 refresh…   <span class="m">2h</span> </span><span class="a">┃</span>
-<span class="a">┃</span>   acme/api #401 CI <span class="bad">✗</span> auth   <span class="m">5h</span>  <span class="a">┃</span>
+<span class="a">┃</span><span class="sel"> <span class="a"><i class="g">▸</i></span> acme/api #412 refresh…   <span class="m">2h</span>    </span><span class="a">┃</span>
+<span class="a">┃</span>   acme/api #401 CI <span class="bad"><i class="g">✗</i></span> auth   <span class="m">5h</span>   <span class="a">┃</span>
 <span class="a">┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛</span>
 <span class="nb"> <span class="n">▌ note</span> <span class="m">· 09:12</span>  check expiry     </span></pre>
         <figcaption class="caption"><strong>paper</strong> · optional. Form paper, ink, dark gold. For light terminals and printouts.</figcaption>
       </figure>
       <figure>
-<pre class="term" style="--g2-bg:#0b1f2a;--g2-fg:#e6e6e6;--g2-accent:#d4af37;--g2-signal-text:#c0392b;--g2-muted:#6c7a89;--g2-border:#7a7a7a;--g2-note:#6fa86f;--g2-note-bg:#122218;--g2-selection:#16303d;--g2-ok:#2ecc71;--g2-bad:#e74c3c;--g2-panel-alt:#16303d;--g2-accent-bright:#f1d26a"><span class="ab">╔═</span> <span class="a">ГЕНСЕК</span> <span class="m">· gensek (legacy)</span> <span class="ab">══════╗</span>
+<pre class="term" style="--g2-bg:#0b1f2a;--g2-fg:#e6e6e6;--g2-accent:#d4af37;--g2-signal-text:#c0392b;--g2-muted:#6c7a89;--g2-border:#7a7a7a;--g2-note:#6fa86f;--g2-note-bg:#122218;--g2-selection:#16303d;--g2-ok:#2ecc71;--g2-bad:#e74c3c;--g2-panel-alt:#16303d;--g2-accent-bright:#f1d26a"><span class="ab">╔═</span> <span class="a">ГЕНСЕК</span> <span class="m">· gensek (legacy)</span> <span class="ab">═══════╗</span>
 <span class="a">┏━ 1 ATTENTION (7) ━━━━━━━━━━━━━━━━┓</span>
 <span class="a">┃</span> <span class="h">▌ asked for review</span> <span class="m">(3)</span>           <span class="a">┃</span>
-<span class="a">┃</span><span class="sel"> <span class="a">▸</span> acme/api #412 refresh…   <span class="m">2h</span> </span><span class="a">┃</span>
-<span class="a">┃</span>   acme/api #401 CI <span class="bad">✗</span> auth   <span class="m">5h</span>  <span class="a">┃</span>
+<span class="a">┃</span><span class="sel"> <span class="a"><i class="g">▸</i></span> acme/api #412 refresh…   <span class="m">2h</span>    </span><span class="a">┃</span>
+<span class="a">┃</span>   acme/api #401 CI <span class="bad"><i class="g">✗</i></span> auth   <span class="m">5h</span>   <span class="a">┃</span>
 <span class="a">┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛</span>
 <span class="nb"> <span class="n">▌ note</span> <span class="m">· 09:12</span>  check expiry     </span></pre>
         <figcaption class="caption"><strong>gensek</strong> · the current default in that repo. Teal field. Stays shipped; no longer canonical.</figcaption>
       </figure>
       <figure>
-<pre class="term" style="--g2-bg:#1a170f;--g2-fg:#eceae5;--g2-accent:#eec35e;--g2-signal-text:#f0d79a;--g2-muted:#8a846f;--g2-border:#6b5f3a;--g2-note:#8fbf8f;--g2-note-bg:#1f2416;--g2-selection:#2b2614;--g2-ok:#7fd68a;--g2-bad:#f07a6a;--g2-panel-alt:#2b2614;--g2-accent-bright:#f6d98a"><span class="ab">╔═</span> <span class="a">ГЕНСЕК</span> <span class="m">· fosforo (blog)</span> <span class="ab">═══════╗</span>
+<pre class="term" style="--g2-bg:#1a170f;--g2-fg:#eceae5;--g2-accent:#eec35e;--g2-signal-text:#f0d79a;--g2-muted:#8a846f;--g2-border:#6b5f3a;--g2-note:#8fbf8f;--g2-note-bg:#1f2416;--g2-selection:#2b2614;--g2-ok:#7fd68a;--g2-bad:#f07a6a;--g2-panel-alt:#2b2614;--g2-accent-bright:#f6d98a"><span class="ab">╔═</span> <span class="a">ГЕНСЕК</span> <span class="m">· fosforo (blog)</span> <span class="ab">════════╗</span>
 <span class="a">┏━ 1 ATTENTION (7) ━━━━━━━━━━━━━━━━┓</span>
 <span class="a">┃</span> <span class="h">▌ asked for review</span> <span class="m">(3)</span>           <span class="a">┃</span>
-<span class="a">┃</span><span class="sel"> <span class="a">▸</span> acme/api #412 refresh…   <span class="m">2h</span> </span><span class="a">┃</span>
-<span class="a">┃</span>   acme/api #401 CI <span class="bad">✗</span> auth   <span class="m">5h</span>  <span class="a">┃</span>
+<span class="a">┃</span><span class="sel"> <span class="a"><i class="g">▸</i></span> acme/api #412 refresh…   <span class="m">2h</span>    </span><span class="a">┃</span>
+<span class="a">┃</span>   acme/api #401 CI <span class="bad"><i class="g">✗</i></span> auth   <span class="m">5h</span>   <span class="a">┃</span>
 <span class="a">┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛</span>
 <span class="nb"> <span class="n">▌ note</span> <span class="m">· 09:12</span>  check expiry     </span></pre>
         <figcaption class="caption"><strong>fosforo</strong> · the blog default, one accent. Heading is derived (accent lightened), not red.</figcaption>
@@ -598,7 +621,7 @@
 <span class="b">│</span> <span class="m">APPROVED BY ......:</span> Director Norman                                      <span class="b">│</span>
 <span class="b">│</span> <span class="m">LICENSE ..........:</span> AGPL-3.0-or-later                                    <span class="b">│</span>
 <span class="b">│</span>                                      <span class="ok">┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓</span> <span class="b">│</span>
-<span class="b">│</span>                                      <span class="ok">┃</span>  <span class="ok">✓  ОДОБРЕНО · APPROVED</span>          <span class="ok">┃</span> <span class="b">│</span>
+<span class="b">│</span>                                      <span class="ok">┃</span>  <span class="ok"><i class="g">✓</i>  ОДОБРЕНО · APPROVED</span>         <span class="ok">┃</span> <span class="b">│</span>
 <span class="b">│</span>                                      <span class="ok">┃</span>  <span class="m">official release · NIRVYTEKH</span>   <span class="ok">┃</span> <span class="b">│</span>
 <span class="b">│</span>                                      <span class="ok">┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛</span> <span class="b">│</span>
 <span class="b">└──────────────────────────────────────────────────────────────────────────┘</span>

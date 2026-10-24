@@ -24,6 +24,13 @@
   }
   body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--g2-bg); }
   * { box-sizing: border-box; }
+  /* scrollbars: flat, square, in the bureau's colours (Firefox + WebKit) */
+  * { scrollbar-width: thin; scrollbar-color: var(--g2-border) var(--g2-well); }
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: var(--g2-well); }
+  ::-webkit-scrollbar-thumb { background: var(--g2-border); border: 2px solid var(--g2-well); }
+  ::-webkit-scrollbar-thumb:hover { background: var(--g2-accent); }
+  ::-webkit-scrollbar-corner { background: var(--g2-well); }
   h1, h2, h3, h4 { margin: 0; text-wrap: balance; color: var(--g2-fg-bright); font-weight: 700; }
   p { margin: 0; max-width: var(--g2-measure); }
   a { color: var(--g2-accent); text-decoration-color: var(--g2-border); text-underline-offset: 0.15em; }
@@ -74,7 +81,7 @@
     border-bottom: var(--g2-rule) solid var(--g2-border); margin: 0 calc(-1 * max(16px, env(safe-area-inset-left, 0px)));
     padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
   }
-  .index ul { list-style: none; margin: 0 auto; padding: 0; max-width: var(--sheet); display: flex; gap: 2px; overflow-x: auto; scrollbar-width: thin; }
+  .index ul { list-style: none; margin: 0 auto; padding: 0; max-width: var(--sheet); display: flex; flex-wrap: wrap; gap: 2px; }
   .index a {
     display: block; height: var(--tab-h); padding: 0 0.9rem; line-height: var(--tab-h); white-space: nowrap;
     font-family: var(--g2-font-mono); font-size: var(--g2-text-xs); letter-spacing: var(--g2-tracking-label); text-transform: uppercase;
@@ -223,6 +230,11 @@
   dialog.form::backdrop { background: rgba(0, 0, 0, 0.6); }
   dialog.form .casefile__head { border-bottom-width: var(--g2-rule); }
   dialog.form .actions { display: flex; gap: 0.75rem; justify-content: flex-end; flex-wrap: wrap; padding: 1rem 1.25rem; border-top: var(--g2-rule) solid var(--g2-border-faint); }
+  .stage { position: relative; min-height: 360px; background: var(--g2-panel); border: var(--g2-rule) solid var(--g2-border); overflow: hidden; }
+  .stage__behind { padding: 1rem; opacity: 0.4; filter: saturate(0.6); display: grid; gap: 0.5rem; pointer-events: none; }
+  .stage__scrim { position: absolute; inset: 0; background: rgba(0, 0, 0, 0.55); }
+  .stage .modal { position: absolute; inset: 0; margin: auto; width: min(92%, 440px); height: fit-content; background: var(--g2-panel); border: 4px double var(--g2-accent); }
+  .stage .modal .actions { display: flex; gap: 0.75rem; justify-content: flex-end; flex-wrap: wrap; padding: 1rem 1.25rem; border-top: var(--g2-rule) solid var(--g2-border-faint); }
   #toast-host { position: fixed; right: max(16px, env(safe-area-inset-right, 0px)); bottom: calc(1rem + env(safe-area-inset-bottom, 0px)); display: grid; gap: 0.5rem; z-index: 20; max-width: min(92vw, 420px); }
   .empty { display: grid; justify-items: center; gap: 0.75rem; text-align: center; padding: 2.5rem 1rem; }
   .empty .glyph { font-family: var(--g2-font-mono); color: var(--g2-faint); font-size: var(--g2-text-2xl); }
@@ -275,6 +287,7 @@
 
   @media (max-width: 720px) {
     .masthead { grid-template-columns: 1fr; padding-top: 3rem; }
+    .index ul { flex-wrap: nowrap; overflow-x: auto; }
     .masthead .seal { position: absolute; right: 0.5rem; bottom: 0.5rem; width: 84px; height: 84px; opacity: 0.6; }
     .corner { top: 0.5rem; right: 0.5rem; font-size: 0.62rem; }
     .specimen .row { grid-template-columns: 1fr; gap: 0.25rem; }
@@ -796,6 +809,31 @@
         </div>
       </div>
     </div>
+      <div class="stage" aria-label="Modal example">
+      <div class="stage__behind" aria-hidden="true">
+        <div class="ledger"><div class="row"><span class="k">документ №</span><span class="lead"></span><span class="v">003</span></div><div class="row"><span class="k">title</span><span class="lead"></span><span class="v">True Contributing Guide</span></div><div class="row"><span class="k">status</span><span class="lead"></span><span class="v"><span class="chip chip--approve">одобрено</span></span></div></div>
+        <div class="fkeys"><div><kbd>F1</kbd><span>Help</span></div><div><kbd>F4</kbd><span>Edit</span></div><div><kbd>F8</kbd><span>Delete</span></div><div><kbd>F10</kbd><span>Quit</span></div></div>
+      </div>
+      <div class="stage__scrim"></div>
+      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="md-title">
+        <span class="corner">ДСП</span>
+        <div class="casefile__head">
+          <div class="ledger">
+            <div class="row"><span class="k">действие</span><span class="lead"></span><span class="v" id="md-title">Revoke permit NV-2026-04</span></div>
+            <div class="row"><span class="k">citizen</span><span class="lead"></span><span class="v">Volkov, Marina</span></div>
+            <div class="row"><span class="k">reversible</span><span class="lead"></span><span class="v cyr">НЕТ · no</span></div>
+          </div>
+        </div>
+        <div class="casefile__body"><p>The permit is withdrawn and the citizen is notified. Internal Affairs receives a copy. Type the permit number to confirm.</p>
+          <div class="field"><label class="label" for="md-input">Permit number</label><div class="bracket"><input class="input" id="md-input" type="text" placeholder="NV-2026-04"></div></div>
+        </div>
+        <div class="actions">
+          <button class="btn btn--ghost" type="button">Cancel <kbd>esc</kbd></button>
+          <button class="btn btn--danger" type="button">Revoke <kbd>⏎</kbd></button>
+        </div>
+      </div>
+    </div>
+    <p class="t-sm muted">A modal is the authority frame over a 55% scrim. The screen behind stays visible and desaturated, so the citizen knows where they are. The question is a ledger; the irreversible flag is red; the destructive button is outline red and asks for the identifier to be typed. Never a browser <code>confirm()</code>. The buttons above open the live version.</p>
   </section>
 
   <!-- ================================================================ §10 -->
