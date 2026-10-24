@@ -59,3 +59,8 @@ not derive in OKLab themselves.
 The aesthetic is loosely inspired by *Papers, Please* (© Lucas Pope / 3909 LLC) in
 atmosphere only. No code, asset, name or symbol from that game, or from any real state,
 appears here. The bureau, its language and its symbols are original to the suite.
+
+## ЛИЦЕНЗИЯ · License
+
+[GNU Affero General Public License v3.0](LICENSE), the same licence as the rest of the
+suite. Tokens, showcases and documents included.
