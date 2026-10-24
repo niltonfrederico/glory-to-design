@@ -94,6 +94,7 @@
   .sec { display: grid; gap: 1.5rem; scroll-margin-top: calc(var(--tab-h) + 1rem); }
   .sec > header { display: grid; gap: 0.35rem; }
   .sec h2 { font-size: var(--g2-text-xl); }
+  .sec h2 .sec-no { font-family: var(--g2-font-mono); font-weight: 400; font-size: 0.55em; color: var(--g2-muted); letter-spacing: var(--g2-tracking-label); vertical-align: middle; margin-right: 0.35em; }
   .sec > header p { color: var(--g2-fg); }
   .grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); }
   .grid > * { min-width: 0; }
@@ -146,7 +147,7 @@
   /* ---------------------------------------------------------------- controls */
   .btn {
     display: inline-flex; align-items: center; gap: 0.5em; padding: 0.55rem 1rem; cursor: pointer;
-    font-family: var(--g2-font-mono); font-size: var(--g2-text-sm); letter-spacing: 0.08em; text-transform: uppercase; font-weight: 600;
+    font-family: var(--g2-font-mono); font-size: var(--g2-text-sm); letter-spacing: 0.02em; font-weight: 600;
     border: var(--g2-rule) solid var(--g2-border); background: var(--g2-panel); color: var(--g2-fg);
   }
   .btn:hover { background: var(--g2-panel-alt); color: var(--g2-fg-bright); border-color: var(--g2-accent); }
@@ -206,6 +207,35 @@
   .ledger-table td.num { text-align: right; font-family: var(--g2-font-mono); }
   .ledger-table td.mono { color: var(--g2-fg-bright); }
 
+  .filters { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.75rem; }
+  .chip.filter { cursor: pointer; background: transparent; opacity: 0.5; }
+  .chip.filter[aria-pressed="true"] { opacity: 1; background: var(--g2-panel-alt); }
+  .pager { display: flex; gap: 0.4rem; align-items: center; flex-wrap: wrap; font-family: var(--g2-font-mono); font-size: var(--g2-text-sm); }
+  .pager a { text-decoration: none; padding: 0.3rem 0.6rem; border: var(--g2-rule) solid var(--g2-border-faint); color: var(--g2-muted); }
+  .pager a:hover { color: var(--g2-accent); border-color: var(--g2-accent); }
+  .pager__sheet { color: var(--g2-fg-bright); padding: 0 0.5rem; letter-spacing: 0.06em; }
+  .figures .v { font-variant-numeric: tabular-nums; }
+  .delta { font-size: var(--g2-text-xs); color: var(--g2-muted); margin-left: 0.4em; }
+  .delta.up { color: var(--g2-ok); } .delta.down { color: var(--g2-muted); } .delta.bad { color: var(--g2-bad); }
+  .chart { display: grid; grid-template-columns: max-content 1fr max-content; gap: 2px 0.75rem; align-items: center; font-family: var(--g2-font-mono); font-size: var(--g2-text-sm); }
+  .chart__label { color: var(--g2-muted); white-space: nowrap; }
+  .chart__track { height: 14px; background: repeating-linear-gradient(90deg, var(--g2-border-faint) 0 1px, transparent 1px 25%); min-width: 0; }
+  .chart__bar { height: 100%; background: var(--g2-accent); border-right: 2px solid var(--g2-panel); }
+  .chart__bar:hover { background: var(--g2-accent-bright); }
+  .chart__val { color: var(--g2-fg-bright); font-variant-numeric: tabular-nums; text-align: right; }
+  .skel { display: grid; gap: 0.5rem; }
+  .skel span { display: block; height: 0.9em; background: repeating-linear-gradient(90deg, var(--g2-border-faint) 0 3px, transparent 3px 6px); }
+  .doc .casefile__body p, .doc .casefile__body li { font-family: var(--g2-font-body); font-size: var(--g2-text-md); line-height: 1.55; }
+  .doc h3 { font-size: var(--g2-text-lg); }
+  .doc blockquote { margin: 0; padding: 0.25rem 1rem; border-left: 3px solid var(--g2-border); color: var(--g2-muted); font-style: italic; max-width: var(--g2-measure); }
+  .doc ul, .doc ol { margin: 0; padding-left: 1.6em; max-width: var(--g2-measure); }
+  .doc ul { list-style: none; } .doc ul li::before { content: "▸"; color: var(--g2-accent); font-family: var(--g2-font-mono); display: inline-block; width: 1.4em; margin-left: -1.4em; }
+  .doc ol { font-variant-numeric: tabular-nums; }
+  .doc li.task::before { content: "[ ]"; color: var(--g2-accent); width: 2.4em; margin-left: -1.6em; }
+  .doc li.task.done::before { content: "[x]"; }
+  .doc li.task.done { color: var(--g2-muted); text-decoration: line-through; text-decoration-color: var(--g2-border); }
+  .doc pre { margin: 0; padding: 0.75rem 1rem; background: var(--g2-well); border: var(--g2-rule) solid var(--g2-border-faint); font-family: var(--g2-font-mono); font-size: var(--g2-text-sm); line-height: 1.6; overflow-x: auto; color: var(--g2-fg-bright); }
+  .doc hr { border: 0; border-top: 1px dashed var(--g2-border); margin: 0.5rem 0; }
   /* ---------------------------------------------------------------- redaction & casefile */
   .redacted { background: var(--g2-fg); color: transparent; padding: 0 0.15em; user-select: all; transition: color 120ms; }
   .redacted:hover { color: var(--g2-bg); }
@@ -296,6 +326,12 @@
     .nono .row { grid-template-columns: 1.2rem 1fr; } .nono .yes { grid-column: 2; }
     .casefile__head, .slip { grid-template-columns: 1fr; }
   }
+  :root.theme-paper body, :root[data-theme="paper"] body { line-height: 1.65; }
+  @media print {
+    .index, .toolbar, #toast-host, dialog, .stage__scrim { display: none !important; }
+    body { padding: 0; } .masthead { margin-top: 0; } .sec { break-inside: avoid; }
+    .stamp { filter: none; }
+  }
   @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
 
@@ -369,8 +405,7 @@
   <!-- ================================================================ §0 -->
   <section class="sec" id="svodka">
     <header>
-      <span class="label"><span class="cyr">СВОДКА</span> · §0 Summary</span>
-      <h2>One sheet. Two surfaces. One voice.</h2>
+      <h2><span class="sec-no">§0</span> <span class="cyr">СВОДКА</span> · One sheet. Two surfaces. One voice.</h2>
       <p>This page is the GUI half of the g2 design system: the tokens, the type, the frames, the stamps and the components every <code>glory-to-*</code> web surface draws from. Its terminal twin is <em>Стандарт TUI</em>. Both read the same seeds from <code>tokens.css</code> and <code>tokens.toml</code>, generated by one script that refuses to emit a pair of colours that fails WCAG AA.</p>
     </header>
     <div class="grid">
@@ -409,8 +444,7 @@
   <!-- ================================================================ §1 -->
   <section class="sec" id="color">
     <header>
-      <span class="label"><span class="cyr">ЦВЕТ</span> · §1 Color</span>
-      <h2>A master trio, derived in OKLab, lifted to contrast</h2>
+      <h2><span class="sec-no">§1</span> <span class="cyr">ЦВЕТ</span> · A master trio, derived in OKLab, lifted to contrast</h2>
       <p>Three seeds (<code>bg</code>, <code>fg</code>, <code>accent</code>) plus the stamp red and the sage note, fixed by hand because the bureau has two accents. Everything else is a mix. The hex values below are read live from the stylesheet, so switching to paper rewrites them.</p>
     </header>
     <h3 class="label">Surface ramp</h3>
@@ -441,8 +475,7 @@
   <!-- ================================================================ §2 -->
   <section class="sec" id="type">
     <header>
-      <span class="label"><span class="cyr">ШРИФТ</span> · §2 Type</span>
-      <h2>Mono is the chrome. Prose is sans. Paper is serif.</h2>
+      <h2><span class="sec-no">§2</span> <span class="cyr">ШРИФТ</span> · Mono is the chrome. Prose is sans. Paper is serif.</h2>
       <p>JetBrains Mono carries every label, key, number, ledger and header, as it already does in the suite's SVGs. Body text is PT Sans, the Cyrillic-first public face, because paragraphs in monospace cost reading effort. On the paper theme the body switches to PT Serif, the typewritten-form register. All three are free and carry Cyrillic.</p>
     </header>
     <div class="specimen">
@@ -476,8 +509,7 @@
   <!-- ================================================================ §3 -->
   <section class="sec" id="frames">
     <header>
-      <span class="label"><span class="cyr">РАМКА</span> · §3 Frames</span>
-      <h2>Weight carries state</h2>
+      <h2><span class="sec-no">§3</span> <span class="cyr">РАМКА</span> · Weight carries state</h2>
       <p>The one grammar both surfaces share literally. In the terminal: <code>┌─┐</code> at rest, <code>┏━┓</code> focused, <code>╔═╗</code> for authority. Here: 1px, 2px gold, 4px double gold. A title sits in the top border, a kicker in the top-right. Never a shadow, never a radius.</p>
     </header>
     <div class="grid">
@@ -507,8 +539,7 @@
   <!-- ================================================================ §4 -->
   <section class="sec" id="stamps">
     <header>
-      <span class="label"><span class="cyr">ПЕЧАТЬ</span> · §4 Stamps</span>
-      <h2>Four decisions and a seal</h2>
+      <h2><span class="sec-no">§4</span> <span class="cyr">ПЕЧАТЬ</span> · Four decisions and a seal</h2>
       <p>A stamp is a terminal decision on a request, never decoration. Rings, text on arcs, a glyph in the center, tilted a few degrees, with ink grain. The same four exist as text blocks in the TUI and as <code>stamp_*</code> helpers in <code>glory-to-protocol</code>. The chip is the stamp's small form for tables and lists.</p>
     </header>
     <div class="stamps">
@@ -587,8 +618,7 @@
   <!-- ================================================================ §5 -->
   <section class="sec" id="forms">
     <header>
-      <span class="label"><span class="cyr">ФОРМА</span> · §5 Form controls</span>
-      <h2>Brackets, boxes and one gold button</h2>
+      <h2><span class="sec-no">§5</span> <span class="cyr">ФОРМА</span> · Brackets, boxes and one gold button</h2>
       <p>Inputs sit in a well with a bottom rule, flanked by mono brackets, the way Norton Commander drew <code>[.........]</code>. Checkboxes and radios are drawn as glyphs. One filled gold button per view; the rest are outline or ghost. Danger is red outline, never red fill.</p>
     </header>
     <div class="grid">
@@ -651,6 +681,7 @@
             <p><strong>Labels above, mono, uppercase, tracked.</strong> Required marks a red asterisk. Help text sits below in mono xs.</p>
             <p><strong>Errors are literal.</strong> <code>✗</code>, then what is wrong and what fixes it. No apology, no "oops".</p>
             <p><strong>The gold button is the filing act.</strong> Submit, approve, publish. Save-draft is outline. Destructive is red outline and asks once, as a form, not a browser confirm.</p>
+            <p><strong>Buttons are sentence case.</strong> Uppercase is for stamps, chips, the focused frame and the classification corner; a button is an instruction, not a decree.</p>
             <p><strong>Keyboard hints on primary actions</strong> as a <kbd>kbd</kbd> inside the button. Mobile hides them.</p>
           </div>
         </div>
@@ -661,8 +692,7 @@
   <!-- ================================================================ §6 -->
   <section class="sec" id="ledger">
     <header>
-      <span class="label"><span class="cyr">ВЕДОМОСТЬ</span> · §6 Ledger and tables</span>
-      <h2>Fields in fixed positions, leaders between them</h2>
+      <h2><span class="sec-no">§6</span> <span class="cyr">ВЕДОМОСТЬ</span> · Fields in fixed positions, leaders between them</h2>
       <p>GOST 6.39 put every form field at a fixed coordinate. The ledger is that idea as a component: label, dotted leader, value, mono throughout. The table is the ledger with rows; the selected row carries a <code>▸</code>, a rejected row a red wash, and status is always a chip.</p>
     </header>
     <div class="grid">
@@ -691,13 +721,65 @@
         </table>
       </div>
     </div>
+    <div class="grid">
+      <div class="frame">
+        <span class="frame__title">ПОИСК · search and filter</span>
+        <div class="field">
+          <label class="label" for="q">Find in the ledger</label>
+          <div class="bracket"><input class="input" id="q" type="search" placeholder="citizen, request, directorate" value="acme/api"></div>
+          <span class="field__msg">press <kbd>/</kbd> anywhere to focus · 3 of 24 rows match</span>
+        </div>
+        <div class="filters" role="group" aria-label="Filter by decision">
+          <button class="chip chip--neutral filter" type="button" aria-pressed="false">all</button>
+          <button class="chip chip--approve filter" type="button" aria-pressed="true">одобрено</button>
+          <button class="chip chip--review filter" type="button" aria-pressed="true">к сведению</button>
+          <button class="chip chip--reject filter" type="button" aria-pressed="false">отказано</button>
+          <button class="chip chip--order filter" type="button" aria-pressed="false">приказ</button>
+        </div>
+        <p class="t-xs muted" style="margin-top:0.75rem">The web form of the terminal's <code>:</code> line. Filters are the decision chips, pressed or not; a pressed chip keeps its colour, an unpressed one fades. The count sits in the help line, never in a badge.</p>
+      </div>
+      <div class="frame">
+        <span class="frame__title">ЛИСТ · pagination</span>
+        <nav class="pager" aria-label="Pagination">
+          <a href="#ledger">« first</a><a href="#ledger">‹ prev</a>
+          <span class="pager__sheet">ЛИСТ 2 ИЗ 7 · sheet 2 of 7</span>
+          <a href="#ledger">next ›</a><a href="#ledger">last »</a>
+        </nav>
+        <div class="ledger" style="margin-top:1rem">
+          <div class="row"><span class="k">rows</span><span class="lead"></span><span class="v">25 – 48 of 162</span></div>
+          <div class="row"><span class="k">per sheet</span><span class="lead"></span><span class="v">24</span></div>
+        </div>
+        <p class="t-xs muted" style="margin-top:0.75rem">A ledger is bound in sheets, so the pager counts sheets, Cyrillic first. Infinite scroll is out of canon: a record has a page number.</p>
+      </div>
+    </div>
+    <div class="grid">
+      <div class="frame">
+        <span class="frame__title">ПОКАЗАТЕЛИ · figures</span>
+        <div class="ledger figures">
+          <div class="row"><span class="k">open requests</span><span class="lead"></span><span class="v">22 <span class="delta up">▲ 3</span></span></div>
+          <div class="row"><span class="k">awaiting review</span><span class="lead"></span><span class="v">7 <span class="delta down">▼ 1</span></span></div>
+          <div class="row"><span class="k">median age</span><span class="lead"></span><span class="v">1d 4h <span class="delta">— 0</span></span></div>
+          <div class="row"><span class="k">rejected this week</span><span class="lead"></span><span class="v">2 <span class="delta up bad">▲ 2</span></span></div>
+        </div>
+        <p class="t-xs muted" style="margin-top:0.75rem">A figure is a ledger row with a tabular number and a delta glyph, not a big-number tile. Deltas carry a glyph as well as a colour; a bad rise is red.</p>
+      </div>
+      <div class="frame">
+        <span class="frame__title">ДИАГРАММА · one hue</span>
+        <div class="chart" role="img" aria-label="Open requests by directorate: Public Works 12, Internal Affairs 5, Standards 3, Archive 2">
+          <span class="chart__label">Public Works</span><div class="chart__track"><div class="chart__bar" style="width:100%" title="Public Works · 12"></div></div><span class="chart__val">12</span>
+          <span class="chart__label">Internal Affairs</span><div class="chart__track"><div class="chart__bar" style="width:41.7%" title="Internal Affairs · 5"></div></div><span class="chart__val">5</span>
+          <span class="chart__label">Standards</span><div class="chart__track"><div class="chart__bar" style="width:25%" title="Standards · 3"></div></div><span class="chart__val">3</span>
+          <span class="chart__label">Archive</span><div class="chart__track"><div class="chart__bar" style="width:16.7%" title="Archive · 2"></div></div><span class="chart__val">2</span>
+        </div>
+        <p class="t-xs muted" style="margin-top:0.75rem">Open requests by directorate, example data. One series, one hue, bars on a faint grid, values as text. <strong>A second series is a second chart.</strong> Measured 2026-10-24: gold, sage and steel as a categorical set fail the colour-vision floor (gold↔sage ΔE 14.4), so this system has no categorical palette. State colours are never series colours.</p>
+      </div>
+    </div>
   </section>
 
   <!-- ================================================================ §7 -->
   <section class="sec" id="docs">
     <header>
-      <span class="label"><span class="cyr">ДОКУМЕНТ</span> · §7 Documents</span>
-      <h2>Case files, classification corners, redaction</h2>
+      <h2><span class="sec-no">§7</span> <span class="cyr">ДОКУМЕНТ</span> · Case files, classification corners, redaction</h2>
       <p>Every public page is a numbered document. The header block names the document, its classification, who approved it and when. The ДСП corner sits top-right with a copy number, as the Soviet instruction placed it. Redacted spans are a bar the reader can still select, a nod to <em>Control</em>'s case files: clearance is a hover away.</p>
     </header>
     <article class="casefile">
@@ -714,6 +796,36 @@
         <p>On inspection, three bureaus were found operating on three backgrounds: slate at Protocol, teal at Gensek, and the warm black of <span class="redacted">the finance vault</span>. The Directorate finds no fault with any single bureau. The fault was the absence of a standard.</p>
         <p>Effective immediately, the warm black is canonical. Migration is per bureau, on its own schedule. The Directorate will <span class="redacted">not be checking</span> weekly.</p>
         <p class="muted" style="margin-top:0.5rem">— Director Norman · <span class="cyr">С честью</span></p>
+      </div>
+    </article>
+    <article class="casefile doc">
+      <div class="casefile__head">
+        <div class="ledger">
+          <div class="row"><span class="k">документ</span><span class="lead"></span><span class="v">rendered prose · markdown painted to the standard</span></div>
+          <div class="row"><span class="k">source</span><span class="lead"></span><span class="v">acme/api #412 · description</span></div>
+        </div>
+      </div>
+      <div class="casefile__body">
+        <h3>Refresh token rotation</h3>
+        <p>Rotates the refresh token on <strong>every use</strong> and invalidates the previous one. Adds a <code>token_version</code> column so a stolen token dies at its first reuse.</p>
+        <blockquote>Closes PROJ-118. Supersedes #388, which rotated only on login.</blockquote>
+        <ul>
+          <li>Migration adds the column with a default of 1.</li>
+          <li>Mobile client sends the version header from build 4.2.</li>
+          <li class="task done">Migration</li>
+          <li class="task">Mobile client</li>
+        </ul>
+        <ol>
+          <li>Deploy the migration.</li>
+          <li>Deploy the API.</li>
+          <li>Ship the client; older builds keep working for 30 days.</li>
+        </ol>
+        <pre><code>def rotate(token: Token) -&gt; Token:
+    token.version += 1
+    store.save(token)
+    return token</code></pre>
+        <hr>
+        <p class="t-sm muted">Body text goes back to sans here, because this is read, not scanned. Bold takes the bright ink, not red: red in prose is reserved for the state's words. Lists use the cursor glyph; task boxes are typed, as in the terminal.</p>
       </div>
     </article>
     <div class="grid">
@@ -740,8 +852,7 @@
   <!-- ================================================================ §8 -->
   <section class="sec" id="nav">
     <header>
-      <span class="label"><span class="cyr">НАВИГАЦИЯ</span> · §8 Navigation</span>
-      <h2>Folder tabs, a rail with keys, and the F-bar</h2>
+      <h2><span class="sec-no">§8</span> <span class="cyr">НАВИГАЦИЯ</span> · Folder tabs, a rail with keys, and the F-bar</h2>
       <p>Top-level sections are folder tabs, like the index pinned to this page. A side rail lists destinations with a key hint and a count. The function-key bar is the footer of every full-screen view, ten slots, inherited straight from the 1980s and still the fastest way to say what the keyboard does.</p>
     </header>
     <div class="grid">
@@ -775,8 +886,7 @@
   <!-- ================================================================ §9 -->
   <section class="sec" id="feedback">
     <header>
-      <span class="label"><span class="cyr">СИГНАЛ</span> · §9 Feedback</span>
-      <h2>Slips, blocks and a dialog that is a form</h2>
+      <h2><span class="sec-no">§9</span> <span class="cyr">СИГНАЛ</span> · Slips, blocks and a dialog that is a form</h2>
       <p>A toast is a filed slip with a coloured edge. Progress is a row of blocks. A confirmation is a small form inside an authority frame, with the question as a ledger and the answer as buttons. The empty state is a blank form, dashed, telling you what will appear and how to file the first entry.</p>
     </header>
     <div class="grid">
@@ -798,6 +908,12 @@
             <div class="progress"><div class="bar" role="progressbar" aria-valuenow="42" aria-valuemin="0" aria-valuemax="100" aria-label="Sync"><span style="width:42%"></span></div><span>sync · 42%</span></div>
             <div class="progress"><div class="blocks" aria-hidden="true"><span class="on">■</span><span class="off">■</span><span class="on">■</span><span class="off">■</span><span class="on">■</span></div><span class="muted">in flight · five squares cycle</span></div>
           </div>
+        </div>
+        <div class="frame" aria-busy="true">
+          <span class="frame__title">ЗАГРУЗКА · loading</span>
+          <div class="skel" aria-hidden="true"><span style="width:62%"></span><span style="width:88%"></span><span style="width:45%"></span><span style="width:71%"></span></div>
+          <p class="t-xs muted mono" style="margin-top:0.75rem"><span style="color:var(--g2-accent)">░░░▒▒▓</span> reading the ledger · 3 of 7 sheets</p>
+          <p class="t-xs muted" style="margin-top:0.5rem">No spinner. Rows that are coming are drawn as shade, the way a terminal draws a disabled region, with a line that says what is being read and how far along it is.</p>
         </div>
         <div class="frame frame--dashed">
           <div class="empty">
@@ -839,8 +955,7 @@
   <!-- ================================================================ §10 -->
   <section class="sec" id="layout">
     <header>
-      <span class="label"><span class="cyr">МАКЕТ</span> · §10 Layout</span>
-      <h2>Three panes on a desk, one column in a hand</h2>
+      <h2><span class="sec-no">§10</span> <span class="cyr">МАКЕТ</span> · Three panes on a desk, one column in a hand</h2>
       <p>Desktop is the Gensek dashboard: a rail, a main pane, an aside, header above and F-bar below. Under 720px the rail becomes the folder tabs, the aside stacks under main, and the F-bar collapses to the four keys that matter on glass. Spacing is a 4px grid; sections breathe at 3.5rem.</p>
     </header>
     <div class="grid">
@@ -865,13 +980,16 @@
         </div>
       </div>
     </div>
+    <div class="note-box">
+      <span class="label">ПЕЧАТЬ НА БУМАГЕ · print</span>
+      <p class="t-sm">Printing switches to the paper tokens by itself (<code>@media print</code> in the generated stylesheet), hides the index, the toolbar and any open slip, and keeps every frame at one pixel. The paper theme exists for this: a filed request should look filed when it comes out of the printer.</p>
+    </div>
   </section>
 
   <!-- ================================================================ §11 -->
   <section class="sec" id="a11y">
     <header>
-      <span class="label"><span class="cyr">ДОСТУП</span> · §11 Accessibility</span>
-      <h2>Built in, then gated</h2>
+      <h2><span class="sec-no">§11</span> <span class="cyr">ДОСТУП</span> · Built in, then gated</h2>
       <p>The owner of this suite reads with dyslexia and ADHD. That is a design input, not a footnote: body text is sans with a generous line height, labels are short and placed where the eye lands, every state is also a shape, and nothing moves unless asked.</p>
     </header>
     <div class="grid">
@@ -887,8 +1005,7 @@
   <!-- ================================================================ §12 -->
   <section class="sec" id="canon">
     <header>
-      <span class="label"><span class="cyr">ВНЕ КАНОНА</span> · §12 Out of canon</span>
-      <h2>What the bureau does not do</h2>
+      <h2><span class="sec-no">§12</span> <span class="cyr">ВНЕ КАНОНА</span> · What the bureau does not do</h2>
       <p>The fastest way to make this look like a costume is any item in the left column. The right column is what the standard does instead.</p>
     </header>
     <div class="nono">

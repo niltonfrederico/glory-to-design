@@ -347,6 +347,15 @@ def write_css(themes: dict[str, dict[str, str]]) -> str:
 {css_block(paper)}
   --g2-font-body: var(--g2-font-serif);
 }}
+
+/* print is paper: a filed request should look filed when it leaves the printer */
+@media print {{
+  :root {{
+    color-scheme: light;
+{css_block(paper, "    ")}
+    --g2-font-body: var(--g2-font-serif);
+  }}
+}}
 """
 
 

@@ -92,3 +92,36 @@
   --g2-info: #3e5a6a;
   --g2-font-body: var(--g2-font-serif);
 }
+
+/* print is paper: a filed request should look filed when it leaves the printer */
+@media print {
+  :root {
+    color-scheme: light;
+    --g2-bg: #e8dcbf;
+    --g2-bg-alt: #dfd3b7;
+    --g2-panel: #d6caae;
+    --g2-panel-alt: #cabfa4;
+    --g2-well: #d8ccaf;
+    --g2-fg: #1c1407;
+    --g2-fg-bright: #0c0600;
+    --g2-muted: #6a5f4c;
+    --g2-faint: #877c65;
+    --g2-accent: #6e5010;
+    --g2-accent-bright: #4c3000;
+    --g2-accent-ink: #d8ccaf;
+    --g2-border: #b09b72;
+    --g2-border-faint: #ccbc99;
+    --g2-border-focus: #6e5010;
+    --g2-selection: #d1c1a0;
+    --g2-signal: #a32616;
+    --g2-signal-text: #a32616;
+    --g2-signal-bg: #e1c4a7;
+    --g2-note: #345f34;
+    --g2-note-bg: #d3ceaf;
+    --g2-ok: #4f5a1c;
+    --g2-warn: #875700;
+    --g2-bad: #a32616;
+    --g2-info: #3e5a6a;
+    --g2-font-body: var(--g2-font-serif);
+  }
+}

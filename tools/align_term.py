@@ -8,7 +8,7 @@ fall back to another font with a different advance width. This script fixes both
 1. Wraps every such glyph in <i class="g"> (CSS gives it exactly 1ch).
 2. For every block, takes the frame-char columns of the first line with N frame
    characters as the anchors for every later line with N frame characters, and the
-   block's width from its first top-border line (or an override), then pads or trims
+   block's width from its first top-border line (or `data-cols` on the <pre>), then pads or trims
    the fill run (spaces, or ─ ━ ═ on border lines) immediately before each frame
    character until it lands on its anchor.
 
@@ -29,7 +29,8 @@ PAGE = ROOT / "showcase" / "tui.html"
 FRAME = set("┌┐└┘│┏┓┗┛┃╔╗╚╝║├┤┬┴╩╦╠╣")
 FILL = set(" ─━═")
 GLYPHS = set("✓✗★▸●■⏎")
-WIDTH_OVERRIDE = {5: 80, 2: 74, 16: 36, 17: 36, 18: 36, 19: 36}
+# A block whose first top border is not its full width (a header band above wider
+# panels, side-by-side panels) declares its width with data-cols="80" on the <pre>.
 
 Tok = tuple[str, str]  # ("tag", "<span ...>") | ("ch", "x")
 
@@ -167,7 +168,8 @@ def main(argv: list[str]) -> int:
         idx += 1
         body = wrap_glyphs(m.group(2))
         lines = body.split("\n")
-        new, errs = normalize_block(lines, WIDTH_OVERRIDE.get(idx))
+        cols = re.search(r'data-cols="(\d+)"', m.group(1))
+        new, errs = normalize_block(lines, int(cols.group(1)) if cols else None)
         for e in errs:
             failures.append(f"block {idx}: {e}")
         return m.group(1) + "\n".join(new) + m.group(3)

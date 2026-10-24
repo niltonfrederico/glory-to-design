@@ -65,13 +65,17 @@ lifted token.
 corner, ledger (field grid), frame panel (rest / focus / authority), stamp (four
 decisions + seal), button (filled gold, outline, ghost, danger), input with bracket
 affordance, select, checkbox and radio drawn as `[ ]` `( )`, table ledger, navigation
-rail with F-key hints, status bar, toast as a filed slip, dialog as a form, tabs as
-folder tabs, badge, progress as a filled bar of blocks, empty state as a blank form.
+rail with F-key hints, status bar, toast as a filed slip, dialog as a form (static and live), tabs as
+folder tabs, badge, progress as a filled bar of blocks, empty state as a blank form, loading as
+shade rows, search and filter chips, pager in sheets, figures as ledger rows, one-hue bar chart,
+rendered prose (lists, tasks, quotes, code), print rules.
 
 **TUI** (terminal). Components: header band with logo and session line, boxed panel
 (three weights), section marker `▌`, ledger rows with dot leaders, stamp block, F-key
 footer (10 slots), status line, command line `:`, inline edit box, list with `▸`
-cursor, table, progress blocks `█▓▒░`, help-as-directive overlay, confirm as a form.
+cursor, table, progress blocks `█▓▒░`, help-as-directive overlay, confirm as a form, modal over a
+dimmed screen, command palette, scroll counts in the frame, narrow mode under 80 columns, boot
+ledger, fatal error as a rejected form.
 
 Shared: seeds, token names, stamp vocabulary, label grammar, frame weights, the
 80-column ledger width (`FORM_WIDTH = 80` in protocol).
@@ -86,6 +90,10 @@ Shared: seeds, token names, stamp vocabulary, label grammar, frame weights, the
 | 2026-10-24 | Design system lives in **`glory-to-design`**; its `CLAUDE.md` is the repo's own, not a parent for `_mashinograd`. | parent CLAUDE.md in `_mashinograd`; docs inside protocol | `_mashinograd` is a folder, not a repo. Canon vocabulary goes to `docs/canon.md` here. |
 | 2026-10-24 | `note` is **hand-fixed sage** `#6fa86f`, not derived. | derive by rotating gold 140° (gives cyan) | Cyan is a second loud colour; the badge green already exists in protocol and gensek. |
 | 2026-10-24 | GUI body in **PT Sans** (PT Serif on paper), chrome in **JetBrains Mono**. | all-mono; Inter / Space Grotesk | Mono paragraphs cost reading effort; PT faces are Cyrillic-first and free; JetBrains Mono is already the SVG stack. |
+| 2026-10-24 | **Section headings carry the Cyrillic themselves** (`СВОДКА · One sheet…`), no eyebrow label above. | mono uppercase eyebrow + plain H2 | The protocol README does it this way; the eyebrow was a template reflex (frontend-design review). |
+| 2026-10-24 | **Buttons are sentence case.** Uppercase stays on stamps, chips, focused frame titles, classification corners and ledger keys. | uppercase on every button | Our own principle says uppercase is semantic; buttons had no canon asking for it. |
+| 2026-10-24 | **Figures use one hue.** A second series is a second chart; no categorical palette exists. | gold + sage + steel as series colours | Measured with the dataviz validator: gold↔sage ΔE 14.4 (normal vision, floor 15), steel below the chroma floor. |
+| 2026-10-24 | **Print is paper**: `@media print` in the generated CSS applies the paper tokens. | a separate print stylesheet | The paper theme exists for printouts; one source. |
 | 2026-10-24 | GUI leans **office-PC tier** (CP866 box drawing, dialogs), TUI leans **terminal tier** (uppercase as semantic, one accent at a time). | blend both on every screen | One hardware tier per surface avoids anachronism (see `docs/references.md`). |
 
 ## Rejected for now, not forever

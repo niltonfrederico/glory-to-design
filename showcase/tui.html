@@ -49,7 +49,7 @@
   .meta { font-family: var(--g2-font-mono); font-size: var(--g2-text-sm); margin-top: 0.5rem; }
   .toolbar { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1.25rem; }
   .masthead .term-logo { justify-self: end; font-size: 11px; border: 0; background: transparent; padding: 0; }
-  .btn { display: inline-flex; align-items: center; gap: 0.5em; padding: 0.55rem 1rem; cursor: pointer; font-family: var(--g2-font-mono); font-size: var(--g2-text-sm); letter-spacing: 0.08em; text-transform: uppercase; font-weight: 600; border: var(--g2-rule) solid var(--g2-border); background: var(--g2-panel); color: var(--g2-fg); text-decoration: none; }
+  .btn { display: inline-flex; align-items: center; gap: 0.5em; padding: 0.55rem 1rem; cursor: pointer; font-family: var(--g2-font-mono); font-size: var(--g2-text-sm); letter-spacing: 0.02em; font-weight: 600; border: var(--g2-rule) solid var(--g2-border); background: var(--g2-panel); color: var(--g2-fg); text-decoration: none; }
   .btn:hover { background: var(--g2-panel-alt); color: var(--g2-fg-bright); border-color: var(--g2-accent); }
   .btn--ghost { background: transparent; border-color: transparent; color: var(--g2-muted); }
   .toggle { display: inline-flex; border: var(--g2-rule) solid var(--g2-border); }
@@ -65,6 +65,7 @@
   .sec { display: grid; gap: 1.5rem; scroll-margin-top: calc(var(--tab-h) + 1rem); }
   .sec > header { display: grid; gap: 0.35rem; }
   .sec h2 { font-size: var(--g2-text-xl); }
+  .sec h2 .sec-no { font-family: var(--g2-font-mono); font-weight: 400; font-size: 0.55em; color: var(--g2-muted); letter-spacing: var(--g2-tracking-label); vertical-align: middle; margin-right: 0.35em; }
   .grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); }
   .grid > * { min-width: 0; }
   .frame { position: relative; border: var(--g2-rule) solid var(--g2-border); background: var(--g2-panel); padding: 1.5rem 1.25rem 1.25rem; }
@@ -123,6 +124,8 @@
     .nono .row { grid-template-columns: 1.2rem 1fr; } .nono .yes { grid-column: 2; }
     .term { font-size: 11.5px; }
   }
+  :root.theme-paper body, :root[data-theme="paper"] body { line-height: 1.65; }
+  @media print { .index, .toolbar { display: none !important; } body { padding: 0; } .masthead { margin-top: 0; } .sec { break-inside: avoid; } }
   @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
 
@@ -171,8 +174,7 @@
   <!-- ================================================================ §0 -->
   <section class="sec" id="svodka">
     <header>
-      <span class="label"><span class="cyr">СВОДКА</span> · §0 Summary</span>
-      <h2>Fourteen tokens, three frame weights, one accent at a time</h2>
+      <h2><span class="sec-no">§0</span> <span class="cyr">СВОДКА</span> · Fourteen tokens, three frame weights, one accent at a time</h2>
       <p>This is the terminal half of the g2 design system. It binds three codebases: <code>glory-to-gensek</code> (ratatui), <code>glory-to-protocol</code> (Rich and Textual) and the review surface they hand off to (tuicr). They share one <code>themes.toml</code> shape, one glyph vocabulary and one voice. Every example on this page is painted only with the tokens in §1, so the paper toggle above re-renders the whole terminal.</p>
     </header>
     <div class="grid">
@@ -203,8 +205,7 @@
   <!-- ================================================================ §1 -->
   <section class="sec" id="tokens">
     <header>
-      <span class="label"><span class="cyr">ТОКЕНЫ</span> · §1 Tokens</span>
-      <h2>The gensek fourteen, and how they map</h2>
+      <h2><span class="sec-no">§1</span> <span class="cyr">ТОКЕНЫ</span> · The gensek fourteen, and how they map</h2>
       <p>Gensek's UI speaks fourteen semantic tokens. The design system's wider table (surface ramp, bright variants, the split red) folds into them as shown. A theme is the master trio plus the hand-fixed <code>heading</code> and <code>note</code>; the loader derives everything else and lifts each token until it clears 4.5:1 on <code>bg</code>.</p>
     </header>
     <div class="grid">
@@ -254,8 +255,7 @@
   <!-- ================================================================ §2 -->
   <section class="sec" id="glyphs">
     <header>
-      <span class="label"><span class="cyr">ГЛИФЫ</span> · §2 Glyphs</span>
-      <h2>The vocabulary, and its ASCII fallback</h2>
+      <h2><span class="sec-no">§2</span> <span class="cyr">ГЛИФЫ</span> · The vocabulary, and its ASCII fallback</h2>
       <p>CP866 kept the whole pseudographic block, so Russian terminals never lost their frames. The suite uses the Unicode box-drawing set with three weights, a handful of markers and the shade blocks. Every glyph has a 7-bit fallback for terminals that cannot draw it; the fallback is chosen once at boot, never mixed.</p>
     </header>
     <div class="grid">
@@ -277,7 +277,7 @@
         </table>
       </div>
       <figure>
-<pre class="term"><span class="b">┌─ rest ──────────────┐</span>  <span class="a">┏━ FOCUS ━━━━━━━━━━━━━┓</span>  <span class="ab">╔═ AUTHORITY ══════════╗</span>
+<pre class="term" data-cols="74"><span class="b">┌─ rest ──────────────┐</span>  <span class="a">┏━ FOCUS ━━━━━━━━━━━━━┓</span>  <span class="ab">╔═ AUTHORITY ══════════╗</span>
 <span class="b">│</span> secondary pane      <span class="b">│</span>  <span class="a">┃</span> the pane with focus <span class="a">┃</span>  <span class="ab">║</span> the bureau speaking  <span class="ab">║</span>
 <span class="b">│</span> <span class="m">hints in muted</span>      <span class="b">│</span>  <span class="a">┃</span><span class="sel"> <span class="a"><i class="g">▸</i></span> row under cursor  </span><span class="a">┃</span>  <span class="ab">║</span> <span class="h">▌ section</span>  <span class="ok"><i class="g">✓</i></span> <span class="bad"><i class="g">✗</i></span> <span class="info">!</span> <span class="warn">?</span>   <span class="ab">║</span>
 <span class="b">└─────────────────────┘</span>  <span class="a">┗━━━━━━━━━━━━━━━━━━━━━┛</span>  <span class="ab">╚══════════════════════╝</span>
@@ -292,8 +292,7 @@
   <!-- ================================================================ §3 -->
   <section class="sec" id="header">
     <header>
-      <span class="label"><span class="cyr">ШАПКА</span> · §3 Header band</span>
-      <h2>Logo, star, session line</h2>
+      <h2><span class="sec-no">§3</span> <span class="cyr">ШАПКА</span> · Logo, star, session line</h2>
       <p>Every full-screen view opens with a double-frame band: the bureau name tracked in accent, the star in red, then a session line in muted (date, connector freshness, locale). Protocol ships two logo sizes; the small one is the tracked word, the large one is a block-letter figure for the fallback console. On narrow terminals the band drops to one line.</p>
     </header>
     <div class="grid">
@@ -324,12 +323,11 @@
   <!-- ================================================================ §4 -->
   <section class="sec" id="panels">
     <header>
-      <span class="label"><span class="cyr">ПАНЕЛИ</span> · §4 Panels and screens</span>
-      <h2>The dashboard and the object screen</h2>
+      <h2><span class="sec-no">§4</span> <span class="cyr">ПАНЕЛИ</span> · The dashboard and the object screen</h2>
       <p>Gensek's two screens, drawn to the standard. Panels are numbered in their title so <kbd>g1</kbd>…<kbd>g3</kbd> jump to them. The focused panel is heavy and uppercase; the others rest. Section markers <code>▌</code> are red; the cursor row is washed in <code>selection</code>; notes are washed in <code>note_bg</code> with their label in sage.</p>
     </header>
     <figure>
-<pre class="term"><span class="ab">╔═</span> <span class="a">ГЕНСЕК</span> <span class="m">· 2026-10-24 · github 2m · jira 5m</span> <span class="ab">══════════════════════════════════╗</span>
+<pre class="term" data-cols="80"><span class="ab">╔═</span> <span class="a">ГЕНСЕК</span> <span class="m">· 2026-10-24 · github 2m · jira 5m</span> <span class="ab">══════════════════════════════════╗</span>
 <span class="a">┏━ 1 ATTENTION (7) ━━━━━━━━━━━━━━━━━━━━━━━━━━━┓</span><span class="b">┌─ 3 preview ───────────────────┐</span>
 <span class="a">┃</span> <span class="h">▌ asked for your review</span> <span class="m">(3)</span>                 <span class="a">┃</span><span class="b">│</span> <span class="fb">feat(auth): refresh token</span>     <span class="b">│</span>
 <span class="a">┃</span><span class="sel"> <span class="a"><i class="g">▸</i></span> acme/api #412 feat(auth): refresh…    <span class="m">2h</span>  </span><span class="a">┃</span><span class="b">│</span> <span class="m">marina · acme/api · 3 files</span>   <span class="b">│</span>
@@ -375,13 +373,36 @@
         <figcaption class="caption">Markdown painted in place: bold takes the heading red, code takes a key wash, quotes dim.</figcaption>
       </figure>
     </div>
+    <div class="grid">
+      <figure>
+<pre class="term"><span class="ab">╔═</span> <span class="a">ГЕНСЕК</span> <span class="m">· 10-24 · gh 2m</span> <span class="ab">═══════════════════╗</span>
+<span class="a">┏━ 1 ATTENTION (7) ━━━━━━━━━━━━━━━━━━━━━━━━━━┓</span>
+<span class="a">┃</span> <span class="h">▌ asked for your review</span> <span class="m">(3)</span>                <span class="a">┃</span>
+<span class="a">┃</span><span class="sel"> <span class="a"><i class="g">▸</i></span> acme/api #412 feat(auth): refr…    <span class="m">2h</span>    </span><span class="a">┃</span>
+<span class="a">┃</span>   acme/api #409 fix: null org on i…  <span class="m">1d</span>    <span class="a">┃</span>
+<span class="a">┃</span> <span class="h">▌ yours, blocked</span> <span class="m">(2)</span>                       <span class="a">┃</span>
+<span class="a">┃</span>   acme/api #401 CI <span class="bad"><i class="g">✗</i></span> tests/auth      <span class="m">5h</span>    <span class="a">┃</span>
+<span class="a">┃</span>                     <span class="f">▼ ещё 3 · 3 more below</span> <span class="a">┃</span>
+<span class="a">┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛</span>
+<span class="m">2 conversation (6)</span> <span class="key"> g2 </span>   <span class="m">3 preview</span> <span class="key"> g3 </span>
+<span class="key"> F1 </span><span class="m">help </span><span class="key"> n </span><span class="m">note </span><span class="key"> : </span><span class="m">cmd </span>            <span class="a">ru</span>  <span class="ok"><i class="g">●</i></span></pre>
+        <figcaption class="caption">Narrow mode, 50 columns. One panel at a time; the other two collapse to a tab line with their jump keys. Titles truncate with <code>…</code>, never wrap.</figcaption>
+      </figure>
+      <div class="frame">
+        <span class="frame__title">ПРАВИЛА · narrow</span>
+        <div class="prose t-sm">
+          <p><strong>Under 80 columns</strong> the three panes stack and only the focused one is drawn; the others become a tab line above the footer.</p>
+          <p><strong>Under 60</strong> the header drops to one line and the footer keeps three keys: help, note, command.</p>
+          <p><strong>Never wrap a row.</strong> Truncate the title, keep the identifier and the age. A wrapped list is unreadable at a glance.</p>
+        </div>
+      </div>
+    </div>
   </section>
 
   <!-- ================================================================ §5 -->
   <section class="sec" id="stamps">
     <header>
-      <span class="label"><span class="cyr">ПЕЧАТЬ</span> · §5 Stamps</span>
-      <h2>Four decisions as text blocks</h2>
+      <h2><span class="sec-no">§5</span> <span class="cyr">ПЕЧАТЬ</span> · Four decisions as text blocks</h2>
       <p>A terminal cannot tilt a ring, so the stamp is a heavy block: three lines, the decision in both languages, the label and detail beneath, right-aligned inside the form it decides. The glyph goes first. The colour is the decision's, as on the GUI. One stamp per form; <code>show_result_stamp=False</code> hides it, the dispatch still runs.</p>
     </header>
     <figure>
@@ -415,9 +436,8 @@
   <!-- ================================================================ §6 -->
   <section class="sec" id="forms">
     <header>
-      <span class="label"><span class="cyr">ФОРМА</span> · §6 Forms, confirms, directives</span>
-      <h2>Eighty columns, dot leaders, the question as a ledger</h2>
-      <p>Protocol's <code>Form</code> is the atom: a titled frame, 80 columns wide (<code>FORM_WIDTH</code>), lines of text or <code>FIELD ....: value</code> rows, and a stamp at the end. A confirm is a small form in a double frame whose answer is two keys. Help is a directive: the same form, with the bindings as its ledger.</p>
+      <h2><span class="sec-no">§6</span> <span class="cyr">ФОРМА</span> · Eighty columns, dot leaders, the question as a ledger</h2>
+      <p>Boot, fatal errors and the command palette are forms too; they close this section. Protocol's <code>Form</code> is the atom: a titled frame, 80 columns wide (<code>FORM_WIDTH</code>), lines of text or <code>FIELD ....: value</code> rows, and a stamp at the end. A confirm is a small form in a double frame whose answer is two keys. Help is a directive: the same form, with the bindings as its ledger.</p>
     </header>
     <div class="grid">
       <figure>
@@ -479,13 +499,49 @@
         </figure>
       </div>
     </div>
+    <div class="grid">
+      <figure>
+<pre class="term"><span class="b">┌─ ЗАГРУЗКА · boot ──────────────────────────────┐</span>
+<span class="b">│</span> <span class="m">CONFIG .....:</span> <span class="ok"><i class="g">✓</i></span> ~/.config/glory-to-gensek      <span class="b">│</span>
+<span class="b">│</span> <span class="m">STORE ......:</span> <span class="ok"><i class="g">✓</i></span> 3.1 MB · 2 migrations pending  <span class="b">│</span>
+<span class="b">│</span> <span class="m">THEME ......:</span> <span class="ok"><i class="g">✓</i></span> bureau · contrast guard quiet  <span class="b">│</span>
+<span class="b">│</span> <span class="m">GITHUB .....:</span> <span class="a">▓▓▓▓</span><span class="f">░░░░</span> 4/8 repos               <span class="b">│</span>
+<span class="b">│</span> <span class="m">JIRA .......:</span> <span class="f">░ waiting</span>                        <span class="b">│</span>
+<span class="b">│</span>                                                <span class="b">│</span>
+<span class="b">│</span> <span class="f">the dashboard opens when github finishes</span>       <span class="b">│</span>
+<span class="b">└────────────────────────────────────────────────┘</span></pre>
+        <figcaption class="caption">Boot is a ledger of checks. Done rows get <code>✓</code>, running rows a block bar, waiting rows a single shade block.</figcaption>
+      </figure>
+      <figure>
+<pre class="term" data-cols="51"><span class="bad">╔═ ОТКАЗ · fatal ═════════════════════════════════╗</span>
+<span class="bad">║</span> <span class="bad"><i class="g">✗</i></span>  <span class="fb">gensek needs an interactive terminal</span>         <span class="bad">║</span>
+<span class="bad">║</span>    <span class="m">stdin and stdout are not a TTY</span>               <span class="bad">║</span>
+<span class="bad">║</span>                                                 <span class="bad">║</span>
+<span class="bad">║</span> <span class="m">FIX ......:</span> run it from a terminal, not a pipe  <span class="bad">║</span>
+<span class="bad">║</span> <span class="m">LOG ......:</span> ~/.local/share/glory-to-gensek/logs <span class="bad">║</span>
+<span class="bad">║</span> <span class="m">EXIT .....:</span> 1                                   <span class="bad">║</span>
+<span class="bad">╚═════════════════════════════════════════════════╝</span></pre>
+        <figcaption class="caption">A fatal error is a rejected form: what failed, why, what fixes it, where the log is, the exit code. No stack trace on screen; it is in the log.</figcaption>
+      </figure>
+      <figure>
+<pre class="term" data-cols="50"><span class="ab">╔═ ПАЛИТРА · command palette ════════════════════╗</span>
+<span class="ab">║</span> <span class="a">[</span> th<span class="cur"> </span>                                        <span class="a">]</span> <span class="ab">║</span>
+<span class="ab">║</span><span class="sel"> <span class="a"><i class="g">▸</i></span> <span class="fb">:theme</span> bureau            <span class="m">switch theme</span>        </span><span class="ab">║</span>
+<span class="ab">║</span>   <span class="fb">:theme</span> paper                                 <span class="ab">║</span>
+<span class="ab">║</span>   <span class="fb">:theme</span> fosforo                               <span class="ab">║</span>
+<span class="ab">║</span>   <span class="fb">:snooze</span> 2d               <span class="m">hide until</span>          <span class="ab">║</span>
+<span class="ab">║</span>                        <span class="f">▼ ещё 4 · 4 more</span>        <span class="ab">║</span>
+<span class="ab">║</span>            <span class="key"> <i class="g">⏎</i> </span><span class="m"> run  </span><span class="key"> tab </span><span class="m"> complete  </span><span class="key"> esc </span>      <span class="ab">║</span>
+<span class="ab">╚════════════════════════════════════════════════╝</span></pre>
+        <figcaption class="caption">The command palette (protocol ships Textual's; gensek's <code>:</code> line grows into it). Bracketed input, fuzzy list, the first match under the cursor, a scroll hint when the list is longer than the box.</figcaption>
+      </figure>
+    </div>
   </section>
 
   <!-- ================================================================ §7 -->
   <section class="sec" id="footer">
     <header>
-      <span class="label"><span class="cyr">ПОДВАЛ</span> · §7 Footer, status line, ticker</span>
-      <h2>The last line is always there</h2>
+      <h2><span class="sec-no">§7</span> <span class="cyr">ПОДВАЛ</span> · The last line is always there</h2>
       <p>Inherited from Norton Commander's ten slots and still the fastest way to say what the keyboard does. The suite shows keys as inverted chips with a muted word, left; locale and sync state, right. The command line replaces the footer while open. A running job gets a one-line ticker above the footer, five squares cycling through the theme's colours.</p>
     </header>
     <figure>
@@ -510,8 +566,7 @@
   <!-- ================================================================ §8 -->
   <section class="sec" id="lists">
     <header>
-      <span class="label"><span class="cyr">СПИСКИ</span> · §8 Lists and tables</span>
-      <h2>Cursor, wash, and one state glyph per row</h2>
+      <h2><span class="sec-no">§8</span> <span class="cyr">СПИСКИ</span> · Cursor, wash, and one state glyph per row</h2>
       <p>A list row is: cursor slot, identifier in accent or plain, title truncated with <code>…</code>, state glyph if any, age in muted at the right edge. The row under the cursor gets <code>▸</code> and the selection wash. A table is a list with aligned columns and a muted uppercase header; numbers are right-aligned.</p>
     </header>
     <div class="grid">
@@ -539,18 +594,35 @@
         <figcaption class="caption">Grouped list. Notes are washed in <code>note_bg</code>; snoozed items are faint; state words sit at the right edge.</figcaption>
       </figure>
     </div>
+    <div class="grid">
+      <figure>
+<pre class="term"><span class="b">┌─ 2 conversation (26) ──────────</span> <span class="f">▲ 9 above</span> <span class="b">─┐</span>
+<span class="b">│</span> <span class="a">marina</span> <span class="m">· 40m</span>  rebased on main              <span class="b">│</span>
+<span class="b">│</span><span class="sel"> <span class="a"><i class="g">▸</i></span> <span class="a">dmitri</span> <span class="m">· 12m</span>  e2e flake is known         </span><span class="b">│</span>
+<span class="b">│</span> <span class="a">marina</span> <span class="m">· 3m</span>   retried, green               <span class="b">│</span>
+<span class="b">└─────────────────────────────</span> <span class="f">▼ 14 below</span> <span class="b">───┘</span></pre>
+        <figcaption class="caption">Scroll indicators live in the frame itself: how many rows are hidden above and below, in faint, inside the top and bottom borders. No scrollbar glyph column.</figcaption>
+      </figure>
+      <div class="frame">
+        <span class="frame__title">ПРАВИЛА · scrolling</span>
+        <div class="prose t-sm">
+          <p><strong>The count is the indicator.</strong> <code>▲ 9 above</code>, <code>▼ 14 below</code>, bilingual when the locale is ru (<code>▼ ещё 14</code>).</p>
+          <p><strong>Cursor, not viewport.</strong> <kbd>j</kbd> <kbd>k</kbd> move the cursor; the viewport follows with three rows of margin. <kbd>g</kbd> <kbd>G</kbd> jump to the ends.</p>
+          <p><strong>Nothing hidden silently.</strong> A list that does not fit always shows at least one of the two counts.</p>
+        </div>
+      </div>
+    </div>
   </section>
 
   <!-- ================================================================ §9 -->
   <section class="sec" id="themes">
     <header>
-      <span class="label"><span class="cyr">ТЕМЫ</span> · §9 Themes</span>
-      <h2>Bureau is canonical; paper is a choice; the rest ship with gensek</h2>
+      <h2><span class="sec-no">§9</span> <span class="cyr">ТЕМЫ</span> · Bureau is canonical; paper is a choice; the rest ship with gensek</h2>
       <p>The same dashboard excerpt in the two themes this repo owns, plus two that gensek ships from the blog. The toggle at the top of the page repaints every other example; these four are pinned so they can be compared. Legacy palettes (protocol's slate, gensek's teal) stay in their repos until each migrates.</p>
     </header>
     <div class="grid">
       <figure>
-<pre class="term" style="--g2-bg:#0e0a05;--g2-fg:#e8c887;--g2-accent:#d4af37;--g2-signal-text:#d54d3d;--g2-muted:#8b7954;--g2-border:#5e4d1c;--g2-note:#6fa86f;--g2-note-bg:#191a0f;--g2-selection:#2b230e;--g2-ok:#758137;--g2-bad:#d54d3d;--g2-panel-alt:#251e12;--g2-accent-bright:#fcd663"><span class="ab">╔═</span> <span class="a">ГЕНСЕК</span> <span class="m">· bureau</span> <span class="ab">════════════════╗</span>
+<pre class="term" data-cols="36" style="--g2-bg:#0e0a05;--g2-fg:#e8c887;--g2-accent:#d4af37;--g2-signal-text:#d54d3d;--g2-muted:#8b7954;--g2-border:#5e4d1c;--g2-note:#6fa86f;--g2-note-bg:#191a0f;--g2-selection:#2b230e;--g2-ok:#758137;--g2-bad:#d54d3d;--g2-panel-alt:#251e12;--g2-accent-bright:#fcd663"><span class="ab">╔═</span> <span class="a">ГЕНСЕК</span> <span class="m">· bureau</span> <span class="ab">════════════════╗</span>
 <span class="a">┏━ 1 ATTENTION (7) ━━━━━━━━━━━━━━━━┓</span>
 <span class="a">┃</span> <span class="h">▌ asked for review</span> <span class="m">(3)</span>           <span class="a">┃</span>
 <span class="a">┃</span><span class="sel"> <span class="a"><i class="g">▸</i></span> acme/api #412 refresh…   <span class="m">2h</span>    </span><span class="a">┃</span>
@@ -560,7 +632,7 @@
         <figcaption class="caption"><strong>bureau</strong> · canonical. Warm black, cream, gold, stamp red, sage.</figcaption>
       </figure>
       <figure>
-<pre class="term" style="--g2-bg:#e8dcbf;--g2-fg:#1c1407;--g2-accent:#6e5010;--g2-signal-text:#a32616;--g2-muted:#6a5f4c;--g2-border:#b09b72;--g2-note:#345f34;--g2-note-bg:#d3ceaf;--g2-selection:#d1c1a0;--g2-ok:#4f5a1c;--g2-bad:#a32616;--g2-panel-alt:#cabfa4;--g2-accent-bright:#4c3000"><span class="ab">╔═</span> <span class="a">ГЕНСЕК</span> <span class="m">· paper</span> <span class="ab">═════════════════╗</span>
+<pre class="term" data-cols="36" style="--g2-bg:#e8dcbf;--g2-fg:#1c1407;--g2-accent:#6e5010;--g2-signal-text:#a32616;--g2-muted:#6a5f4c;--g2-border:#b09b72;--g2-note:#345f34;--g2-note-bg:#d3ceaf;--g2-selection:#d1c1a0;--g2-ok:#4f5a1c;--g2-bad:#a32616;--g2-panel-alt:#cabfa4;--g2-accent-bright:#4c3000"><span class="ab">╔═</span> <span class="a">ГЕНСЕК</span> <span class="m">· paper</span> <span class="ab">═════════════════╗</span>
 <span class="a">┏━ 1 ATTENTION (7) ━━━━━━━━━━━━━━━━┓</span>
 <span class="a">┃</span> <span class="h">▌ asked for review</span> <span class="m">(3)</span>           <span class="a">┃</span>
 <span class="a">┃</span><span class="sel"> <span class="a"><i class="g">▸</i></span> acme/api #412 refresh…   <span class="m">2h</span>    </span><span class="a">┃</span>
@@ -570,7 +642,7 @@
         <figcaption class="caption"><strong>paper</strong> · optional. Form paper, ink, dark gold. For light terminals and printouts.</figcaption>
       </figure>
       <figure>
-<pre class="term" style="--g2-bg:#0b1f2a;--g2-fg:#e6e6e6;--g2-accent:#d4af37;--g2-signal-text:#c0392b;--g2-muted:#6c7a89;--g2-border:#7a7a7a;--g2-note:#6fa86f;--g2-note-bg:#122218;--g2-selection:#16303d;--g2-ok:#2ecc71;--g2-bad:#e74c3c;--g2-panel-alt:#16303d;--g2-accent-bright:#f1d26a"><span class="ab">╔═</span> <span class="a">ГЕНСЕК</span> <span class="m">· gensek (legacy)</span> <span class="ab">═══════╗</span>
+<pre class="term" data-cols="36" style="--g2-bg:#0b1f2a;--g2-fg:#e6e6e6;--g2-accent:#d4af37;--g2-signal-text:#c0392b;--g2-muted:#6c7a89;--g2-border:#7a7a7a;--g2-note:#6fa86f;--g2-note-bg:#122218;--g2-selection:#16303d;--g2-ok:#2ecc71;--g2-bad:#e74c3c;--g2-panel-alt:#16303d;--g2-accent-bright:#f1d26a"><span class="ab">╔═</span> <span class="a">ГЕНСЕК</span> <span class="m">· gensek (legacy)</span> <span class="ab">═══════╗</span>
 <span class="a">┏━ 1 ATTENTION (7) ━━━━━━━━━━━━━━━━┓</span>
 <span class="a">┃</span> <span class="h">▌ asked for review</span> <span class="m">(3)</span>           <span class="a">┃</span>
 <span class="a">┃</span><span class="sel"> <span class="a"><i class="g">▸</i></span> acme/api #412 refresh…   <span class="m">2h</span>    </span><span class="a">┃</span>
@@ -580,7 +652,7 @@
         <figcaption class="caption"><strong>gensek</strong> · the current default in that repo. Teal field. Stays shipped; no longer canonical.</figcaption>
       </figure>
       <figure>
-<pre class="term" style="--g2-bg:#1a170f;--g2-fg:#eceae5;--g2-accent:#eec35e;--g2-signal-text:#f0d79a;--g2-muted:#8a846f;--g2-border:#6b5f3a;--g2-note:#8fbf8f;--g2-note-bg:#1f2416;--g2-selection:#2b2614;--g2-ok:#7fd68a;--g2-bad:#f07a6a;--g2-panel-alt:#2b2614;--g2-accent-bright:#f6d98a"><span class="ab">╔═</span> <span class="a">ГЕНСЕК</span> <span class="m">· fosforo (blog)</span> <span class="ab">════════╗</span>
+<pre class="term" data-cols="36" style="--g2-bg:#1a170f;--g2-fg:#eceae5;--g2-accent:#eec35e;--g2-signal-text:#f0d79a;--g2-muted:#8a846f;--g2-border:#6b5f3a;--g2-note:#8fbf8f;--g2-note-bg:#1f2416;--g2-selection:#2b2614;--g2-ok:#7fd68a;--g2-bad:#f07a6a;--g2-panel-alt:#2b2614;--g2-accent-bright:#f6d98a"><span class="ab">╔═</span> <span class="a">ГЕНСЕК</span> <span class="m">· fosforo (blog)</span> <span class="ab">════════╗</span>
 <span class="a">┏━ 1 ATTENTION (7) ━━━━━━━━━━━━━━━━┓</span>
 <span class="a">┃</span> <span class="h">▌ asked for review</span> <span class="m">(3)</span>           <span class="a">┃</span>
 <span class="a">┃</span><span class="sel"> <span class="a"><i class="g">▸</i></span> acme/api #412 refresh…   <span class="m">2h</span>    </span><span class="a">┃</span>
@@ -595,8 +667,7 @@
   <!-- ================================================================ §10 -->
   <section class="sec" id="canon">
     <header>
-      <span class="label"><span class="cyr">ВНЕ КАНОНА</span> · §10 Out of canon</span>
-      <h2>What the terminal does not do</h2>
+      <h2><span class="sec-no">§10</span> <span class="cyr">ВНЕ КАНОНА</span> · What the terminal does not do</h2>
       <p>Most of the GUI list applies here too. These are the terminal-specific ways to turn the standard into a costume.</p>
     </header>
     <div class="nono">
