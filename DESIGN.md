@@ -94,6 +94,8 @@ Shared: seeds, token names, stamp vocabulary, label grammar, frame weights, the
 | 2026-10-24 | **Buttons are sentence case.** Uppercase stays on stamps, chips, focused frame titles, classification corners and ledger keys. | uppercase on every button | Our own principle says uppercase is semantic; buttons had no canon asking for it. |
 | 2026-10-24 | **Figures use one hue.** A second series is a second chart; no categorical palette exists. | gold + sage + steel as series colours | Measured with the dataviz validator: gold↔sage ΔE 14.4 (normal vision, floor 15), steel below the chroma floor. |
 | 2026-10-24 | **Print is paper**: `@media print` in the generated CSS applies the paper tokens. | a separate print stylesheet | The paper theme exists for printouts; one source. |
+| 2026-10-24 | **Dose plena stays on the masthead** (logo, star, seal, ДСП corner, ОФИЦИАЛЬНО rule, seal again in the footer). | trim the footer rule and the masthead corner (frontend-design review) | Owner's call, second time asked. The review's "remove one accessory" is noted, not applied. |
+| 2026-10-24 | **One motion in the system**: the masthead seal lands once on load (420 ms, transform only), off under `prefers-reduced-motion`. | no motion; also landing decision stamps | The review asked for one orchestrated moment; the stamp is the bureau's most characteristic gesture. Decision stamps stay still for now. |
 | 2026-10-24 | GUI leans **office-PC tier** (CP866 box drawing, dialogs), TUI leans **terminal tier** (uppercase as semantic, one accent at a time). | blend both on every screen | One hardware tier per surface avoids anachronism (see `docs/references.md`). |
 
 ## Rejected for now, not forever
@@ -102,8 +104,8 @@ Shared: seeds, token names, stamp vocabulary, label grammar, frame weights, the
   selectors. The direktiva DESIGN.md already parked this.
 - A `legacy-slate` / `legacy-teal` theme shipped from this repo: the consuming repos
   already ship them; duplicating would create a second source of truth.
-- Animated stamps on the GUI: planned in protocol `0.5.0`; the GUI spec reserves a
-  `.stamp.is-landing` hook and nothing more.
+- Landing decision stamps on the GUI (after *File request*, say): protocol plans animated
+  stamps for `0.5.0`; the GUI has the `.is-landing` keyframes on the masthead seal only.
 
 ## Migration notes for consuming repos
 
