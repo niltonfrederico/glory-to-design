@@ -25,8 +25,8 @@ superfícies, uma voz:
 
 | Superfície | Showcase | Tokens |
 |---|---|---|
-| **GUI** (web, desktop e mobile) | `showcase/gui.html` | `tokens/tokens.css` |
-| **TUI** (terminal) | `showcase/tui.html` | `tokens/tokens.toml` |
+| **GUI** (web, desktop e mobile) | `showcase/gui.html` · [claude.ai](https://claude.ai/artifact/PELwp9DNkNjuiURKXmFZQY) | `tokens/tokens.css` |
+| **TUI** (terminal) | `showcase/tui.html` · [claude.ai](https://claude.ai/artifact/QUMmvjRv58NTwvYETHy56A) | `tokens/tokens.toml` |
 
 Campo quase-preto quente, dourado para foco, vermelho de carimbo para decisões,
 molduras box-drawing cujo peso carrega estado, rótulos em cirílico pareados com
