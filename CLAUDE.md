@@ -13,6 +13,7 @@ this repo; nothing here depends on any other repo.
 | `tokens/tokens.toml` | TUI tokens, generated. Master trio + overrides, gensek `themes.toml` shape, plus the resolved table. | `glory-to-gensek`, `glory-to-protocol`, tuicr |
 | `tokens/contrast-report.md` | Generated WCAG report for every load-bearing pair. | humans, before changing a seed |
 | `tools/derive_tokens.py` | The only source of truth for colors. Edit seeds here, never in the generated files. | whoever changes the palette |
+| `tools/align_term.py` | Normalizes the `<pre class="term">` mockups in `showcase/tui.html`: column-exact frames, fixed-width glyph cells. `--check` is the gate. | whoever edits a terminal mockup |
 | `showcase/gui.html` | GUI system: spec and living showcase in one page. | published as a claude.ai artifact |
 | `showcase/tui.html` | TUI system: spec and living showcase in one page. | published as a claude.ai artifact |
 | `DESIGN.md` | Principles, decisions and their dates, what was rejected and why. | before proposing a change |
@@ -33,6 +34,9 @@ this repo; nothing here depends on any other repo.
   `tokens.css`. If one changes, change the other.
 - **Gate before done.** `python3 tools/derive_tokens.py` exits 1 when a load-bearing
   pair falls under its target. Do not lower a target to make it pass; change the seed.
+- **Terminal mockups are column-exact.** After editing any `<pre class="term">` block,
+  run `python3 tools/align_term.py` (rewrites) and `--check` (gate). Glyphs outside
+  JetBrains Mono (`✓ ✗ ★ ▸ ● ■ ⏎`) must sit in `<i class="g">`; the script does it.
 - **Tone is the only sacred thing.** Palette, glyphs, components and layout are all
   negotiable; the deadpan state-bureau voice is not. `docs/canon.md` is the reference.
   Fake Cyrillic (Я for R) and hammer-and-sickle kitsch are out of canon.
