@@ -1,0 +1,636 @@
+<title>Стандарт TUI</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=PT+Sans:ital,wght@0,400;0,700;1,400&family=PT+Serif:ital,wght@0,400;0,700;1,400&display=swap">
+<link rel="stylesheet" href="tokens.css">
+<style>
+  /* Layout concept: the same standard sheet as the GUI page, but every example is a
+     terminal frame (<pre class="term">) painted only with semantic tokens. Tokens come
+     from tokens.css (generated). Page-local tokens only below. */
+  :root { --sheet: 1100px; --tab-h: 2.75rem; }
+  html, body { background: var(--g2-bg); }
+  body {
+    color: var(--g2-fg); font-family: var(--g2-font-body); font-size: 1.0625rem; line-height: 1.55;
+    padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 0 4rem;
+    -webkit-font-smoothing: antialiased;
+  }
+  body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--g2-bg); }
+  * { box-sizing: border-box; }
+  h1, h2, h3 { margin: 0; text-wrap: balance; color: var(--g2-fg-bright); font-weight: 700; }
+  p { margin: 0; max-width: var(--g2-measure); }
+  a { color: var(--g2-accent); text-decoration-color: var(--g2-border); text-underline-offset: 0.15em; }
+  :focus-visible { outline: 2px solid var(--g2-accent-bright); outline-offset: 2px; }
+  ::selection { background: var(--g2-accent); color: var(--g2-accent-ink); }
+  code, kbd, .mono { font-family: var(--g2-font-mono); font-size: 0.92em; }
+  code { color: var(--g2-fg-bright); background: var(--g2-well); padding: 0.05em 0.35em; }
+  kbd { color: var(--g2-accent); border: 1px solid var(--g2-border); padding: 0 0.4em; font-size: 0.8em; }
+  .sheet { max-width: var(--sheet); margin: 0 auto; display: grid; gap: 3.5rem; }
+  .label { font-family: var(--g2-font-mono); font-size: var(--g2-text-xs); text-transform: uppercase; letter-spacing: var(--g2-tracking-label); color: var(--g2-muted); }
+  .cyr { color: var(--g2-signal-text); }
+  .muted { color: var(--g2-muted); }
+  .t-sm { font-size: var(--g2-text-sm); } .t-xs { font-size: var(--g2-text-xs); }
+  .prose { max-width: var(--g2-measure); display: grid; gap: 0.75rem; }
+  .ruled { display: flex; align-items: center; gap: 1rem; }
+  .ruled::before, .ruled::after { content: ""; flex: 1; border-top: var(--g2-rule) solid var(--g2-border-faint); }
+
+  .masthead { position: relative; margin-top: 2.25rem; padding: 2.75rem 1.5rem 1.75rem; background: var(--g2-panel); border: var(--g2-rule-strong) solid var(--g2-border); display: grid; grid-template-columns: 1fr auto; gap: 1.5rem; align-items: center; }
+  .masthead .tab { position: absolute; top: -1.5rem; left: 1.25rem; height: 1.5rem; padding: 0 0.75rem; background: var(--g2-panel); border: var(--g2-rule-strong) solid var(--g2-border); border-bottom: 0; display: flex; align-items: center; }
+  .corner { position: absolute; top: 0.75rem; right: 0.75rem; padding: 0.2rem 0.6rem; border: var(--g2-rule) solid var(--g2-signal); color: var(--g2-signal-text); font-family: var(--g2-font-mono); font-size: var(--g2-text-xs); letter-spacing: var(--g2-tracking-label); text-transform: uppercase; transform: rotate(-2deg); }
+  .logo { font-family: var(--g2-font-mono); font-weight: 700; letter-spacing: var(--g2-tracking-logo); font-size: clamp(2rem, 6vw, 3.6rem); color: var(--g2-accent); line-height: 1; }
+  .star { color: var(--g2-signal); font-size: 1.4rem; line-height: 1; margin: 0.6rem 0 0.4rem; }
+  .masthead h1 { font-family: var(--g2-font-mono); font-size: var(--g2-text-md); letter-spacing: 0.1em; text-transform: uppercase; color: var(--g2-signal-text); }
+  .meta { font-family: var(--g2-font-mono); font-size: var(--g2-text-sm); margin-top: 0.5rem; }
+  .toolbar { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1.25rem; }
+  .masthead .term-logo { justify-self: end; font-size: 11px; border: 0; background: transparent; padding: 0; }
+  .btn { display: inline-flex; align-items: center; gap: 0.5em; padding: 0.55rem 1rem; cursor: pointer; font-family: var(--g2-font-mono); font-size: var(--g2-text-sm); letter-spacing: 0.08em; text-transform: uppercase; font-weight: 600; border: var(--g2-rule) solid var(--g2-border); background: var(--g2-panel); color: var(--g2-fg); text-decoration: none; }
+  .btn:hover { background: var(--g2-panel-alt); color: var(--g2-fg-bright); border-color: var(--g2-accent); }
+  .btn--ghost { background: transparent; border-color: transparent; color: var(--g2-muted); }
+  .toggle { display: inline-flex; border: var(--g2-rule) solid var(--g2-border); }
+  .toggle .btn { border: 0; }
+  .toggle .btn[aria-pressed="true"] { background: var(--g2-accent); color: var(--g2-accent-ink); }
+
+  .index { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--g2-bg); border-bottom: var(--g2-rule) solid var(--g2-border); margin: 0 calc(-1 * max(16px, env(safe-area-inset-left, 0px))); padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+  .index ul { list-style: none; margin: 0 auto; padding: 0; max-width: var(--sheet); display: flex; gap: 2px; overflow-x: auto; scrollbar-width: thin; }
+  .index a { display: block; height: var(--tab-h); padding: 0 0.9rem; line-height: var(--tab-h); white-space: nowrap; font-family: var(--g2-font-mono); font-size: var(--g2-text-xs); letter-spacing: var(--g2-tracking-label); text-transform: uppercase; color: var(--g2-muted); text-decoration: none; border: var(--g2-rule) solid transparent; border-bottom: 0; }
+  .index a:hover { color: var(--g2-fg-bright); }
+  .index a.is-active { color: var(--g2-accent); border-color: var(--g2-border); background: var(--g2-panel); }
+
+  .sec { display: grid; gap: 1.5rem; scroll-margin-top: calc(var(--tab-h) + 1rem); }
+  .sec > header { display: grid; gap: 0.35rem; }
+  .sec h2 { font-size: var(--g2-text-xl); }
+  .grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); }
+  .grid > * { min-width: 0; }
+  .frame { position: relative; border: var(--g2-rule) solid var(--g2-border); background: var(--g2-panel); padding: 1.5rem 1.25rem 1.25rem; }
+  .frame--authority { border: 4px double var(--g2-accent); }
+  .frame__title { position: absolute; top: -0.65em; left: 0.9rem; padding: 0 0.5rem; background: inherit; font-family: var(--g2-font-mono); font-size: var(--g2-text-xs); letter-spacing: var(--g2-tracking-label); color: var(--g2-muted); }
+  .frame--authority .frame__title { color: var(--g2-accent); text-transform: uppercase; font-weight: 600; }
+  .note-box { border-left: 3px solid var(--g2-note); background: var(--g2-note-bg); padding: 0.75rem 1rem; }
+  .note-box .label { color: var(--g2-note); }
+  .tablewrap { overflow-x: auto; border: var(--g2-rule) solid var(--g2-border); background: var(--g2-panel); }
+  table { width: 100%; border-collapse: collapse; font-size: var(--g2-text-sm); font-variant-numeric: tabular-nums; }
+  th { font-family: var(--g2-font-mono); font-size: var(--g2-text-xs); letter-spacing: var(--g2-tracking-label); text-transform: uppercase; color: var(--g2-muted); text-align: left; padding: 0.6rem 0.75rem; border-bottom: var(--g2-rule) solid var(--g2-border); font-weight: 600; }
+  td { padding: 0.5rem 0.75rem; border-bottom: var(--g2-rule) solid var(--g2-border-faint); vertical-align: top; }
+  tr:last-child td { border-bottom: 0; }
+  td.mono { font-family: var(--g2-font-mono); color: var(--g2-fg-bright); white-space: nowrap; }
+  td.g { font-family: var(--g2-font-mono); color: var(--g2-accent); font-size: 1.05em; white-space: pre; }
+
+  /* ---------------------------------------------------------------- terminal frames */
+  .term {
+    margin: 0; font-family: var(--g2-font-mono); font-size: 13px; line-height: 1.32; white-space: pre; overflow-x: auto;
+    background: var(--g2-bg); color: var(--g2-fg); border: var(--g2-rule) solid var(--g2-border-faint); padding: 12px 14px; tab-size: 4;
+  }
+  .term--well { background: var(--g2-well); }
+  .term .a { color: var(--g2-accent); font-weight: 600; }        /* accent: focused frame, title, author */
+  .term .ab { color: var(--g2-accent-bright); font-weight: 700; }
+  .term .h { color: var(--g2-signal-text); font-weight: 600; }   /* heading = stamp red, hand-fixed */
+  .term .m { color: var(--g2-muted); }
+  .term .f { color: var(--g2-faint); }
+  .term .b { color: var(--g2-border); }
+  .term .fb { color: var(--g2-fg-bright); font-weight: 600; }
+  .term .n { color: var(--g2-note); font-weight: 600; } .term .nb { background: var(--g2-note-bg); }
+  .term .sel { background: var(--g2-selection); }
+  .term .ok { color: var(--g2-ok); } .term .warn { color: var(--g2-warn); } .term .bad { color: var(--g2-bad); } .term .info { color: var(--g2-info); }
+  .term .inv { background: var(--g2-accent); color: var(--g2-accent-ink); font-weight: 700; }
+  .term .key { background: var(--g2-panel-alt); color: var(--g2-accent); }
+  .term .cur { background: var(--g2-fg); color: var(--g2-bg); }
+  .term .sig { background: var(--g2-signal-bg); }
+  .term .dim { opacity: 0.55; }
+  .caption { font-family: var(--g2-font-mono); font-size: var(--g2-text-xs); color: var(--g2-muted); margin-top: 0.4rem; }
+  figure { margin: 0; min-width: 0; }
+
+  .nono { display: grid; gap: 0.6rem; }
+  .nono .row { display: grid; grid-template-columns: 1.2rem 1fr 1fr; gap: 0.75rem; align-items: baseline; padding-bottom: 0.6rem; border-bottom: var(--g2-rule) solid var(--g2-border-faint); font-size: var(--g2-text-sm); }
+  .nono .x { color: var(--g2-signal-text); font-family: var(--g2-font-mono); font-weight: 700; }
+  .nono .no { color: var(--g2-muted); text-decoration: line-through; text-decoration-color: var(--g2-signal); }
+  .nono .yes strong { color: var(--g2-fg-bright); }
+  .colophon { display: grid; gap: 1.5rem; padding-top: 1.5rem; border-top: var(--g2-rule-strong) solid var(--g2-border); }
+  .sig-block { font-family: var(--g2-font-mono); font-size: var(--g2-text-sm); color: var(--g2-muted); display: grid; gap: 0.25rem; }
+  .sig-block .name { color: var(--g2-fg-bright); font-style: italic; }
+
+  @media (max-width: 720px) {
+    .masthead { grid-template-columns: 1fr; padding-top: 3rem; }
+    .masthead .term-logo { display: none; }
+    .corner { top: 0.5rem; right: 0.5rem; font-size: 0.62rem; }
+    .nono .row { grid-template-columns: 1.2rem 1fr; } .nono .yes { grid-column: 2; }
+    .term { font-size: 11.5px; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="sheet">
+
+  <header class="masthead">
+    <span class="tab label">СТАНДАРТ № 002 · TUI</span>
+    <span class="corner">ДСП · Экз. № 1</span>
+    <div>
+      <div class="logo">СТАНДАРТ</div>
+      <div class="star">★</div>
+      <h1>Bureau of Computational Technology · Design Standard, TUI surface</h1>
+      <div class="meta"><span class="muted">Нирская Вычислительная Техника</span></div>
+      <div class="meta"><span class="muted">Директор:</span> Норман <span class="muted">· Дата:</span> 2026-10-24 <span class="muted">· Scope:</span> ratatui, Rich, Textual, tuicr</div>
+      <div class="toolbar">
+        <div class="toggle" role="group" aria-label="Theme">
+          <button class="btn" id="theme-bureau" aria-pressed="true" type="button">БЮРО · bureau</button>
+          <button class="btn" id="theme-paper" aria-pressed="false" type="button">БЛАНК · paper</button>
+        </div>
+        <a class="btn btn--ghost" href="#canon">Out of canon <kbd>§10</kbd></a>
+      </div>
+    </div>
+<pre class="term term-logo" aria-hidden="true"><span class="b">╔══════════════════════════════╗</span>
+<span class="b">║</span>  <span class="a">П Р О Т О К О Л</span>  <span class="h">★</span>  <span class="m">v0.4.0</span>  <span class="b">║</span>
+<span class="b">║</span>  <span class="h">BUREAU OF COMP. TECHNOLOGY</span>  <span class="b">║</span>
+<span class="b">║</span>  <span class="m">Директор: Норман · 2026-10-24</span> <span class="b">║</span>
+<span class="b">╚══════════════════════════════╝</span></pre>
+  </header>
+
+  <nav class="index" aria-label="Sections">
+    <ul>
+      <li><a href="#svodka">§0 Сводка</a></li>
+      <li><a href="#tokens">§1 Токены</a></li>
+      <li><a href="#glyphs">§2 Глифы</a></li>
+      <li><a href="#header">§3 Шапка</a></li>
+      <li><a href="#panels">§4 Панели</a></li>
+      <li><a href="#stamps">§5 Печать</a></li>
+      <li><a href="#forms">§6 Форма</a></li>
+      <li><a href="#footer">§7 Подвал</a></li>
+      <li><a href="#lists">§8 Списки</a></li>
+      <li><a href="#themes">§9 Темы</a></li>
+      <li><a href="#canon">§10 Вне канона</a></li>
+    </ul>
+  </nav>
+
+  <!-- ================================================================ §0 -->
+  <section class="sec" id="svodka">
+    <header>
+      <span class="label"><span class="cyr">СВОДКА</span> · §0 Summary</span>
+      <h2>Fourteen tokens, three frame weights, one accent at a time</h2>
+      <p>This is the terminal half of the g2 design system. It binds three codebases: <code>glory-to-gensek</code> (ratatui), <code>glory-to-protocol</code> (Rich and Textual) and the review surface they hand off to (tuicr). They share one <code>themes.toml</code> shape, one glyph vocabulary and one voice. Every example on this page is painted only with the tokens in §1, so the paper toggle above re-renders the whole terminal.</p>
+    </header>
+    <div class="grid">
+      <div class="frame frame--authority">
+        <span class="frame__title">ТРИ ПРАВИЛА · the three rules</span>
+        <div class="prose t-sm">
+          <p><strong>1. The terminal tier.</strong> Uppercase is semantic (a focused title, a directory, a stamp), one accent is live at a time, the status line is always there. Lean KOI-7 console, not CP866 desktop.</p>
+          <p><strong>2. The frame says who is speaking.</strong> Light for a pane at rest, heavy for the pane with focus, double for the bureau itself.</p>
+          <p><strong>3. Tokens only.</strong> UI code never names a colour. It names <code>accent</code>, <code>heading</code>, <code>note</code>. The theme loader does the rest, in OKLab, at boot.</p>
+        </div>
+      </div>
+      <div class="frame">
+        <span class="frame__title">ПОТРЕБИТЕЛИ · consumers</span>
+        <div class="tablewrap" style="border:0">
+          <table>
+            <thead><tr><th>repo</th><th>stack</th><th>reads</th></tr></thead>
+            <tbody>
+              <tr><td class="mono">glory-to-gensek</td><td>ratatui 0.30 · <code>palette</code> OKLab</td><td><code>[themes.bureau]</code> trio, derives the rest</td></tr>
+              <tr><td class="mono">glory-to-protocol</td><td>Rich · Textual 8</td><td><code>[resolved.bureau]</code>, no derivation step</td></tr>
+              <tr><td class="mono">tuicr</td><td>ratatui</td><td>gensek exports the active theme in its format</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================================ §1 -->
+  <section class="sec" id="tokens">
+    <header>
+      <span class="label"><span class="cyr">ТОКЕНЫ</span> · §1 Tokens</span>
+      <h2>The gensek fourteen, and how they map</h2>
+      <p>Gensek's UI speaks fourteen semantic tokens. The design system's wider table (surface ramp, bright variants, the split red) folds into them as shown. A theme is the master trio plus the hand-fixed <code>heading</code> and <code>note</code>; the loader derives everything else and lifts each token until it clears 4.5:1 on <code>bg</code>.</p>
+    </header>
+    <div class="grid">
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>TUI token</th><th>g2 token</th><th>derivation</th><th>painted on</th></tr></thead>
+          <tbody>
+            <tr><td class="mono">bg</td><td class="mono">bg</td><td>seed</td><td>the whole terminal</td></tr>
+            <tr><td class="mono">fg</td><td class="mono">fg</td><td>seed</td><td>body text</td></tr>
+            <tr><td class="mono">accent</td><td class="mono">accent</td><td>seed</td><td>focused frame, titles, authors, keys</td></tr>
+            <tr><td class="mono">heading</td><td class="mono">signal_text</td><td>hand-fixed stamp red</td><td>section markers <code>▌</code>, bold in markdown</td></tr>
+            <tr><td class="mono">muted</td><td class="mono">muted</td><td>mix(fg 55%, bg), lifted 4.5</td><td>timestamps, counts, hints</td></tr>
+            <tr><td class="mono">border</td><td class="mono">border</td><td>mix(accent 45%, bg)</td><td>frames at rest</td></tr>
+            <tr><td class="mono">border_focus</td><td class="mono">accent</td><td>= accent</td><td>the focused frame</td></tr>
+            <tr><td class="mono">note</td><td class="mono">note</td><td>hand-fixed sage, lifted on note_bg</td><td>note rows, annotations</td></tr>
+            <tr><td class="mono">note_bg</td><td class="mono">note_bg</td><td>mix(note 12%, bg)</td><td>the note row's wash</td></tr>
+            <tr><td class="mono">selection</td><td class="mono">selection</td><td>mix(accent 18%, bg)</td><td>the row under the cursor</td></tr>
+            <tr><td class="mono">ok · warn · bad · info</td><td class="mono">ok · warn · bad · info</td><td>seeds lifted 4.5</td><td>✓ ✗ ! ? and state words</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div style="display:grid;gap:1rem">
+<pre class="term term--well"><span class="m"># themes.toml · generated by glory-to-design</span>
+<span class="a">[themes.bureau]</span>            <span class="m"># БЮРО · canonical, dark</span>
+<span class="fb">bg</span>        = <span class="n">"#0e0a05"</span>
+<span class="fb">fg</span>        = <span class="n">"#e8c887"</span>
+<span class="fb">accent</span>    = <span class="n">"#d4af37"</span>
+<span class="fb">heading</span>   = <span class="n">"#c0392b"</span>   <span class="m"># the bureau has two accents</span>
+<span class="fb">note</span>      = <span class="n">"#6fa86f"</span>
+<span class="fb">muted</span>     = <span class="n">"#8b7954"</span>
+<span class="fb">border</span>    = <span class="n">"#5e4d1c"</span>
+<span class="fb">selection</span> = <span class="n">"#2b230e"</span>
+
+<span class="a">[themes.paper]</span>             <span class="m"># БЛАНК · optional, light</span>
+<span class="fb">bg</span>        = <span class="n">"#e8dcbf"</span>
+<span class="fb">fg</span>        = <span class="n">"#1c1407"</span>
+<span class="fb">accent</span>    = <span class="n">"#6e5010"</span>
+<span class="fb">heading</span>   = <span class="n">"#a32616"</span></pre>
+        <div class="note-box">
+          <span class="label">ЗАМЕТКА · the contrast guard</span>
+          <p class="t-sm">At load, if <code>note</code> sits within 30° of <code>accent</code> in hue, or <code>accent</code> within 20° and 0.15 lightness of <code>fg</code>, the loader rotates <code>note</code> to the farthest of three candidate hues and logs a warning. The guard is skipped for grey accents. This is the blog's WCAG 1.4.1 rule run at boot instead of in a script.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================================ §2 -->
+  <section class="sec" id="glyphs">
+    <header>
+      <span class="label"><span class="cyr">ГЛИФЫ</span> · §2 Glyphs</span>
+      <h2>The vocabulary, and its ASCII fallback</h2>
+      <p>CP866 kept the whole pseudographic block, so Russian terminals never lost their frames. The suite uses the Unicode box-drawing set with three weights, a handful of markers and the shade blocks. Every glyph has a 7-bit fallback for terminals that cannot draw it; the fallback is chosen once at boot, never mixed.</p>
+    </header>
+    <div class="grid">
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>role</th><th>glyphs</th><th>fallback</th><th>rule</th></tr></thead>
+          <tbody>
+            <tr><td>frame · rest</td><td class="g">┌ ─ ┐ │ └ ┘ ├ ┤ ┬ ┴</td><td class="g">+ - |</td><td>panes nobody is looking at</td></tr>
+            <tr><td>frame · focus</td><td class="g">┏ ━ ┓ ┃ ┗ ┛</td><td class="g">+ = |</td><td>exactly one on screen; title uppercase</td></tr>
+            <tr><td>frame · authority</td><td class="g">╔ ═ ╗ ║ ╚ ╝</td><td class="g">+ = |</td><td>header band, stamps, directives</td></tr>
+            <tr><td>section marker</td><td class="g">▌</td><td class="g">&gt;</td><td>in <code>heading</code> red, before a group title</td></tr>
+            <tr><td>cursor</td><td class="g">▸</td><td class="g">&gt;</td><td>the row under the cursor, with <code>selection</code> wash</td></tr>
+            <tr><td>state</td><td class="g">✓ ✗ ! ?</td><td class="g">v x ! ?</td><td>ok · bad · order · review, always with a word</td></tr>
+            <tr><td>progress</td><td class="g">█ ▓ ▒ ░</td><td class="g"># = - .</td><td>filled to empty; five squares cycle while a job runs</td></tr>
+            <tr><td>the state</td><td class="g">★</td><td class="g">*</td><td>once per screen, in the header</td></tr>
+            <tr><td>leaders</td><td class="g">· ….: ──</td><td class="g">. -</td><td>dot leaders in ledgers, <code>·</code> as separator</td></tr>
+            <tr><td>shade</td><td class="g">░▒▓</td><td class="g">.:#</td><td>disabled regions, redaction</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <figure>
+<pre class="term"><span class="b">┌─ rest ──────────────┐</span>  <span class="a">┏━ FOCUS ━━━━━━━━━━━━━┓</span>  <span class="ab">╔═ AUTHORITY ═════════╗</span>
+<span class="b">│</span> secondary pane      <span class="b">│</span>  <span class="a">┃</span> the pane with focus <span class="a">┃</span>  <span class="ab">║</span> the bureau speaking  <span class="ab">║</span>
+<span class="b">│</span> <span class="m">hints in muted</span>      <span class="b">│</span>  <span class="a">┃</span><span class="sel"> <span class="a">▸</span> row under cursor  </span><span class="a">┃</span>  <span class="ab">║</span> <span class="h">▌ section</span>  <span class="ok">✓</span> <span class="bad">✗</span> <span class="info">!</span> <span class="warn">?</span>  <span class="ab">║</span>
+<span class="b">└─────────────────────┘</span>  <span class="a">┗━━━━━━━━━━━━━━━━━━━━━┛</span>  <span class="ab">╚══════════════════════╝</span>
+
+<span class="m">progress</span>  <span class="a">████████████</span><span class="f">░░░░░░░░</span>  <span class="m">12/20</span>     <span class="m">in flight</span>  <span class="a">■</span><span class="f">■</span><span class="a">■</span><span class="f">■</span><span class="a">■</span>
+<span class="m">redacted</span>  the finance <span class="f">▓▓▓▓▓▓▓▓▓</span> vault         <span class="m">leader</span>     документ № ........: <span class="fb">003</span></pre>
+        <figcaption class="caption">Three weights side by side. Only the focused frame may be heavy; only the bureau may be double.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ================================================================ §3 -->
+  <section class="sec" id="header">
+    <header>
+      <span class="label"><span class="cyr">ШАПКА</span> · §3 Header band</span>
+      <h2>Logo, star, session line</h2>
+      <p>Every full-screen view opens with a double-frame band: the bureau name tracked in accent, the star in red, then a session line in muted (date, connector freshness, locale). Protocol ships two logo sizes; the small one is the tracked word, the large one is a block-letter figure for the fallback console. On narrow terminals the band drops to one line.</p>
+    </header>
+    <div class="grid">
+      <figure>
+<pre class="term"><span class="ab">╔═</span> <span class="a">ГЕНСЕК</span> <span class="m">· 2026-10-24 · github 2m · jira 5m · ru</span> <span class="ab">═══════════════════╗</span>
+<span class="ab">║</span>                                                                    <span class="ab">║</span>
+<span class="ab">║</span>   <span class="a">Г Е Н С Е К</span>   <span class="h">★</span>   <span class="h">PERSONAL COMMAND CENTER</span>                        <span class="ab">║</span>
+<span class="ab">║</span>   <span class="m">Директор: Норман · Сессия: #0417 · Store: 3.1 MB</span>                 <span class="ab">║</span>
+<span class="ab">║</span>                                                                    <span class="ab">║</span>
+<span class="ab">╚════════════════════════════════════════════════════════════════════╝</span></pre>
+        <figcaption class="caption">Full band, 70 columns. The star is the only red in the header.</figcaption>
+      </figure>
+      <figure>
+<pre class="term"><span class="ab">╔═</span> <span class="a">ГЕНСЕК</span> <span class="m">· 10-24 · gh 2m</span> <span class="ab">══╗</span>
+<span class="ab">╚═══════════════════════════╩</span>
+
+<span class="m">protocol · large logo (fallback console)</span>
+
+<span class="a">█▀█ █▀█ █▀█ ▀█▀ █▀█ █▀▀ █▀█ █  </span>
+<span class="a">█▀▀ █▀▄ █ █  █  █ █ █   █ █ █  </span>
+<span class="a">▀   ▀ ▀ ▀▀▀  ▀  ▀▀▀ ▀▀▀ ▀▀▀ ▀▀▀</span>
+<span class="h">            ★ BUREAU OF COMPUTATIONAL TECHNOLOGY</span></pre>
+        <figcaption class="caption">Narrow band, and the half-block logo protocol prints when there is no alt-screen.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ================================================================ §4 -->
+  <section class="sec" id="panels">
+    <header>
+      <span class="label"><span class="cyr">ПАНЕЛИ</span> · §4 Panels and screens</span>
+      <h2>The dashboard and the object screen</h2>
+      <p>Gensek's two screens, drawn to the standard. Panels are numbered in their title so <kbd>g1</kbd>…<kbd>g3</kbd> jump to them. The focused panel is heavy and uppercase; the others rest. Section markers <code>▌</code> are red; the cursor row is washed in <code>selection</code>; notes are washed in <code>note_bg</code> with their label in sage.</p>
+    </header>
+    <figure>
+<pre class="term"><span class="ab">╔═</span> <span class="a">ГЕНСЕК</span> <span class="m">· 2026-10-24 · github 2m · jira 5m</span> <span class="ab">════════════════════════════════╗</span>
+<span class="a">┏━ 1 ATTENTION (7) ━━━━━━━━━━━━━━━━━━━━━━━━━━━┓</span><span class="b">┌─ 3 preview ─────────────────────┐</span>
+<span class="a">┃</span> <span class="h">▌ asked for your review</span> <span class="m">(3)</span>                <span class="a">┃</span><span class="b">│</span> <span class="fb">feat(auth): refresh token</span>       <span class="b">│</span>
+<span class="a">┃</span><span class="sel"> <span class="a">▸</span> acme/api #412 feat(auth): refresh…  <span class="m">2h</span> </span><span class="a">┃</span><span class="b">│</span> <span class="m">marina · acme/api · 3 files</span>     <span class="b">│</span>
+<span class="a">┃</span>   acme/api #409 fix: null org on invite <span class="m">1d</span> <span class="a">┃</span><span class="b">│</span>                                 <span class="b">│</span>
+<span class="a">┃</span>   acme/web #230 docs: design standard   <span class="m">6h</span> <span class="a">┃</span><span class="b">│</span> Rotates the refresh token on    <span class="b">│</span>
+<span class="a">┃</span> <span class="h">▌ yours, blocked</span> <span class="m">(2)</span>                       <span class="a">┃</span><span class="b">│</span> every use and invalidates the   <span class="b">│</span>
+<span class="a">┃</span>   acme/api #401 CI <span class="bad">✗</span> tests/auth         <span class="m">5h</span> <span class="a">┃</span><span class="b">│</span> old one. Closes PROJ-118.       <span class="b">│</span>
+<span class="a">┃</span>   acme/web #228 <span class="warn">?</span> awaiting Gensek       <span class="m">9d</span> <span class="a">┃</span><span class="b">│</span>                                 <span class="b">│</span>
+<span class="a">┃</span> <span class="h">▌ directives</span> <span class="m">(1)</span>                           <span class="a">┃</span><span class="b">│</span> <span class="m">checks</span>  <span class="ok">✓</span> lint  <span class="ok">✓</span> test  <span class="bad">✗</span> e2e  <span class="b">│</span>
+<span class="a">┃</span>   #4711 <span class="info">!</span> immediate execution           <span class="m">15m</span> <span class="a">┃</span><span class="b">│</span> <span class="m">review</span>  <span class="warn">?</span> 1 requested           <span class="b">│</span>
+<span class="a">┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛</span><span class="b">└─────────────────────────────────┘</span>
+<span class="b">┌─ 2 conversation (6 · 2 notes) ───────────────────────────────────────────────┐</span>
+<span class="b">│</span> <span class="a">marina</span> <span class="m">· 40m</span>  rebased on main, CI green except e2e                           <span class="b">│</span>
+<span class="b">│</span><span class="nb"> <span class="n">▌ note</span> <span class="m">· 09:12</span>  check token expiry on mobile before approving                </span><span class="b">│</span>
+<span class="b">│</span> <span class="a">dmitri</span> <span class="m">· 12m</span>  e2e flake is known, see #398                                   <span class="b">│</span>
+<span class="b">└──────────────────────────────────────────────────────────────────────────────┘</span>
+<span class="key"> F1 </span><span class="m">help </span><span class="key"> n </span><span class="m">note </span><span class="key"> c </span><span class="m">comment </span><span class="key"> r </span><span class="m">review </span><span class="key"> : </span><span class="m">cmd </span><span class="key"> ? </span><span class="m">keys </span>                 <span class="m">en · pt-br ·</span> <span class="a">ru</span>  <span class="ok">●</span> <span class="m">synced</span></pre>
+      <figcaption class="caption">Dashboard, 80 columns. Panel 1 has focus. One red star, one gold frame, red only on section markers and one failed check.</figcaption>
+    </figure>
+    <div class="grid">
+      <figure>
+<pre class="term"><span class="a">┏━ 2 CONVERSATION (6 · 2 notes) ━━━━━━━━━━━━━┓</span>
+<span class="a">┃</span> <span class="a">marina</span> <span class="m">· 40m</span>  rebased on main              <span class="a">┃</span>
+<span class="a">┃</span><span class="sel"> <span class="a">▸</span> <span class="a">dmitri</span> <span class="m">· 12m</span>  e2e flake is known        </span><span class="a">┃</span>
+<span class="a">┃</span> <span class="b">┌─ note on L32-47 ─────────────────────┐</span>  <span class="a">┃</span>
+<span class="a">┃</span> <span class="b">│</span> <span class="m">-- INSERT --</span>                           <span class="b">│</span>  <span class="a">┃</span>
+<span class="a">┃</span> <span class="b">│</span> The refresh path logs the old token<span class="cur"> </span>  <span class="b">│</span>  <span class="a">┃</span>
+<span class="a">┃</span> <span class="b">│</span>                                       <span class="b">│</span>  <span class="a">┃</span>
+<span class="a">┃</span> <span class="b">└─ </span><span class="key">esc</span><span class="m"> normal · </span><span class="key">⏎⏎</span><span class="m"> save · </span><span class="key">^c</span><span class="m"> cancel </span><span class="b">──┘</span>  <span class="a">┃</span>
+<span class="a">┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛</span></pre>
+        <figcaption class="caption">Inline edit box under the cursor, never <code>$EDITOR</code>. Vim mode starts in INSERT.</figcaption>
+      </figure>
+      <figure>
+<pre class="term"><span class="b">┌─ </span><span class="h">! description</span><span class="b"> ─ </span><span class="m">@ links (4)</span><span class="b"> ─────────────────┐</span>
+<span class="b">│</span> <span class="fb">Refresh token rotation</span>                       <span class="b">│</span>
+<span class="b">│</span>                                              <span class="b">│</span>
+<span class="b">│</span> Rotates on <span class="h">every use</span> and invalidates the    <span class="b">│</span>
+<span class="b">│</span> previous one. Adds a <span class="key">token_version</span> column.  <span class="b">│</span>
+<span class="b">│</span>                                              <span class="b">│</span>
+<span class="b">│</span> <span class="m">- [x]</span> migration     <span class="m">- [ ]</span> mobile client     <span class="b">│</span>
+<span class="b">│</span> <span class="m">&gt;</span> <span class="m dim">Closes PROJ-118. Supersedes #388.</span>          <span class="b">│</span>
+<span class="b">└──────────────────────────────────────────────┘</span></pre>
+        <figcaption class="caption">Markdown painted in place: bold takes the heading red, code takes a key wash, quotes dim.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ================================================================ §5 -->
+  <section class="sec" id="stamps">
+    <header>
+      <span class="label"><span class="cyr">ПЕЧАТЬ</span> · §5 Stamps</span>
+      <h2>Four decisions as text blocks</h2>
+      <p>A terminal cannot tilt a ring, so the stamp is a heavy block: three lines, the decision in both languages, the label and detail beneath, right-aligned inside the form it decides. The glyph goes first. The colour is the decision's, as on the GUI. One stamp per form; <code>show_result_stamp=False</code> hides it, the dispatch still runs.</p>
+    </header>
+    <figure>
+<pre class="term"><span class="ok">┏━━━━━━━━━━━━━━━━━━━━━━━━━━━┓</span>  <span class="bad">┏━━━━━━━━━━━━━━━━━━━━━━━━━━━┓</span>  <span class="info">┏━━━━━━━━━━━━━━━━━━━━━━━━━━━┓</span>  <span class="warn">┏━━━━━━━━━━━━━━━━━━━━━━━━━━━┓</span>
+<span class="ok">┃</span>  <span class="ok">✓  ОДОБРЕНО</span>               <span class="ok">┃</span>  <span class="bad">┃</span>  <span class="bad">✗  ОТКАЗАНО</span>               <span class="bad">┃</span>  <span class="info">┃</span>  <span class="info">!  ПРИКАЗ</span>                 <span class="info">┃</span>  <span class="warn">┃</span>  <span class="warn">?  К СВЕДЕНИЮ</span>             <span class="warn">┃</span>
+<span class="ok">┃</span>     <span class="ok">APPROVED</span>               <span class="ok">┃</span>  <span class="bad">┃</span>     <span class="bad">REJECTED</span>               <span class="bad">┃</span>  <span class="info">┃</span>     <span class="info">DIRECT ORDER</span>           <span class="info">┃</span>  <span class="warn">┃</span>     <span class="warn">FOR REVIEW</span>             <span class="warn">┃</span>
+<span class="ok">┃</span>  <span class="m">Q2 budget · audit clean</span>  <span class="ok">┃</span>  <span class="bad">┃</span>  <span class="m">#4711 · out of scope</span>     <span class="bad">┃</span>  <span class="info">┃</span>  <span class="m">team 3 · immediate</span>       <span class="info">┃</span>  <span class="warn">┃</span>  <span class="m">report · awaiting Gensek</span> <span class="warn">┃</span>
+<span class="ok">┗━━━━━━━━━━━━━━━━━━━━━━━━━━━┛</span>  <span class="bad">┗━━━━━━━━━━━━━━━━━━━━━━━━━━━┛</span>  <span class="info">┗━━━━━━━━━━━━━━━━━━━━━━━━━━━┛</span>  <span class="warn">┗━━━━━━━━━━━━━━━━━━━━━━━━━━━┛</span></pre>
+      <figcaption class="caption">The four stamps, 29 columns each. Reject always carries a reason in the detail line.</figcaption>
+    </figure>
+    <div class="grid">
+      <figure>
+<pre class="term"><span class="ab">╔══════════════════════════════════════════════╗</span>
+<span class="ab">║</span>  <span class="h">★</span>  <span class="a">ДОСТОЯНИЕ НАРОДА · PROPERTY OF THE PEOPLE</span> <span class="ab">║</span>
+<span class="ab">║</span>     <span class="m">glory-to-protocol · AGPL-3.0-or-later</span>    <span class="ab">║</span>
+<span class="ab">╚══════════════════════════════════════════════╝</span></pre>
+        <figcaption class="caption">The seal, as a one-line authority band. Used once, at the end of <code>--help</code> or a release note.</figcaption>
+      </figure>
+      <div class="frame">
+        <span class="frame__title">ПРАВИЛА · rules</span>
+        <div class="prose t-sm">
+          <p><strong>Glyph, Cyrillic, English, detail.</strong> Four lines inside a heavy frame in the decision's colour.</p>
+          <p><strong>Right-aligned</strong> in an 80-column form, flush with the frame's right edge; left-aligned if the terminal is narrower than 60.</p>
+          <p><strong>Colours never swap.</strong> Approve is <code>ok</code>, reject <code>bad</code>, order <code>info</code>, review <code>warn</code>. A red approve is a bug.</p>
+          <p><strong>Fallback:</strong> <code>[v] APPROVED</code>, <code>[x] REJECTED</code>, <code>[!] DIRECT ORDER</code>, <code>[?] FOR REVIEW</code>, in a <code>+=+</code> frame.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================================ §6 -->
+  <section class="sec" id="forms">
+    <header>
+      <span class="label"><span class="cyr">ФОРМА</span> · §6 Forms, confirms, directives</span>
+      <h2>Eighty columns, dot leaders, the question as a ledger</h2>
+      <p>Protocol's <code>Form</code> is the atom: a titled frame, 80 columns wide (<code>FORM_WIDTH</code>), lines of text or <code>FIELD ....: value</code> rows, and a stamp at the end. A confirm is a small form in a double frame whose answer is two keys. Help is a directive: the same form, with the bindings as its ledger.</p>
+    </header>
+    <div class="grid">
+      <figure>
+<pre class="term"><span class="b">┌─ status ─────────────────────────────────────────────────────┐</span>
+<span class="b">│</span> <span class="m">ДОКУМЕНТ № .....:</span> <span class="fb">0042</span>                                        <span class="b">│</span>
+<span class="b">│</span> <span class="m">CITIZEN ........:</span> Volkov, Marina                              <span class="b">│</span>
+<span class="b">│</span> <span class="m">DIRECTORATE ....:</span> Public Works <span class="m">(Общественные Работы)</span>          <span class="b">│</span>
+<span class="b">│</span> <span class="m">CLASSIFICATION .:</span> <span class="h">ДСП</span>                                         <span class="b">│</span>
+<span class="b">│</span> <span class="m">FILED ..........:</span> 2026-10-24 16:04                            <span class="b">│</span>
+<span class="b">│</span>                                                              <span class="b">│</span>
+<span class="b">│</span> All systems nominal. The queue holds seven requests.        <span class="b">│</span>
+<span class="b">│</span>                                                              <span class="b">│</span>
+<span class="b">│</span>                              <span class="ok">┏━━━━━━━━━━━━━━━━━━━━━━━━━━━┓</span> <span class="b">│</span>
+<span class="b">│</span>                              <span class="ok">┃</span>  <span class="ok">✓  ОДОБРЕНО</span>               <span class="ok">┃</span> <span class="b">│</span>
+<span class="b">│</span>                              <span class="ok">┃</span>     <span class="ok">APPROVED</span>               <span class="ok">┃</span> <span class="b">│</span>
+<span class="b">│</span>                              <span class="ok">┃</span>  <span class="m">status check · audit</span>     <span class="ok">┃</span> <span class="b">│</span>
+<span class="b">│</span>                              <span class="ok">┗━━━━━━━━━━━━━━━━━━━━━━━━━━━┛</span> <span class="b">│</span>
+<span class="b">└──────────────────────────────────────────────────────────────┘</span>
+<span class="f">С честью, Генсек</span></pre>
+        <figcaption class="caption">A protocol <code>Form</code> with a ledger, a line and a stamp. The signature is <code>faint</code>, italic where the terminal can.</figcaption>
+      </figure>
+      <div style="display:grid;gap:1rem">
+        <figure>
+<pre class="term"><span class="ab">╔═ ПОДТВЕРЖДЕНИЕ · confirm ═══════════════════╗</span>
+<span class="ab">║</span> <span class="m">ДЕЙСТВИЕ ....:</span> <span class="fb">comment on acme/api #412</span>      <span class="ab">║</span>
+<span class="ab">║</span> <span class="m">PUBLIC ......:</span> <span class="h">ДА · yes</span>                      <span class="ab">║</span>
+<span class="ab">║</span> <span class="m">QUOTES ......:</span> L32-47                        <span class="ab">║</span>
+<span class="ab">║</span>                                              <span class="ab">║</span>
+<span class="ab">║</span>   <span class="inv"> y </span> <span class="m">post it</span>      <span class="key"> n </span> <span class="m">keep as note</span>           <span class="ab">║</span>
+<span class="ab">╚══════════════════════════════════════════════╝</span></pre>
+          <figcaption class="caption">A confirm names the target and whether it is public. Default key is inverted.</figcaption>
+        </figure>
+        <figure>
+<pre class="term"><span class="ab">╔═ ДИРЕКТИВА · help ═══════════════════════════╗</span>
+<span class="ab">║</span> <span class="h">▌ navigation</span>                                 <span class="ab">║</span>
+<span class="ab">║</span>   <span class="key"> g1 </span><span class="key"> g2 </span><span class="key"> g3 </span>  <span class="m">jump to panel</span>                <span class="ab">║</span>
+<span class="ab">║</span>   <span class="key"> tab </span>          <span class="m">cycle focus</span>                  <span class="ab">║</span>
+<span class="ab">║</span> <span class="h">▌ actions</span>                                    <span class="ab">║</span>
+<span class="ab">║</span>   <span class="key"> n </span>  <span class="m">note</span>   <span class="key"> c </span>  <span class="m">comment</span>   <span class="key"> r </span>  <span class="m">review</span>   <span class="ab">║</span>
+<span class="ab">║</span> <span class="h">▌ command line</span>                               <span class="ab">║</span>
+<span class="ab">║</span>   <span class="key"> : </span>  <span class="m">:theme :lang :keys :snooze :log</span>      <span class="ab">║</span>
+<span class="ab">║</span>                      <span class="f">esc closes · Слава НИРВЫТЕХ</span> <span class="ab">║</span>
+<span class="ab">╚══════════════════════════════════════════════╝</span></pre>
+          <figcaption class="caption">Help as a directive: the live keymap, grouped under red section markers.</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================================ §7 -->
+  <section class="sec" id="footer">
+    <header>
+      <span class="label"><span class="cyr">ПОДВАЛ</span> · §7 Footer, status line, ticker</span>
+      <h2>The last line is always there</h2>
+      <p>Inherited from Norton Commander's ten slots and still the fastest way to say what the keyboard does. The suite shows keys as inverted chips with a muted word, left; locale and sync state, right. The command line replaces the footer while open. A running job gets a one-line ticker above the footer, five squares cycling through the theme's colours.</p>
+    </header>
+    <figure>
+<pre class="term"><span class="m">footer · keys</span>
+<span class="key"> F1 </span><span class="m">help </span><span class="key"> F2 </span><span class="m">menu </span><span class="key"> F3 </span><span class="m">view </span><span class="key"> F4 </span><span class="m">edit </span><span class="key"> F5 </span><span class="m">copy </span><span class="key"> F6 </span><span class="m">move </span><span class="key"> F7 </span><span class="m">new </span><span class="key"> F8 </span><span class="m">del </span><span class="key"> F9 </span><span class="m">theme </span><span class="key"> F10 </span><span class="m">quit </span>
+
+<span class="m">footer · gensek</span>
+<span class="key"> F1 </span><span class="m">help </span><span class="key"> n </span><span class="m">note </span><span class="key"> c </span><span class="m">comment </span><span class="key"> r </span><span class="m">review </span><span class="key"> : </span><span class="m">cmd </span><span class="key"> ? </span><span class="m">keys </span>                        <span class="m">en · pt-br ·</span> <span class="a">ru</span>  <span class="ok">●</span> <span class="m">github 2m</span>
+
+<span class="m">command line (replaces the footer)</span>
+<span class="a">:</span>theme bureau<span class="cur"> </span>                                                   <span class="m">bureau · paper · fosforo · hacker</span>
+
+<span class="m">ticker · a job in flight</span>
+<span class="a">■</span><span class="h">■</span><span class="n">■</span><span class="f">■</span><span class="f">■</span> <span class="m">refresh github</span> <span class="fb">3/7</span> <span class="m">· 00:12 · acme/api</span>                                     <span class="warn">!</span> <span class="m">jira offline, cached 5m</span>
+
+<span class="m">status · offline</span>
+<span class="sig"> <span class="bad">✗</span> <span class="h">OFFLINE</span> <span class="m">· showing the store as of 15:58 · retry in 40s · </span><span class="key"> R </span><span class="m"> now                                      </span></span></pre>
+      <figcaption class="caption">Footer variants. Offline is a red wash across the whole line with the time of the last good read.</figcaption>
+    </figure>
+  </section>
+
+  <!-- ================================================================ §8 -->
+  <section class="sec" id="lists">
+    <header>
+      <span class="label"><span class="cyr">СПИСКИ</span> · §8 Lists and tables</span>
+      <h2>Cursor, wash, and one state glyph per row</h2>
+      <p>A list row is: cursor slot, identifier in accent or plain, title truncated with <code>…</code>, state glyph if any, age in muted at the right edge. The row under the cursor gets <code>▸</code> and the selection wash. A table is a list with aligned columns and a muted uppercase header; numbers are right-aligned.</p>
+    </header>
+    <div class="grid">
+      <figure>
+<pre class="term"><span class="m">  REQUEST          CITIZEN       DIRECTORATE     AGE  DECISION</span>
+<span class="sel"><span class="a">▸</span> <span class="a">acme/api #412</span>    Volkov, M.    Public Works     <span class="m">2h</span>  <span class="warn">? к сведению</span> </span>
+  <span class="a">acme/api #409</span>    Petrova, I.   Public Works     <span class="m">1d</span>  <span class="ok">✓ одобрено</span>
+<span class="sig">  <span class="a">acme/api #401</span>    Sokolov, D.   Internal Affairs <span class="m">5h</span>  <span class="bad">✗ отказано</span>   </span>
+  <span class="a">acme/web #230</span>    Volkov, M.    Standards        <span class="m">6h</span>  <span class="info">! приказ</span>
+  <span class="f">acme/web #228    —             —                9d  не подано</span></pre>
+        <figcaption class="caption">Table. A rejected row takes the red wash; a draft row is faint throughout.</figcaption>
+      </figure>
+      <figure>
+<pre class="term"><span class="h">▌ recent notes</span> <span class="m">(3)</span>
+<span class="nb"> <span class="n">▌</span> <span class="m">09:12</span>  check token expiry on mobile            <span class="m">#412</span> </span>
+<span class="nb"> <span class="n">▌</span> <span class="m">08:40</span>  ask dmitri about the e2e flake          <span class="m">#401</span> </span>
+<span class="nb"> <span class="n">▌</span> <span class="m">yest.</span>  palette drift: open a standard         <span class="m">#230</span> </span>
+
+<span class="h">▌ assigned issues</span> <span class="m">(2)</span>
+  <span class="a">PROJ-118</span>  Refresh token rotation            <span class="info">in review</span>
+  <span class="a">PROJ-121</span>  Design standard for the suite     <span class="ok">done</span>
+
+<span class="h">▌ snoozed</span> <span class="m">(1 · until mon)</span>
+  <span class="f">acme/web #228  i18n footer strings</span></pre>
+        <figcaption class="caption">Grouped list. Notes are washed in <code>note_bg</code>; snoozed items are faint; state words sit at the right edge.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ================================================================ §9 -->
+  <section class="sec" id="themes">
+    <header>
+      <span class="label"><span class="cyr">ТЕМЫ</span> · §9 Themes</span>
+      <h2>Bureau is canonical; paper is a choice; the rest ship with gensek</h2>
+      <p>The same dashboard excerpt in the two themes this repo owns, plus two that gensek ships from the blog. The toggle at the top of the page repaints every other example; these four are pinned so they can be compared. Legacy palettes (protocol's slate, gensek's teal) stay in their repos until each migrates.</p>
+    </header>
+    <div class="grid">
+      <figure>
+<pre class="term" style="--g2-bg:#0e0a05;--g2-fg:#e8c887;--g2-accent:#d4af37;--g2-signal-text:#d54d3d;--g2-muted:#8b7954;--g2-border:#5e4d1c;--g2-note:#6fa86f;--g2-note-bg:#191a0f;--g2-selection:#2b230e;--g2-ok:#758137;--g2-bad:#d54d3d;--g2-panel-alt:#251e12;--g2-accent-bright:#fcd663"><span class="ab">╔═</span> <span class="a">ГЕНСЕК</span> <span class="m">· bureau</span> <span class="ab">═══════════════╗</span>
+<span class="a">┏━ 1 ATTENTION (7) ━━━━━━━━━━━━━━━━┓</span>
+<span class="a">┃</span> <span class="h">▌ asked for review</span> <span class="m">(3)</span>           <span class="a">┃</span>
+<span class="a">┃</span><span class="sel"> <span class="a">▸</span> acme/api #412 refresh…   <span class="m">2h</span> </span><span class="a">┃</span>
+<span class="a">┃</span>   acme/api #401 CI <span class="bad">✗</span> auth   <span class="m">5h</span>  <span class="a">┃</span>
+<span class="a">┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛</span>
+<span class="nb"> <span class="n">▌ note</span> <span class="m">· 09:12</span>  check expiry     </span></pre>
+        <figcaption class="caption"><strong>bureau</strong> · canonical. Warm black, cream, gold, stamp red, sage.</figcaption>
+      </figure>
+      <figure>
+<pre class="term" style="--g2-bg:#e8dcbf;--g2-fg:#1c1407;--g2-accent:#6e5010;--g2-signal-text:#a32616;--g2-muted:#6a5f4c;--g2-border:#b09b72;--g2-note:#345f34;--g2-note-bg:#d3ceaf;--g2-selection:#d1c1a0;--g2-ok:#4f5a1c;--g2-bad:#a32616;--g2-panel-alt:#cabfa4;--g2-accent-bright:#4c3000"><span class="ab">╔═</span> <span class="a">ГЕНСЕК</span> <span class="m">· paper</span> <span class="ab">════════════════╗</span>
+<span class="a">┏━ 1 ATTENTION (7) ━━━━━━━━━━━━━━━━┓</span>
+<span class="a">┃</span> <span class="h">▌ asked for review</span> <span class="m">(3)</span>           <span class="a">┃</span>
+<span class="a">┃</span><span class="sel"> <span class="a">▸</span> acme/api #412 refresh…   <span class="m">2h</span> </span><span class="a">┃</span>
+<span class="a">┃</span>   acme/api #401 CI <span class="bad">✗</span> auth   <span class="m">5h</span>  <span class="a">┃</span>
+<span class="a">┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛</span>
+<span class="nb"> <span class="n">▌ note</span> <span class="m">· 09:12</span>  check expiry     </span></pre>
+        <figcaption class="caption"><strong>paper</strong> · optional. Form paper, ink, dark gold. For light terminals and printouts.</figcaption>
+      </figure>
+      <figure>
+<pre class="term" style="--g2-bg:#0b1f2a;--g2-fg:#e6e6e6;--g2-accent:#d4af37;--g2-signal-text:#c0392b;--g2-muted:#6c7a89;--g2-border:#7a7a7a;--g2-note:#6fa86f;--g2-note-bg:#122218;--g2-selection:#16303d;--g2-ok:#2ecc71;--g2-bad:#e74c3c;--g2-panel-alt:#16303d;--g2-accent-bright:#f1d26a"><span class="ab">╔═</span> <span class="a">ГЕНСЕК</span> <span class="m">· gensek (legacy)</span> <span class="ab">══════╗</span>
+<span class="a">┏━ 1 ATTENTION (7) ━━━━━━━━━━━━━━━━┓</span>
+<span class="a">┃</span> <span class="h">▌ asked for review</span> <span class="m">(3)</span>           <span class="a">┃</span>
+<span class="a">┃</span><span class="sel"> <span class="a">▸</span> acme/api #412 refresh…   <span class="m">2h</span> </span><span class="a">┃</span>
+<span class="a">┃</span>   acme/api #401 CI <span class="bad">✗</span> auth   <span class="m">5h</span>  <span class="a">┃</span>
+<span class="a">┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛</span>
+<span class="nb"> <span class="n">▌ note</span> <span class="m">· 09:12</span>  check expiry     </span></pre>
+        <figcaption class="caption"><strong>gensek</strong> · the current default in that repo. Teal field. Stays shipped; no longer canonical.</figcaption>
+      </figure>
+      <figure>
+<pre class="term" style="--g2-bg:#1a170f;--g2-fg:#eceae5;--g2-accent:#eec35e;--g2-signal-text:#f0d79a;--g2-muted:#8a846f;--g2-border:#6b5f3a;--g2-note:#8fbf8f;--g2-note-bg:#1f2416;--g2-selection:#2b2614;--g2-ok:#7fd68a;--g2-bad:#f07a6a;--g2-panel-alt:#2b2614;--g2-accent-bright:#f6d98a"><span class="ab">╔═</span> <span class="a">ГЕНСЕК</span> <span class="m">· fosforo (blog)</span> <span class="ab">═══════╗</span>
+<span class="a">┏━ 1 ATTENTION (7) ━━━━━━━━━━━━━━━━┓</span>
+<span class="a">┃</span> <span class="h">▌ asked for review</span> <span class="m">(3)</span>           <span class="a">┃</span>
+<span class="a">┃</span><span class="sel"> <span class="a">▸</span> acme/api #412 refresh…   <span class="m">2h</span> </span><span class="a">┃</span>
+<span class="a">┃</span>   acme/api #401 CI <span class="bad">✗</span> auth   <span class="m">5h</span>  <span class="a">┃</span>
+<span class="a">┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛</span>
+<span class="nb"> <span class="n">▌ note</span> <span class="m">· 09:12</span>  check expiry     </span></pre>
+        <figcaption class="caption"><strong>fosforo</strong> · the blog default, one accent. Heading is derived (accent lightened), not red.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ================================================================ §10 -->
+  <section class="sec" id="canon">
+    <header>
+      <span class="label"><span class="cyr">ВНЕ КАНОНА</span> · §10 Out of canon</span>
+      <h2>What the terminal does not do</h2>
+      <p>Most of the GUI list applies here too. These are the terminal-specific ways to turn the standard into a costume.</p>
+    </header>
+    <div class="nono">
+      <div class="row"><span class="x">✗</span><span class="no">Emoji as state or decoration</span><span class="yes"><strong>Four glyphs,</strong> <code>✓ ✗ ! ?</code>, each with a word beside it.</span></div>
+      <div class="row"><span class="x">✗</span><span class="no">Nerd Font icons as a hard dependency</span><span class="yes"><strong>Box drawing and blocks only,</strong> with a 7-bit fallback chosen once at boot.</span></div>
+      <div class="row"><span class="x">✗</span><span class="no">Mixing single and double lines inside one frame</span><span class="yes"><strong>One weight per frame.</strong> Weight is the message.</span></div>
+      <div class="row"><span class="x">✗</span><span class="no">Two heavy frames on screen</span><span class="yes"><strong>Exactly one focus.</strong> The rest rest.</span></div>
+      <div class="row"><span class="x">✗</span><span class="no">Colour as the only carrier of state</span><span class="yes"><strong>Glyph plus word plus colour.</strong> Monochrome terminals still read it.</span></div>
+      <div class="row"><span class="x">✗</span><span class="no">Blinking, marquee, spinners that never stop</span><span class="yes"><strong>Five squares cycle</strong> while a job runs, and stop when it stops.</span></div>
+      <div class="row"><span class="x">✗</span><span class="no">ASCII-art faces, banners on every command</span><span class="yes"><strong>One header band per screen.</strong> The large logo only on the fallback console.</span></div>
+      <div class="row"><span class="x">✗</span><span class="no">Hex codes in UI code</span><span class="yes"><strong>Tokens only.</strong> <code>theme.accent</code>, never <code>#d4af37</code>.</span></div>
+      <div class="row"><span class="x">✗</span><span class="no">Dropping to <code>$EDITOR</code> for a one-line note</span><span class="yes"><strong>The inline box</strong> under the cursor, vim keys optional.</span></div>
+      <div class="row"><span class="x">✗</span><span class="no">Cyrillic-only strings with no English</span><span class="yes"><strong>Every UI string exists in en, pt-br and ru.</strong> The state's labels pair with the citizen's language.</span></div>
+    </div>
+  </section>
+
+  <footer class="colophon">
+<pre class="term"><span class="b">┌──────────────────────────────────────────────────────────────────────────┐</span>
+<span class="b">│</span> <span class="m">СТАНДАРТ № .......:</span> <span class="fb">002 · TUI</span>                                            <span class="b">│</span>
+<span class="b">│</span> <span class="m">COMPANION ........:</span> СТАНДАРТ № 001 · GUI                                 <span class="b">│</span>
+<span class="b">│</span> <span class="m">TOKENS ...........:</span> tokens/tokens.toml · generated 2026-10-24            <span class="b">│</span>
+<span class="b">│</span> <span class="m">APPROVED BY ......:</span> Director Norman                                      <span class="b">│</span>
+<span class="b">│</span> <span class="m">LICENSE ..........:</span> AGPL-3.0-or-later                                    <span class="b">│</span>
+<span class="b">│</span>                                      <span class="ok">┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓</span> <span class="b">│</span>
+<span class="b">│</span>                                      <span class="ok">┃</span>  <span class="ok">✓  ОДОБРЕНО · APPROVED</span>          <span class="ok">┃</span> <span class="b">│</span>
+<span class="b">│</span>                                      <span class="ok">┃</span>  <span class="m">official release · NIRVYTEKH</span>   <span class="ok">┃</span> <span class="b">│</span>
+<span class="b">│</span>                                      <span class="ok">┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛</span> <span class="b">│</span>
+<span class="b">└──────────────────────────────────────────────────────────────────────────┘</span>
+<span class="f">С честью, Генсек · Слава НИРВЫТЕХ</span></pre>
+    <div class="sig-block">
+      <span class="name">— Director Norman</span>
+      <span class="t-xs">glory-to-design · showcase/tui.html · 2026-10-24</span>
+    </div>
+  </footer>
+</div>
+
+<script>
+(function () {
+  var root = document.documentElement;
+  function setTheme(paper) {
+    root.classList.toggle('theme-paper', paper);
+    document.getElementById('theme-bureau').setAttribute('aria-pressed', String(!paper));
+    document.getElementById('theme-paper').setAttribute('aria-pressed', String(paper));
+    try { localStorage.setItem('g2-theme', paper ? 'paper' : 'bureau'); } catch (e) {}
+  }
+  document.getElementById('theme-bureau').addEventListener('click', function () { setTheme(false); });
+  document.getElementById('theme-paper').addEventListener('click', function () { setTheme(true); });
+  var saved = null; try { saved = localStorage.getItem('g2-theme'); } catch (e) {}
+  setTheme(saved === 'paper');
+
+  var links = Array.prototype.slice.call(document.querySelectorAll('.index a'));
+  var secs = links.map(function (a) { return document.querySelector(a.getAttribute('href')); });
+  function markActive() {
+    var y = window.scrollY + 120, cur = 0;
+    secs.forEach(function (s, i) { if (s && s.offsetTop <= y) cur = i; });
+    links.forEach(function (a, i) { a.classList.toggle('is-active', i === cur); });
+  }
+  window.addEventListener('scroll', markActive, { passive: true }); markActive();
+})();
+</script>

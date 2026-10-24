@@ -94,6 +94,16 @@ with Cyrillic subsets.
   green and yellow. (verified) https://gamedeveloper.com/design/road-to-the-igf-lucas-pope-s-i-papers-please-i-
 - **Disco Elysium**: dialogue column built for scanning, not reading. (verified) https://80.lv/articles/disco-elysium-working-on-ui-design
 - **Teletext**: 40×24, 8 colours, 2×3 block graphics; constraint is the attraction. (summary)
+- **Control** (Remedy, 2019), suggested by Nilton 2026-10-24. The Federal Bureau of
+  Control is a *modern* state bureau that still reads as a bureau: brutalist concrete,
+  mid-century office furniture, typewritten case files with black redaction bars, a
+  seal on every document, one warm accent against greys. Its lesson for us is the
+  opposite edge of Papers, Please: the period feel survives contemporary ergonomics
+  when the paperwork grammar is kept intact. Borrowed: the **redacted** inline
+  component (text under a bar, still selectable for the reader with clearance), the
+  **case-file** header variant, concrete-grey as an allowed neutral on the paper theme.
+  Not borrowed: the Board's slashed-alternative speech, any FBC symbol. (from memory,
+  unverified against a source)
 
 ### Five takeaways applied
 

@@ -1,0 +1,1001 @@
+<title>Стандарт GUI</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=PT+Sans:ital,wght@0,400;0,700;1,400&family=PT+Serif:ital,wght@0,400;0,700;1,400&display=swap">
+<link rel="stylesheet" href="tokens.css">
+<style>
+  /* Layout concept: one A4-like sheet of a state standard, read top to bottom, with a
+     folder-tab index pinned at the top. Tokens come from tokens.css (generated).
+     Page-local tokens only below. */
+  :root {
+    --sheet: 1100px;
+    --tab-h: 2.75rem;
+  }
+  html, body { background: var(--g2-bg); }
+  body {
+    color: var(--g2-fg);
+    font-family: var(--g2-font-body);
+    font-size: 1.0625rem;
+    line-height: 1.55;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    padding-block: 0 4rem;
+    -webkit-font-smoothing: antialiased;
+  }
+  body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--g2-bg); }
+  * { box-sizing: border-box; }
+  h1, h2, h3, h4 { margin: 0; text-wrap: balance; color: var(--g2-fg-bright); font-weight: 700; }
+  p { margin: 0; max-width: var(--g2-measure); }
+  a { color: var(--g2-accent); text-decoration-color: var(--g2-border); text-underline-offset: 0.15em; }
+  a:hover { color: var(--g2-accent-bright); }
+  :focus-visible { outline: 2px solid var(--g2-accent-bright); outline-offset: 2px; }
+  ::selection { background: var(--g2-accent); color: var(--g2-accent-ink); }
+  code, kbd, .mono { font-family: var(--g2-font-mono); font-size: 0.92em; }
+  code { color: var(--g2-fg-bright); background: var(--g2-well); padding: 0.05em 0.35em; }
+  kbd { color: var(--g2-accent); border: 1px solid var(--g2-border); padding: 0 0.4em; font-size: 0.8em; }
+  .sheet { max-width: var(--sheet); margin: 0 auto; display: grid; gap: 3.5rem; }
+  .label {
+    font-family: var(--g2-font-mono); font-size: var(--g2-text-xs); text-transform: uppercase;
+    letter-spacing: var(--g2-tracking-label); color: var(--g2-muted);
+  }
+  .cyr { color: var(--g2-signal-text); }
+  .muted { color: var(--g2-muted); }
+  .ruled { display: flex; align-items: center; gap: 1rem; }
+  .ruled::before, .ruled::after { content: ""; flex: 1; border-top: var(--g2-rule) solid var(--g2-border-faint); }
+
+  /* ---------------------------------------------------------------- masthead */
+  .masthead {
+    position: relative; margin-top: 2.25rem; padding: 2.75rem 1.5rem 1.75rem;
+    background: var(--g2-panel); border: var(--g2-rule-strong) solid var(--g2-border);
+    display: grid; grid-template-columns: 1fr auto; gap: 1.5rem; align-items: center;
+  }
+  .masthead .tab {
+    position: absolute; top: -1.5rem; left: 1.25rem; height: 1.5rem; padding: 0 0.75rem;
+    background: var(--g2-panel); border: var(--g2-rule-strong) solid var(--g2-border); border-bottom: 0;
+    display: flex; align-items: center;
+  }
+  .corner {
+    position: absolute; top: 0.75rem; right: 0.75rem; padding: 0.2rem 0.6rem;
+    border: var(--g2-rule) solid var(--g2-signal); color: var(--g2-signal-text);
+    font-family: var(--g2-font-mono); font-size: var(--g2-text-xs); letter-spacing: var(--g2-tracking-label); text-transform: uppercase;
+    transform: rotate(-2deg);
+  }
+  .logo { font-family: var(--g2-font-mono); font-weight: 700; letter-spacing: var(--g2-tracking-logo); font-size: clamp(2rem, 6vw, 3.6rem); color: var(--g2-accent); line-height: 1; }
+  .star { color: var(--g2-signal); font-size: 1.4rem; line-height: 1; margin: 0.6rem 0 0.4rem; }
+  .masthead h1 { font-family: var(--g2-font-mono); font-size: var(--g2-text-md); letter-spacing: 0.1em; text-transform: uppercase; color: var(--g2-signal-text); }
+  .meta { font-family: var(--g2-font-mono); font-size: var(--g2-text-sm); color: var(--g2-fg); margin-top: 0.5rem; }
+  .meta .muted { color: var(--g2-muted); }
+  .masthead .seal { width: 150px; height: 150px; color: var(--g2-signal); transform: rotate(-12deg); justify-self: end; }
+  .toolbar { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1.25rem; }
+
+  /* ---------------------------------------------------------------- index tabs */
+  .index {
+    position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--g2-bg);
+    border-bottom: var(--g2-rule) solid var(--g2-border); margin: 0 calc(-1 * max(16px, env(safe-area-inset-left, 0px)));
+    padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  }
+  .index ul { list-style: none; margin: 0 auto; padding: 0; max-width: var(--sheet); display: flex; gap: 2px; overflow-x: auto; scrollbar-width: thin; }
+  .index a {
+    display: block; height: var(--tab-h); padding: 0 0.9rem; line-height: var(--tab-h); white-space: nowrap;
+    font-family: var(--g2-font-mono); font-size: var(--g2-text-xs); letter-spacing: var(--g2-tracking-label); text-transform: uppercase;
+    color: var(--g2-muted); text-decoration: none; border: var(--g2-rule) solid transparent; border-bottom: 0;
+  }
+  .index a:hover { color: var(--g2-fg-bright); }
+  .index a.is-active { color: var(--g2-accent); border-color: var(--g2-border); background: var(--g2-panel); }
+
+  /* ---------------------------------------------------------------- sections */
+  .sec { display: grid; gap: 1.5rem; scroll-margin-top: calc(var(--tab-h) + 1rem); }
+  .sec > header { display: grid; gap: 0.35rem; }
+  .sec h2 { font-size: var(--g2-text-xl); }
+  .sec > header p { color: var(--g2-fg); }
+  .grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); }
+  .grid > * { min-width: 0; }
+  .note-box { border-left: 3px solid var(--g2-note); background: var(--g2-note-bg); padding: 0.75rem 1rem; }
+  .note-box .label { color: var(--g2-note); }
+
+  /* ---------------------------------------------------------------- frames */
+  .frame { position: relative; border: var(--g2-rule) solid var(--g2-border); background: var(--g2-panel); padding: 1.5rem 1.25rem 1.25rem; }
+  .frame--focus { border-width: var(--g2-rule-strong); border-color: var(--g2-border-focus); }
+  .frame--authority { border: 4px double var(--g2-accent); }
+  .frame--rest { background: var(--g2-bg-alt); }
+  .frame--dashed { border-style: dashed; background: transparent; }
+  .frame__title {
+    position: absolute; top: -0.65em; left: 0.9rem; padding: 0 0.5rem; background: inherit;
+    font-family: var(--g2-font-mono); font-size: var(--g2-text-xs); letter-spacing: var(--g2-tracking-label); color: var(--g2-muted);
+  }
+  .frame--focus .frame__title, .frame--authority .frame__title { color: var(--g2-accent); text-transform: uppercase; font-weight: 600; }
+  .frame__kicker { position: absolute; top: -0.65em; right: 0.9rem; padding: 0 0.5rem; background: inherit; font-family: var(--g2-font-mono); font-size: var(--g2-text-xs); color: var(--g2-faint); }
+
+  /* ---------------------------------------------------------------- swatches */
+  .swatches { display: grid; gap: 0.75rem; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+  .sw { border: var(--g2-rule) solid var(--g2-border-faint); background: var(--g2-panel); display: grid; }
+  .sw__chip { height: 56px; border-bottom: var(--g2-rule) solid var(--g2-border-faint); }
+  .sw__body { padding: 0.5rem 0.6rem; display: grid; gap: 0.15rem; }
+  .sw__name { font-family: var(--g2-font-mono); font-size: var(--g2-text-sm); color: var(--g2-fg-bright); }
+  .sw__hex { font-family: var(--g2-font-mono); font-size: var(--g2-text-xs); color: var(--g2-muted); text-transform: uppercase; }
+  .sw__role { font-size: var(--g2-text-xs); color: var(--g2-muted); line-height: 1.35; }
+
+  /* ---------------------------------------------------------------- type */
+  .specimen { display: grid; gap: 0.75rem; }
+  .specimen .row { display: grid; grid-template-columns: 7rem 1fr; gap: 1rem; align-items: baseline; border-bottom: var(--g2-rule) solid var(--g2-border-faint); padding-bottom: 0.5rem; }
+  .specimen .row > :last-child { min-width: 0; overflow-wrap: anywhere; }
+  .t-3xl { font-size: var(--g2-text-3xl); line-height: 1.1; } .t-2xl { font-size: var(--g2-text-2xl); line-height: 1.15; }
+  .t-xl { font-size: var(--g2-text-xl); line-height: 1.2; } .t-lg { font-size: var(--g2-text-lg); } .t-md { font-size: var(--g2-text-md); }
+  .t-sm { font-size: var(--g2-text-sm); } .t-xs { font-size: var(--g2-text-xs); }
+  .prose { max-width: var(--g2-measure); display: grid; gap: 0.75rem; }
+
+  /* ---------------------------------------------------------------- stamps */
+  .stamps { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+  .stamp-card { display: grid; justify-items: center; gap: 0.5rem; padding: 1rem 0.5rem; border: var(--g2-rule) solid var(--g2-border-faint); background: var(--g2-panel); text-align: center; }
+  .stamp { width: 130px; height: 130px; transform: rotate(-6deg); }
+  .stamp--approve { color: var(--g2-ok); } .stamp--reject { color: var(--g2-bad); } .stamp--order { color: var(--g2-info); } .stamp--review { color: var(--g2-warn); }
+  .stamp--seal { color: var(--g2-signal); } .stamp--gold { color: var(--g2-accent); }
+  .chip {
+    display: inline-flex; align-items: center; gap: 0.4em; padding: 0.1em 0.55em; border: var(--g2-rule) solid currentColor;
+    font-family: var(--g2-font-mono); font-size: var(--g2-text-xs); letter-spacing: 0.08em; text-transform: uppercase; white-space: nowrap;
+  }
+  .chip--approve { color: var(--g2-ok); } .chip--reject { color: var(--g2-bad); } .chip--order { color: var(--g2-info); } .chip--review { color: var(--g2-warn); } .chip--neutral { color: var(--g2-muted); }
+
+  /* ---------------------------------------------------------------- controls */
+  .btn {
+    display: inline-flex; align-items: center; gap: 0.5em; padding: 0.55rem 1rem; cursor: pointer;
+    font-family: var(--g2-font-mono); font-size: var(--g2-text-sm); letter-spacing: 0.08em; text-transform: uppercase; font-weight: 600;
+    border: var(--g2-rule) solid var(--g2-border); background: var(--g2-panel); color: var(--g2-fg);
+  }
+  .btn:hover { background: var(--g2-panel-alt); color: var(--g2-fg-bright); border-color: var(--g2-accent); }
+  .btn--primary { background: var(--g2-accent); color: var(--g2-accent-ink); border-color: var(--g2-accent); }
+  .btn--primary:hover { background: var(--g2-accent-bright); color: var(--g2-accent-ink); border-color: var(--g2-accent-bright); }
+  .btn--outline { background: transparent; color: var(--g2-accent); border-color: var(--g2-accent); }
+  .btn--ghost { background: transparent; border-color: transparent; color: var(--g2-muted); }
+  .btn--danger { background: transparent; color: var(--g2-signal-text); border-color: var(--g2-signal); }
+  .btn--danger:hover { background: var(--g2-signal-bg); color: var(--g2-signal-text); border-color: var(--g2-signal); }
+  .btn[disabled], .btn[aria-disabled="true"] { color: var(--g2-faint); border-color: var(--g2-border-faint); background: transparent; cursor: not-allowed; }
+  .btn kbd { font-size: 0.75em; border-color: currentColor; color: inherit; opacity: 0.8; }
+  .field { display: grid; gap: 0.35rem; min-width: 0; }
+  .field > .label { color: var(--g2-muted); }
+  .field--required > .label::after { content: " *"; color: var(--g2-signal-text); }
+  .bracket { display: grid; grid-template-columns: auto 1fr auto; align-items: center; font-family: var(--g2-font-mono); color: var(--g2-accent); }
+  .bracket::before { content: "["; } .bracket::after { content: "]"; }
+  .input, .select, .textarea {
+    width: 100%; min-width: 0; font: inherit; font-family: var(--g2-font-mono); font-size: var(--g2-text-sm);
+    color: var(--g2-fg-bright); background: var(--g2-well); border: 0; border-bottom: var(--g2-rule) solid var(--g2-border);
+    padding: 0.5rem 0.6rem; border-radius: 0;
+  }
+  .input::placeholder, .textarea::placeholder { color: var(--g2-faint); }
+  .input:focus, .select:focus, .textarea:focus { outline: none; border-bottom: var(--g2-rule-strong) solid var(--g2-accent); background: var(--g2-panel); }
+  .bracket:focus-within { color: var(--g2-accent-bright); }
+  .field--error .input { border-bottom-color: var(--g2-signal); }
+  .field--error .bracket { color: var(--g2-signal-text); }
+  .field__msg { font-family: var(--g2-font-mono); font-size: var(--g2-text-xs); color: var(--g2-muted); }
+  .field--error .field__msg { color: var(--g2-signal-text); }
+  .select { appearance: none; background-image: linear-gradient(45deg, transparent 50%, var(--g2-accent) 50%), linear-gradient(135deg, var(--g2-accent) 50%, transparent 50%); background-position: calc(100% - 14px) 55%, calc(100% - 9px) 55%; background-size: 5px 5px; background-repeat: no-repeat; padding-right: 2rem; }
+  .textarea { resize: vertical; min-height: 5.5rem; }
+  .check, .radio { display: inline-flex; align-items: center; gap: 0.6rem; cursor: pointer; font-size: var(--g2-text-sm); }
+  .check input, .radio input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+  .check .box, .radio .box { font-family: var(--g2-font-mono); color: var(--g2-accent); white-space: pre; }
+  .check .box::before { content: "[ ]"; } .check input:checked ~ .box::before { content: "[x]"; }
+  .radio .box::before { content: "( )"; } .radio input:checked ~ .box::before { content: "(•)"; }
+  .check input:focus-visible ~ .box, .radio input:focus-visible ~ .box { outline: 2px solid var(--g2-accent-bright); outline-offset: 2px; }
+  .toggle { display: inline-flex; border: var(--g2-rule) solid var(--g2-border); }
+  .toggle .btn { border: 0; }
+  .toggle .btn[aria-pressed="true"] { background: var(--g2-accent); color: var(--g2-accent-ink); }
+
+  /* ---------------------------------------------------------------- ledger & table */
+  .ledger { display: grid; gap: 0.3rem; font-family: var(--g2-font-mono); font-size: var(--g2-text-sm); }
+  .ledger .row { display: grid; grid-template-columns: minmax(7rem, max-content) 1fr auto; align-items: baseline; gap: 0.5rem; }
+  .ledger .k { color: var(--g2-muted); text-transform: uppercase; letter-spacing: 0.06em; font-size: var(--g2-text-xs); white-space: nowrap; }
+  .ledger .lead { border-bottom: 1px dotted var(--g2-border); transform: translateY(-0.25em); }
+  .ledger .v { color: var(--g2-fg-bright); text-align: right; min-width: 0; overflow-wrap: anywhere; }
+  .ledger .v.cyr { color: var(--g2-signal-text); }
+  .tablewrap { overflow-x: auto; border: var(--g2-rule) solid var(--g2-border); background: var(--g2-panel); }
+  table.ledger-table { width: 100%; border-collapse: collapse; font-size: var(--g2-text-sm); font-variant-numeric: tabular-nums; }
+  .ledger-table th { font-family: var(--g2-font-mono); font-size: var(--g2-text-xs); letter-spacing: var(--g2-tracking-label); text-transform: uppercase; color: var(--g2-muted); text-align: left; padding: 0.6rem 0.75rem; border-bottom: var(--g2-rule) solid var(--g2-border); font-weight: 600; }
+  .ledger-table td { padding: 0.55rem 0.75rem; border-bottom: var(--g2-rule) solid var(--g2-border-faint); vertical-align: middle; }
+  .ledger-table tr:last-child td { border-bottom: 0; }
+  .ledger-table tbody tr:hover { background: var(--g2-bg-alt); }
+  .ledger-table tr.is-selected { background: var(--g2-selection); }
+  .ledger-table tr.is-selected td:first-child::before { content: "▸ "; color: var(--g2-accent); font-family: var(--g2-font-mono); }
+  .ledger-table tr.is-rejected { background: var(--g2-signal-bg); }
+  .ledger-table td.num { text-align: right; font-family: var(--g2-font-mono); }
+  .ledger-table td.mono { color: var(--g2-fg-bright); }
+
+  /* ---------------------------------------------------------------- redaction & casefile */
+  .redacted { background: var(--g2-fg); color: transparent; padding: 0 0.15em; user-select: all; transition: color 120ms; }
+  .redacted:hover { color: var(--g2-bg); }
+  .redacted::selection { background: var(--g2-fg); color: var(--g2-bg); }
+  .casefile { background: var(--g2-panel); border: var(--g2-rule) solid var(--g2-border); position: relative; }
+  .casefile__head { display: grid; grid-template-columns: 1fr auto; gap: 1rem; padding: 1rem 1.25rem; border-bottom: var(--g2-rule-strong) solid var(--g2-border); align-items: start; }
+  .casefile__body { padding: 1.25rem; display: grid; gap: 0.75rem; }
+  .casefile__body p { font-family: var(--g2-font-mono); font-size: var(--g2-text-sm); line-height: 1.6; max-width: 72ch; }
+
+  /* ---------------------------------------------------------------- feedback */
+  .slip { display: grid; grid-template-columns: auto 1fr auto; gap: 1rem; align-items: start; padding: 0.75rem 1rem; background: var(--g2-panel); border: var(--g2-rule) solid var(--g2-border); border-left: 4px solid var(--g2-accent); }
+  .slip--ok { border-left-color: var(--g2-ok); } .slip--bad { border-left-color: var(--g2-bad); } .slip--warn { border-left-color: var(--g2-warn); } .slip--info { border-left-color: var(--g2-info); }
+  .slip .label { padding-top: 0.2rem; }
+  .slip .slip__text { font-size: var(--g2-text-sm); }
+  .slip .slip__text strong { color: var(--g2-fg-bright); }
+  .blocks { font-family: var(--g2-font-mono); letter-spacing: 0.02em; white-space: nowrap; overflow: hidden; }
+  .blocks .on { color: var(--g2-accent); } .blocks .off { color: var(--g2-border-faint); }
+  .progress { display: grid; grid-template-columns: 1fr auto; gap: 1rem; align-items: center; font-family: var(--g2-font-mono); font-size: var(--g2-text-sm); }
+  .bar { height: 10px; background: var(--g2-well); border: var(--g2-rule) solid var(--g2-border-faint); }
+  .bar > span { display: block; height: 100%; background: repeating-linear-gradient(90deg, var(--g2-accent) 0 6px, transparent 6px 8px); }
+  dialog.form { background: var(--g2-panel); color: var(--g2-fg); border: 4px double var(--g2-accent); padding: 0; max-width: min(92vw, 520px); }
+  dialog.form::backdrop { background: rgba(0, 0, 0, 0.6); }
+  dialog.form .casefile__head { border-bottom-width: var(--g2-rule); }
+  dialog.form .actions { display: flex; gap: 0.75rem; justify-content: flex-end; flex-wrap: wrap; padding: 1rem 1.25rem; border-top: var(--g2-rule) solid var(--g2-border-faint); }
+  #toast-host { position: fixed; right: max(16px, env(safe-area-inset-right, 0px)); bottom: calc(1rem + env(safe-area-inset-bottom, 0px)); display: grid; gap: 0.5rem; z-index: 20; max-width: min(92vw, 420px); }
+  .empty { display: grid; justify-items: center; gap: 0.75rem; text-align: center; padding: 2.5rem 1rem; }
+  .empty .glyph { font-family: var(--g2-font-mono); color: var(--g2-faint); font-size: var(--g2-text-2xl); }
+
+  /* ---------------------------------------------------------------- navigation */
+  .fkeys { display: grid; grid-template-columns: repeat(auto-fit, minmax(96px, 1fr)); gap: 2px; background: var(--g2-border-faint); border: var(--g2-rule) solid var(--g2-border-faint); }
+  .fkeys > div { background: var(--g2-panel); padding: 0.45rem 0.6rem; font-family: var(--g2-font-mono); font-size: var(--g2-text-xs); display: flex; gap: 0.5rem; align-items: center; white-space: nowrap; overflow: hidden; }
+  .fkeys kbd { border: 0; padding: 0; color: var(--g2-accent); font-weight: 700; }
+  .fkeys span { color: var(--g2-muted); text-transform: uppercase; letter-spacing: 0.06em; overflow: hidden; text-overflow: ellipsis; }
+  .crumbs { font-family: var(--g2-font-mono); font-size: var(--g2-text-sm); color: var(--g2-muted); display: flex; flex-wrap: wrap; gap: 0.4em; }
+  .crumbs a { text-decoration: none; }
+  .crumbs .cur { color: var(--g2-fg-bright); }
+  .rail { display: grid; gap: 2px; background: var(--g2-well); border: var(--g2-rule) solid var(--g2-border); }
+  .rail a { display: grid; grid-template-columns: 2.2rem 1fr auto; align-items: center; gap: 0.5rem; padding: 0.55rem 0.75rem; text-decoration: none; color: var(--g2-fg); font-size: var(--g2-text-sm); background: var(--g2-panel); }
+  .rail a:hover { background: var(--g2-panel-alt); }
+  .rail a.is-active { background: var(--g2-selection); color: var(--g2-fg-bright); box-shadow: inset 3px 0 0 var(--g2-accent); }
+  .rail .k { font-family: var(--g2-font-mono); color: var(--g2-accent); font-size: var(--g2-text-xs); }
+  .rail .n { font-family: var(--g2-font-mono); color: var(--g2-muted); font-size: var(--g2-text-xs); }
+  .demo-tabs { display: flex; gap: 2px; border-bottom: var(--g2-rule) solid var(--g2-border); flex-wrap: wrap; }
+  .demo-tabs button { font-family: var(--g2-font-mono); font-size: var(--g2-text-xs); letter-spacing: var(--g2-tracking-label); text-transform: uppercase; padding: 0.6rem 0.9rem; background: transparent; color: var(--g2-muted); border: var(--g2-rule) solid transparent; border-bottom: 0; cursor: pointer; margin-bottom: -1px; }
+  .demo-tabs button[aria-selected="true"] { color: var(--g2-accent); background: var(--g2-panel); border-color: var(--g2-border); }
+  .demo-panel { padding: 1rem 1.25rem; background: var(--g2-panel); border: var(--g2-rule) solid var(--g2-border); border-top: 0; font-size: var(--g2-text-sm); }
+
+  /* ---------------------------------------------------------------- layout sketches */
+  .sketch { display: grid; gap: 4px; font-family: var(--g2-font-mono); font-size: var(--g2-text-xs); text-transform: uppercase; letter-spacing: 0.08em; color: var(--g2-muted); }
+  .sketch div { border: 1px dashed var(--g2-border); padding: 0.5rem; background: var(--g2-bg-alt); }
+  .sketch .hd { border-style: solid; color: var(--g2-accent); }
+  .sketch--desktop { grid-template-columns: 180px 1fr 240px; grid-template-rows: auto 1fr auto; min-height: 220px; }
+  .sketch--desktop .hd, .sketch--desktop .ft { grid-column: 1 / -1; }
+  .sketch--mobile { max-width: 220px; }
+  .scale { display: grid; gap: 0.25rem; font-family: var(--g2-font-mono); font-size: var(--g2-text-xs); color: var(--g2-muted); }
+  .scale div { display: grid; grid-template-columns: 7rem 1fr; align-items: center; gap: 0.75rem; }
+  .scale i { display: block; height: 10px; background: var(--g2-accent); }
+
+  /* ---------------------------------------------------------------- out of canon */
+  .nono { display: grid; gap: 0.6rem; }
+  .nono .row { display: grid; grid-template-columns: 1.2rem 1fr 1fr; gap: 0.75rem; align-items: baseline; padding-bottom: 0.6rem; border-bottom: var(--g2-rule) solid var(--g2-border-faint); font-size: var(--g2-text-sm); }
+  .nono .x { color: var(--g2-signal-text); font-family: var(--g2-font-mono); font-weight: 700; }
+  .nono .no { color: var(--g2-muted); text-decoration: line-through; text-decoration-color: var(--g2-signal); }
+  .nono .yes strong { color: var(--g2-fg-bright); }
+
+  /* ---------------------------------------------------------------- contrast table */
+  .contrast td.pass { color: var(--g2-ok); } .contrast td.fail { color: var(--g2-bad); font-weight: 700; }
+
+  /* ---------------------------------------------------------------- footer */
+  .colophon { display: grid; grid-template-columns: 1fr auto; gap: 1.5rem; align-items: end; padding-top: 1.5rem; border-top: var(--g2-rule-strong) solid var(--g2-border); }
+  .sig { font-family: var(--g2-font-mono); font-size: var(--g2-text-sm); color: var(--g2-muted); display: grid; gap: 0.25rem; }
+  .sig .name { color: var(--g2-fg-bright); font-style: italic; }
+  .colophon .stamp { width: 110px; height: 110px; }
+
+  @media (max-width: 720px) {
+    .masthead { grid-template-columns: 1fr; padding-top: 3rem; }
+    .masthead .seal { position: absolute; right: 0.5rem; bottom: 0.5rem; width: 84px; height: 84px; opacity: 0.6; }
+    .corner { top: 0.5rem; right: 0.5rem; font-size: 0.62rem; }
+    .specimen .row { grid-template-columns: 1fr; gap: 0.25rem; }
+    .sketch--desktop { grid-template-columns: 1fr; }
+    .colophon { grid-template-columns: 1fr; }
+    .nono .row { grid-template-columns: 1.2rem 1fr; } .nono .yes { grid-column: 2; }
+    .casefile__head, .slip { grid-template-columns: 1fr; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <path id="arc-top" d="M 40,160 A 120,120 0 0 1 280,160"></path>
+    <path id="arc-bot" d="M 50,160 A 110,110 0 0 0 270,160"></path>
+    <filter id="ink" x="-10%" y="-10%" width="120%" height="120%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.75" numOctaves="2" seed="5" result="noise"></feTurbulence>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="3" result="disp"></feDisplacementMap>
+      <feTurbulence type="fractalNoise" baseFrequency="0.4" numOctaves="3" seed="9" result="grain"></feTurbulence>
+      <feColorMatrix in="grain" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -2 1.35" result="grainAlpha"></feColorMatrix>
+      <feComposite in="disp" in2="grainAlpha" operator="in"></feComposite>
+    </filter>
+  </defs>
+</svg>
+
+<div class="sheet">
+
+  <header class="masthead">
+    <span class="tab label">СТАНДАРТ № 001 · GUI</span>
+    <span class="corner">ДСП · Экз. № 1</span>
+    <div>
+      <div class="logo">СТАНДАРТ</div>
+      <div class="star">★</div>
+      <h1>Bureau of Computational Technology · Design Standard, GUI surface</h1>
+      <div class="meta"><span class="muted">Нирская Вычислительная Техника</span></div>
+      <div class="meta"><span class="muted">Директор:</span> Норман <span class="muted">· Дата:</span> 2026-10-24 <span class="muted">· Scope:</span> web, desktop, mobile</div>
+      <div class="toolbar">
+        <div class="toggle" role="group" aria-label="Theme">
+          <button class="btn" id="theme-bureau" aria-pressed="true" type="button">БЮРО · bureau</button>
+          <button class="btn" id="theme-paper" aria-pressed="false" type="button">БЛАНК · paper</button>
+        </div>
+        <a class="btn btn--ghost" href="#canon">Out of canon <kbd>§12</kbd></a>
+      </div>
+    </div>
+    <svg class="seal stamp stamp--seal" viewBox="0 0 320 320" role="img" aria-label="Property of the people seal">
+      <g filter="url(#ink)" fill="none" stroke="currentColor">
+        <circle cx="160" cy="160" r="140" stroke-width="4"></circle>
+        <circle cx="160" cy="160" r="120" stroke-width="4"></circle>
+        <circle cx="160" cy="160" r="112" stroke-width="2"></circle>
+      </g>
+      <g fill="currentColor" font-family="JetBrains Mono, ui-monospace, monospace" font-weight="700" text-anchor="middle">
+        <text font-size="20" letter-spacing="4"><textPath href="#arc-top" startOffset="50%">ДОСТОЯНИЕ НАРОДА</textPath></text>
+        <text font-size="15" letter-spacing="3" font-weight="600"><textPath href="#arc-bot" startOffset="50%">PROPERTY OF THE PEOPLE</textPath></text>
+        <text x="160" y="150" font-size="56">★</text>
+        <text x="160" y="182" font-size="14" letter-spacing="2">СТАНДАРТ</text>
+        <text x="160" y="204" font-size="12" letter-spacing="3" font-weight="600">AGPL-3.0</text>
+      </g>
+    </svg>
+  </header>
+
+  <nav class="index" aria-label="Sections">
+    <ul>
+      <li><a href="#svodka">§0 Сводка</a></li>
+      <li><a href="#color">§1 Цвет</a></li>
+      <li><a href="#type">§2 Шрифт</a></li>
+      <li><a href="#frames">§3 Рамка</a></li>
+      <li><a href="#stamps">§4 Печать</a></li>
+      <li><a href="#forms">§5 Форма</a></li>
+      <li><a href="#ledger">§6 Ведомость</a></li>
+      <li><a href="#docs">§7 Документ</a></li>
+      <li><a href="#nav">§8 Навигация</a></li>
+      <li><a href="#feedback">§9 Сигнал</a></li>
+      <li><a href="#layout">§10 Макет</a></li>
+      <li><a href="#a11y">§11 Доступ</a></li>
+      <li><a href="#canon">§12 Вне канона</a></li>
+    </ul>
+  </nav>
+
+  <!-- ================================================================ §0 -->
+  <section class="sec" id="svodka">
+    <header>
+      <span class="label"><span class="cyr">СВОДКА</span> · §0 Summary</span>
+      <h2>One sheet. Two surfaces. One voice.</h2>
+      <p>This page is the GUI half of the g2 design system: the tokens, the type, the frames, the stamps and the components every <code>glory-to-*</code> web surface draws from. Its terminal twin is <em>Стандарт TUI</em>. Both read the same seeds from <code>tokens.css</code> and <code>tokens.toml</code>, generated by one script that refuses to emit a pair of colours that fails WCAG AA.</p>
+    </header>
+    <div class="grid">
+      <div class="frame frame--authority">
+        <span class="frame__title">ПРИНЦИПЫ · Principles</span>
+        <div class="ledger">
+          <div class="row"><span class="k">01 tone</span><span class="lead"></span><span class="v">the only sacred thing</span></div>
+          <div class="row"><span class="k">02 field</span><span class="lead"></span><span class="v">quiet; accent is an event</span></div>
+          <div class="row"><span class="k">03 surface</span><span class="lead"></span><span class="v">flat, straight, no shadow</span></div>
+          <div class="row"><span class="k">04 frame</span><span class="lead"></span><span class="v">weight carries state</span></div>
+          <div class="row"><span class="k">05 mono</span><span class="lead"></span><span class="v">chrome, not prose</span></div>
+          <div class="row"><span class="k">06 cyrillic</span><span class="lead"></span><span class="v cyr">content, never texture</span></div>
+          <div class="row"><span class="k">07 grammar</span><span class="lead"></span><span class="v">borrowed; symbols are not</span></div>
+          <div class="row"><span class="k">08 restraint</span><span class="lead"></span><span class="v">carries the deadpan</span></div>
+          <div class="row"><span class="k">09 use</span><span class="lead"></span><span class="v">modern; the era is in the feel</span></div>
+          <div class="row"><span class="k">10 contrast</span><span class="lead"></span><span class="v">AA by construction</span></div>
+        </div>
+      </div>
+      <div class="frame">
+        <span class="frame__title">ДОЗА · Dose</span>
+        <div class="prose">
+          <p>The owner's call on 2026-10-24: err toward excess and trim later. So frames go on containers, stamps go on status, dialogs are forms and the footer carries function keys. Principle 09 still holds: hover, focus, validation and reflow are not negotiable.</p>
+          <p class="t-sm muted">Treat the amount of bureau on this page as the ceiling, not the floor. A consuming app may dial down; it may not dial past this.</p>
+        </div>
+      </div>
+      <div class="frame frame--rest">
+        <span class="frame__title">ИСТОЧНИК · Sources</span>
+        <div class="prose t-sm">
+          <p>Palette lineage: <code>glory-to-direktiva</code> and the Obsidian <em>Nirvytekh</em> theme (warm near-black), <code>glory-to-protocol</code> (gold, stamp red, the four decisions), <code>glory-to-gensek</code> (token model, OKLab derivation, sage note).</p>
+          <p>Period grammar: CP866 box drawing, Norton Commander's F-key bar, GOST 6.39 form grids, ДСП classification corners. Modern homages: <em>Papers, Please</em> for restraint, <em>Control</em> for a bureau that is still a workplace. Sources in <code>docs/references.md</code>.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================================ §1 -->
+  <section class="sec" id="color">
+    <header>
+      <span class="label"><span class="cyr">ЦВЕТ</span> · §1 Color</span>
+      <h2>A master trio, derived in OKLab, lifted to contrast</h2>
+      <p>Three seeds (<code>bg</code>, <code>fg</code>, <code>accent</code>) plus the stamp red and the sage note, fixed by hand because the bureau has two accents. Everything else is a mix. The hex values below are read live from the stylesheet, so switching to paper rewrites them.</p>
+    </header>
+    <h3 class="label">Surface ramp</h3>
+    <div class="swatches" data-tokens="well bg bg-alt panel panel-alt selection"></div>
+    <h3 class="label">Text</h3>
+    <div class="swatches" data-tokens="fg-bright fg muted faint accent-ink"></div>
+    <h3 class="label">Accents</h3>
+    <div class="swatches" data-tokens="accent accent-bright border border-faint signal signal-text signal-bg note note-bg"></div>
+    <h3 class="label">State</h3>
+    <div class="swatches" data-tokens="ok warn bad info"></div>
+    <div class="grid">
+      <div class="frame">
+        <span class="frame__title">КОНТРАСТ · live contrast</span>
+        <div class="tablewrap" style="border:0">
+          <table class="ledger-table contrast" id="contrast-table">
+            <thead><tr><th>pair</th><th>ratio</th><th>target</th><th>result</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="note-box">
+        <span class="label">ЗАМЕТКА · why signal is split</span>
+        <p class="t-sm">Stamp red on the warm black measures about 3.4:1. Fine for a ring or a 20px heading, not for a sentence. Brightening it everywhere would stop it looking like ink, so body-size red gets its own lifted token, <code>signal-text</code>. Same reasoning gives <code>faint</code> a 3:1 target: it is for placeholders and disabled controls, never for words that must be read.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================================ §2 -->
+  <section class="sec" id="type">
+    <header>
+      <span class="label"><span class="cyr">ШРИФТ</span> · §2 Type</span>
+      <h2>Mono is the chrome. Prose is sans. Paper is serif.</h2>
+      <p>JetBrains Mono carries every label, key, number, ledger and header, as it already does in the suite's SVGs. Body text is PT Sans, the Cyrillic-first public face, because paragraphs in monospace cost reading effort. On the paper theme the body switches to PT Serif, the typewritten-form register. All three are free and carry Cyrillic.</p>
+    </header>
+    <div class="specimen">
+      <div class="row"><span class="label">3xl · 39px</span><span class="t-3xl mono" style="color:var(--g2-accent);letter-spacing:var(--g2-tracking-logo);font-weight:700">ПРОТОКОЛ</span></div>
+      <div class="row"><span class="label">2xl · 31px</span><h3 class="t-2xl">Directorate of Public Works</h3></div>
+      <div class="row"><span class="label">xl · 25px</span><h3 class="t-xl">Every work order begins as a filed concern</h3></div>
+      <div class="row"><span class="label">lg · 20px</span><p class="t-lg">The Directorate welcomes labor. The Directorate is also picky about it.</p></div>
+      <div class="row"><span class="label">md · 17px</span><p class="t-md">Body copy in PT Sans. Съешь же ещё этих мягких французских булок, да выпей чаю. The quick brown fox jumps over the lazy dog. Avaliação ética do código, com acentuação íntegra.</p></div>
+      <div class="row"><span class="label">sm · 14px</span><p class="t-sm mono">ledger rows, table cells, field values · ведомость · 0123456789</p></div>
+      <div class="row"><span class="label">xs · 12px</span><span class="label">eyebrow labels · uppercase · tracked 0.12em · РУБРИКА</span></div>
+    </div>
+    <div class="grid">
+      <div class="frame">
+        <span class="frame__title">ГРАММАТИКА · label grammar</span>
+        <div class="prose t-sm">
+          <p><strong>Cyrillic first, middle dot, English.</strong> <code>СВОДКА · TL;DR</code>, <code>ОДОБРЕНО · APPROVED</code>, <code>ДСП · Экз. № 1</code>. The Cyrillic is the state's voice and appears in every language; the English is for the citizen. In PT-BR surfaces the English slot takes Portuguese.</p>
+          <p><strong>Uppercase is semantic.</strong> A focused panel title, a stamp, a classification mark. Never emphasis inside prose.</p>
+          <p><strong>Real words only.</strong> Fake Cyrillic (Я for R) is out of canon, full stop.</p>
+        </div>
+      </div>
+      <div class="frame">
+        <span class="frame__title">МЕРА · measure &amp; rhythm</span>
+        <div class="prose t-sm">
+          <p>Body measure 65ch. Line height 1.55 for sans, 1.6 for mono blocks. Scale ratio 1.25 on a 16px base; the mono logo tracks 0.18em, labels 0.12em.</p>
+          <p>Numbers in tables use <code>tabular-nums</code>. Dates are ISO (<code>2026-10-24</code>), document numbers zero-padded to three (<code>№ 003</code>).</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================================ §3 -->
+  <section class="sec" id="frames">
+    <header>
+      <span class="label"><span class="cyr">РАМКА</span> · §3 Frames</span>
+      <h2>Weight carries state</h2>
+      <p>The one grammar both surfaces share literally. In the terminal: <code>┌─┐</code> at rest, <code>┏━┓</code> focused, <code>╔═╗</code> for authority. Here: 1px, 2px gold, 4px double gold. A title sits in the top border, a kicker in the top-right. Never a shadow, never a radius.</p>
+    </header>
+    <div class="grid">
+      <div class="frame frame--rest">
+        <span class="frame__title">┌─ rest</span>
+        <span class="frame__kicker">1px · border</span>
+        <p class="t-sm">A panel nobody is looking at. Secondary lists, previews, an inactive pane.</p>
+      </div>
+      <div class="frame frame--focus">
+        <span class="frame__title">┏━ FOCUS</span>
+        <span class="frame__kicker">2px · accent</span>
+        <p class="t-sm">The pane with keyboard focus. Only one on screen at a time. Title goes uppercase.</p>
+      </div>
+      <div class="frame frame--authority">
+        <span class="frame__title">╔═ AUTHORITY</span>
+        <span class="frame__kicker">4px double</span>
+        <p class="t-sm">The bureau speaking: a dialog, a directive, a result stamp's frame. Rare by design.</p>
+      </div>
+      <div class="frame frame--dashed">
+        <span class="frame__title">┈┈ pending</span>
+        <span class="frame__kicker">dashed</span>
+        <p class="t-sm muted">Empty state, drop target, a form not yet filed.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================================ §4 -->
+  <section class="sec" id="stamps">
+    <header>
+      <span class="label"><span class="cyr">ПЕЧАТЬ</span> · §4 Stamps</span>
+      <h2>Four decisions and a seal</h2>
+      <p>A stamp is a terminal decision on a request, never decoration. Rings, text on arcs, a glyph in the center, tilted a few degrees, with ink grain. The same four exist as text blocks in the TUI and as <code>stamp_*</code> helpers in <code>glory-to-protocol</code>. The chip is the stamp's small form for tables and lists.</p>
+    </header>
+    <div class="stamps">
+      <div class="stamp-card">
+        <svg class="stamp stamp--approve" viewBox="0 0 320 320" role="img" aria-label="Approved">
+          <g filter="url(#ink)" fill="none" stroke="currentColor"><circle cx="160" cy="160" r="140" stroke-width="4"></circle><circle cx="160" cy="160" r="120" stroke-width="4"></circle><circle cx="160" cy="160" r="112" stroke-width="2"></circle></g>
+          <g fill="currentColor" font-family="JetBrains Mono, ui-monospace, monospace" font-weight="700" text-anchor="middle">
+            <text font-size="22" letter-spacing="5"><textPath href="#arc-top" startOffset="50%">ОДОБРЕНО</textPath></text>
+            <text font-size="16" letter-spacing="4" font-weight="600"><textPath href="#arc-bot" startOffset="50%">APPROVED</textPath></text>
+            <text x="160" y="172" font-size="72">✓</text>
+          </g>
+        </svg>
+        <span class="chip chip--approve">ОДОБРЕНО · approved</span>
+        <span class="t-xs muted">request granted, action complete</span>
+      </div>
+      <div class="stamp-card">
+        <svg class="stamp stamp--reject" viewBox="0 0 320 320" role="img" aria-label="Rejected">
+          <g filter="url(#ink)" fill="none" stroke="currentColor"><circle cx="160" cy="160" r="140" stroke-width="4"></circle><circle cx="160" cy="160" r="120" stroke-width="4"></circle><circle cx="160" cy="160" r="112" stroke-width="2"></circle></g>
+          <g fill="currentColor" font-family="JetBrains Mono, ui-monospace, monospace" font-weight="700" text-anchor="middle">
+            <text font-size="22" letter-spacing="5"><textPath href="#arc-top" startOffset="50%">ОТКАЗАНО</textPath></text>
+            <text font-size="16" letter-spacing="4" font-weight="600"><textPath href="#arc-bot" startOffset="50%">REJECTED</textPath></text>
+            <text x="160" y="172" font-size="72">✗</text>
+          </g>
+        </svg>
+        <span class="chip chip--reject">ОТКАЗАНО · rejected</span>
+        <span class="t-xs muted">denied; always carries a reason</span>
+      </div>
+      <div class="stamp-card">
+        <svg class="stamp stamp--order" viewBox="0 0 320 320" role="img" aria-label="Direct order">
+          <g filter="url(#ink)" fill="none" stroke="currentColor"><circle cx="160" cy="160" r="140" stroke-width="4"></circle><circle cx="160" cy="160" r="120" stroke-width="4"></circle><circle cx="160" cy="160" r="112" stroke-width="2"></circle></g>
+          <g fill="currentColor" font-family="JetBrains Mono, ui-monospace, monospace" font-weight="700" text-anchor="middle">
+            <text font-size="22" letter-spacing="5"><textPath href="#arc-top" startOffset="50%">ПРИКАЗ</textPath></text>
+            <text font-size="16" letter-spacing="4" font-weight="600"><textPath href="#arc-bot" startOffset="50%">DIRECT ORDER</textPath></text>
+            <text x="160" y="172" font-size="72">!</text>
+          </g>
+        </svg>
+        <span class="chip chip--order">ПРИКАЗ · order</span>
+        <span class="t-xs muted">the bureau dictates an action</span>
+      </div>
+      <div class="stamp-card">
+        <svg class="stamp stamp--review" viewBox="0 0 320 320" role="img" aria-label="For review">
+          <g filter="url(#ink)" fill="none" stroke="currentColor"><circle cx="160" cy="160" r="140" stroke-width="4"></circle><circle cx="160" cy="160" r="120" stroke-width="4"></circle><circle cx="160" cy="160" r="112" stroke-width="2"></circle></g>
+          <g fill="currentColor" font-family="JetBrains Mono, ui-monospace, monospace" font-weight="700" text-anchor="middle">
+            <text font-size="20" letter-spacing="4"><textPath href="#arc-top" startOffset="50%">К СВЕДЕНИЮ</textPath></text>
+            <text font-size="16" letter-spacing="4" font-weight="600"><textPath href="#arc-bot" startOffset="50%">FOR REVIEW</textPath></text>
+            <text x="160" y="172" font-size="72">?</text>
+          </g>
+        </svg>
+        <span class="chip chip--review">К СВЕДЕНИЮ · review</span>
+        <span class="t-xs muted">awaiting an external decision</span>
+      </div>
+    </div>
+    <div class="grid">
+      <div class="frame">
+        <span class="frame__title">ПРАВИЛА · rules</span>
+        <div class="prose t-sm">
+          <p><strong>One stamp per record.</strong> A request has one terminal decision. Progress is shown with blocks, not stamps.</p>
+          <p><strong>Color is the decision's.</strong> Approve takes <code>ok</code>, reject <code>bad</code>, order <code>info</code>, review <code>warn</code>. The seal alone takes <code>signal</code> or <code>accent</code>.</p>
+          <p><strong>Tilt between −4° and −12°.</strong> A perfectly level stamp reads as a logo. Grain stays on; the ink filter is part of the component.</p>
+          <p><strong>Never smaller than 96px as a ring.</strong> Below that, use the chip.</p>
+        </div>
+      </div>
+      <div class="frame">
+        <span class="frame__title">ФИШКА · chips in context</span>
+        <div class="ledger">
+          <div class="row"><span class="k">PR #412</span><span class="lead"></span><span class="v"><span class="chip chip--approve">одобрено</span></span></div>
+          <div class="row"><span class="k">PR #409</span><span class="lead"></span><span class="v"><span class="chip chip--review">к сведению</span></span></div>
+          <div class="row"><span class="k">PR #401</span><span class="lead"></span><span class="v"><span class="chip chip--reject">отказано</span></span></div>
+          <div class="row"><span class="k">#4711</span><span class="lead"></span><span class="v"><span class="chip chip--order">приказ</span></span></div>
+          <div class="row"><span class="k">draft</span><span class="lead"></span><span class="v"><span class="chip chip--neutral">не подано</span></span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================================ §5 -->
+  <section class="sec" id="forms">
+    <header>
+      <span class="label"><span class="cyr">ФОРМА</span> · §5 Form controls</span>
+      <h2>Brackets, boxes and one gold button</h2>
+      <p>Inputs sit in a well with a bottom rule, flanked by mono brackets, the way Norton Commander drew <code>[.........]</code>. Checkboxes and radios are drawn as glyphs. One filled gold button per view; the rest are outline or ghost. Danger is red outline, never red fill.</p>
+    </header>
+    <div class="grid">
+      <form class="frame frame--focus" id="demo-form" style="display:grid;gap:1.1rem" novalidate>
+        <span class="frame__title">ЗАЯВКА · Request form</span>
+        <span class="frame__kicker">№ 0042</span>
+        <div class="field field--required">
+          <label class="label" for="f-name">Citizen name · Имя</label>
+          <div class="bracket"><input class="input" id="f-name" type="text" placeholder="surname, name" value="Volkov, Marina"></div>
+          <span class="field__msg">as printed on the work permit</span>
+        </div>
+        <div class="field field--error">
+          <label class="label" for="f-id">Permit number · Номер</label>
+          <div class="bracket"><input class="input" id="f-id" type="text" value="NV-2026-04" aria-invalid="true" aria-describedby="f-id-msg"></div>
+          <span class="field__msg" id="f-id-msg">✗ a permit number has eight digits after the prefix</span>
+        </div>
+        <div class="field">
+          <label class="label" for="f-dir">Directorate · Директорат</label>
+          <div class="bracket"><select class="select" id="f-dir">
+            <option>Public Works · Общественные Работы</option>
+            <option>Internal Affairs</option>
+            <option>Standards · Стандартизация</option>
+          </select></div>
+        </div>
+        <div class="field">
+          <label class="label" for="f-reason">Reason · Основание</label>
+          <div class="bracket"><textarea class="textarea" id="f-reason" placeholder="one concern per request"></textarea></div>
+        </div>
+        <div style="display:grid;gap:0.5rem">
+          <label class="check"><input type="checkbox" id="f-read" checked><span class="box"></span> I have read the Code of Conduct</label>
+          <label class="check"><input type="checkbox" id="f-refactor"><span class="box"></span> This patch smuggles a refactor</label>
+        </div>
+        <div style="display:flex;gap:1rem;flex-wrap:wrap">
+          <label class="radio"><input type="radio" name="urg" id="f-u1" checked><span class="box"></span> routine</label>
+          <label class="radio"><input type="radio" name="urg" id="f-u2"><span class="box"></span> urgent</label>
+          <label class="radio"><input type="radio" name="urg" id="f-u3"><span class="box"></span> directive</label>
+        </div>
+        <div style="display:flex;gap:0.75rem;flex-wrap:wrap;justify-content:flex-end">
+          <button class="btn btn--ghost" type="reset">Clear</button>
+          <button class="btn btn--outline" type="button" id="btn-save">Save draft</button>
+          <button class="btn btn--primary" type="submit">File request <kbd>⏎</kbd></button>
+        </div>
+      </form>
+      <div style="display:grid;gap:1rem;align-content:start">
+        <div class="frame">
+          <span class="frame__title">КНОПКИ · buttons</span>
+          <div style="display:flex;gap:0.75rem;flex-wrap:wrap;align-items:center">
+            <button class="btn btn--primary" type="button">Primary</button>
+            <button class="btn btn--outline" type="button">Outline</button>
+            <button class="btn" type="button">Default</button>
+            <button class="btn btn--ghost" type="button">Ghost</button>
+            <button class="btn btn--danger" type="button" id="btn-danger">Revoke</button>
+            <button class="btn" type="button" disabled>Disabled</button>
+          </div>
+          <p class="t-xs muted" style="margin-top:0.75rem">Hover lifts the panel and gilds the border. Focus is a 2px bright-gold outline, offset 2px. Pressed state is the filled gold inverted (ink on gold).</p>
+        </div>
+        <div class="frame">
+          <span class="frame__title">ПРАВИЛА · rules</span>
+          <div class="prose t-sm">
+            <p><strong>Labels above, mono, uppercase, tracked.</strong> Required marks a red asterisk. Help text sits below in mono xs.</p>
+            <p><strong>Errors are literal.</strong> <code>✗</code>, then what is wrong and what fixes it. No apology, no "oops".</p>
+            <p><strong>The gold button is the filing act.</strong> Submit, approve, publish. Save-draft is outline. Destructive is red outline and asks once, as a form, not a browser confirm.</p>
+            <p><strong>Keyboard hints on primary actions</strong> as a <kbd>kbd</kbd> inside the button. Mobile hides them.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================================ §6 -->
+  <section class="sec" id="ledger">
+    <header>
+      <span class="label"><span class="cyr">ВЕДОМОСТЬ</span> · §6 Ledger and tables</span>
+      <h2>Fields in fixed positions, leaders between them</h2>
+      <p>GOST 6.39 put every form field at a fixed coordinate. The ledger is that idea as a component: label, dotted leader, value, mono throughout. The table is the ledger with rows; the selected row carries a <code>▸</code>, a rejected row a red wash, and status is always a chip.</p>
+    </header>
+    <div class="grid">
+      <div class="frame">
+        <span class="frame__title">КАРТОЧКА · record ledger</span>
+        <div class="ledger">
+          <div class="row"><span class="k">документ №</span><span class="lead"></span><span class="v">003</span></div>
+          <div class="row"><span class="k">title</span><span class="lead"></span><span class="v">True Contributing Guide</span></div>
+          <div class="row"><span class="k">classification</span><span class="lead"></span><span class="v cyr">OPEN CALL</span></div>
+          <div class="row"><span class="k">directorate</span><span class="lead"></span><span class="v">Public Works</span></div>
+          <div class="row"><span class="k">approved by</span><span class="lead"></span><span class="v">Director Norman</span></div>
+          <div class="row"><span class="k">effective</span><span class="lead"></span><span class="v">2026-05-20</span></div>
+          <div class="row"><span class="k">status</span><span class="lead"></span><span class="v"><span class="chip chip--approve">одобрено</span></span></div>
+        </div>
+      </div>
+      <div class="tablewrap">
+        <table class="ledger-table">
+          <thead><tr><th>Request</th><th>Citizen</th><th>Directorate</th><th class="num">Age</th><th>Decision</th></tr></thead>
+          <tbody>
+            <tr class="is-selected"><td class="mono">acme/api #412</td><td>Volkov, M.</td><td>Public Works</td><td class="num">2h</td><td><span class="chip chip--review">к сведению</span></td></tr>
+            <tr><td class="mono">acme/api #409</td><td>Petrova, I.</td><td>Public Works</td><td class="num">1d</td><td><span class="chip chip--approve">одобрено</span></td></tr>
+            <tr class="is-rejected"><td class="mono">acme/api #401</td><td>Sokolov, D.</td><td>Internal Affairs</td><td class="num">5h</td><td><span class="chip chip--reject">отказано</span></td></tr>
+            <tr><td class="mono">acme/web #230</td><td>Volkov, M.</td><td>Standards</td><td class="num">6h</td><td><span class="chip chip--order">приказ</span></td></tr>
+            <tr><td class="mono">acme/web #228</td><td>—</td><td>—</td><td class="num">9d</td><td><span class="chip chip--neutral">не подано</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================================ §7 -->
+  <section class="sec" id="docs">
+    <header>
+      <span class="label"><span class="cyr">ДОКУМЕНТ</span> · §7 Documents</span>
+      <h2>Case files, classification corners, redaction</h2>
+      <p>Every public page is a numbered document. The header block names the document, its classification, who approved it and when. The ДСП corner sits top-right with a copy number, as the Soviet instruction placed it. Redacted spans are a bar the reader can still select, a nod to <em>Control</em>'s case files: clearance is a hover away.</p>
+    </header>
+    <article class="casefile">
+      <span class="corner">СЕКРЕТНО · Экз. № 2</span>
+      <div class="casefile__head">
+        <div class="ledger">
+          <div class="row"><span class="k">дело №</span><span class="lead"></span><span class="v">0017-Б</span></div>
+          <div class="row"><span class="k">subject</span><span class="lead"></span><span class="v">Palette drift between bureaus</span></div>
+          <div class="row"><span class="k">directorate</span><span class="lead"></span><span class="v">Standards (Стандартизация)</span></div>
+          <div class="row"><span class="k">filed</span><span class="lead"></span><span class="v">2026-10-24</span></div>
+        </div>
+      </div>
+      <div class="casefile__body">
+        <p>On inspection, three bureaus were found operating on three backgrounds: slate at Protocol, teal at Gensek, and the warm black of <span class="redacted">the finance vault</span>. The Directorate finds no fault with any single bureau. The fault was the absence of a standard.</p>
+        <p>Effective immediately, the warm black is canonical. Migration is per bureau, on its own schedule. The Directorate will <span class="redacted">not be checking</span> weekly.</p>
+        <p class="muted" style="margin-top:0.5rem">— Director Norman · <span class="cyr">С честью</span></p>
+      </div>
+    </article>
+    <div class="grid">
+      <div class="frame">
+        <span class="frame__title">УГОЛ · classification corner</span>
+        <div style="display:flex;gap:1rem;flex-wrap:wrap;align-items:center">
+          <span class="corner" style="position:static;transform:rotate(-2deg)">ДСП · Экз. № 1</span>
+          <span class="corner" style="position:static;transform:rotate(-2deg)">СЕКРЕТНО</span>
+          <span class="corner" style="position:static;transform:rotate(-2deg);border-color:var(--g2-border);color:var(--g2-muted)">ОТКРЫТО · open</span>
+        </div>
+        <p class="t-xs muted" style="margin-top:0.75rem">Hierarchy from the period: ДСП &lt; Секретно &lt; Совершенно секретно. In practice the suite uses ДСП for internal, ОТКРЫТО for public, and Секретно as a joke it tells once.</p>
+      </div>
+      <div class="frame">
+        <span class="frame__title">ПРАВИЛА · rules</span>
+        <div class="prose t-sm">
+          <p><strong>Document numbers are per repo</strong>, three digits, zero-padded. Standards use the <code>СТАНДАРТ №</code> series; everything else <code>ДОКУМЕНТ №</code>.</p>
+          <p><strong>Dates are ISO.</strong> <code>2026-05-20</code> is the founding date on every first-generation document.</p>
+          <p><strong>Redaction is content.</strong> Redact only what the joke needs; the real document underneath must still make sense without it.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================================ §8 -->
+  <section class="sec" id="nav">
+    <header>
+      <span class="label"><span class="cyr">НАВИГАЦИЯ</span> · §8 Navigation</span>
+      <h2>Folder tabs, a rail with keys, and the F-bar</h2>
+      <p>Top-level sections are folder tabs, like the index pinned to this page. A side rail lists destinations with a key hint and a count. The function-key bar is the footer of every full-screen view, ten slots, inherited straight from the 1980s and still the fastest way to say what the keyboard does.</p>
+    </header>
+    <div class="grid">
+      <div>
+        <div class="demo-tabs" role="tablist" aria-label="Demo tabs">
+          <button role="tab" aria-selected="true" aria-controls="tp-1" id="tab-1" type="button">Attention · 7</button>
+          <button role="tab" aria-selected="false" aria-controls="tp-2" id="tab-2" type="button">Conversation</button>
+          <button role="tab" aria-selected="false" aria-controls="tp-3" id="tab-3" type="button">Links · 4</button>
+        </div>
+        <div class="demo-panel" role="tabpanel" id="tp-1" aria-labelledby="tab-1">Three PRs ask for your review. Two of yours are blocked on CI. One directive from the Gensek is unread.</div>
+        <div class="demo-panel" role="tabpanel" id="tp-2" aria-labelledby="tab-2" hidden>marina · 40m · rebased on main. <span class="chip chip--neutral" style="margin-left:.4em">note</span> check token expiry on mobile.</div>
+        <div class="demo-panel" role="tabpanel" id="tp-3" aria-labelledby="tab-3" hidden>PROJ-118 · release/2026.10 · acme/web #230 · the design standard.</div>
+        <nav class="crumbs" style="margin-top:1rem" aria-label="Breadcrumb">
+          <a href="#nav">АРХИВ</a><span>/</span><a href="#nav">Public Works</a><span>/</span><a href="#nav">дело 0017-Б</a><span>/</span><span class="cur">palette drift</span>
+        </nav>
+      </div>
+      <nav class="rail" aria-label="Rail">
+        <a href="#nav" class="is-active"><span class="k">g1</span><span>Attention</span><span class="n">7</span></a>
+        <a href="#nav"><span class="k">g2</span><span>Conversation</span><span class="n">6 · 2 notes</span></a>
+        <a href="#nav"><span class="k">g3</span><span>Preview</span><span class="n"></span></a>
+        <a href="#nav"><span class="k">:</span><span>Command line</span><span class="n">:theme :lang</span></a>
+        <a href="#nav"><span class="k">?</span><span>Help as directive</span><span class="n">F1</span></a>
+      </nav>
+    </div>
+    <div class="fkeys" role="toolbar" aria-label="Function keys">
+      <div><kbd>F1</kbd><span>Help</span></div><div><kbd>F2</kbd><span>Menu</span></div><div><kbd>F3</kbd><span>View</span></div><div><kbd>F4</kbd><span>Edit</span></div><div><kbd>F5</kbd><span>Copy</span></div>
+      <div><kbd>F6</kbd><span>Move</span></div><div><kbd>F7</kbd><span>New</span></div><div><kbd>F8</kbd><span>Delete</span></div><div><kbd>F9</kbd><span>Theme</span></div><div><kbd>F10</kbd><span>Quit</span></div>
+    </div>
+  </section>
+
+  <!-- ================================================================ §9 -->
+  <section class="sec" id="feedback">
+    <header>
+      <span class="label"><span class="cyr">СИГНАЛ</span> · §9 Feedback</span>
+      <h2>Slips, blocks and a dialog that is a form</h2>
+      <p>A toast is a filed slip with a coloured edge. Progress is a row of blocks. A confirmation is a small form inside an authority frame, with the question as a ledger and the answer as buttons. The empty state is a blank form, dashed, telling you what will appear and how to file the first entry.</p>
+    </header>
+    <div class="grid">
+      <div style="display:grid;gap:0.75rem">
+        <div class="slip slip--ok"><span class="label">СПРАВКА</span><div class="slip__text"><strong>Filed.</strong> Request № 0042 entered the queue of Public Works.</div><span class="t-xs muted mono">16:04</span></div>
+        <div class="slip slip--bad"><span class="label">ОТКАЗ</span><div class="slip__text"><strong>Not filed.</strong> Permit number has eight digits after the prefix.</div><span class="t-xs muted mono">16:04</span></div>
+        <div class="slip slip--warn"><span class="label">ВНИМАНИЕ</span><div class="slip__text"><strong>CI is red</strong> on acme/api #401, tests/auth.</div><span class="t-xs muted mono">16:03</span></div>
+        <div class="slip slip--info"><span class="label">ПРИКАЗ</span><div class="slip__text"><strong>Directive #4711</strong> received from the Генсек. Immediate execution.</div><span class="t-xs muted mono">15:58</span></div>
+        <div style="display:flex;gap:0.75rem;flex-wrap:wrap">
+          <button class="btn btn--outline" type="button" id="btn-toast">Show a slip</button>
+          <button class="btn btn--outline" type="button" id="btn-dialog">Open confirm form</button>
+        </div>
+      </div>
+      <div style="display:grid;gap:1rem;align-content:start">
+        <div class="frame">
+          <span class="frame__title">ХОД · progress</span>
+          <div style="display:grid;gap:0.75rem">
+            <div class="progress"><div class="blocks" aria-hidden="true"><span class="on">████████████████</span><span class="off">████████</span></div><span>16 / 24 · 67%</span></div>
+            <div class="progress"><div class="bar" role="progressbar" aria-valuenow="42" aria-valuemin="0" aria-valuemax="100" aria-label="Sync"><span style="width:42%"></span></div><span>sync · 42%</span></div>
+            <div class="progress"><div class="blocks" aria-hidden="true"><span class="on">■</span><span class="off">■</span><span class="on">■</span><span class="off">■</span><span class="on">■</span></div><span class="muted">in flight · five squares cycle</span></div>
+          </div>
+        </div>
+        <div class="frame frame--dashed">
+          <div class="empty">
+            <span class="glyph">┌ ┐<br>└ ┘</span>
+            <span class="label">ФОРМА ПУСТА · nothing filed yet</span>
+            <p class="t-sm muted">Notes you write on a request appear here, newest first.</p>
+            <button class="btn btn--primary" type="button">Write the first note <kbd>n</kbd></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================================ §10 -->
+  <section class="sec" id="layout">
+    <header>
+      <span class="label"><span class="cyr">МАКЕТ</span> · §10 Layout</span>
+      <h2>Three panes on a desk, one column in a hand</h2>
+      <p>Desktop is the Gensek dashboard: a rail, a main pane, an aside, header above and F-bar below. Under 720px the rail becomes the folder tabs, the aside stacks under main, and the F-bar collapses to the four keys that matter on glass. Spacing is a 4px grid; sections breathe at 3.5rem.</p>
+    </header>
+    <div class="grid">
+      <div class="sketch sketch--desktop" aria-label="Desktop layout sketch">
+        <div class="hd">header · logo · session · corner</div>
+        <div>rail</div><div style="border-color:var(--g2-accent)">main · focus frame</div><div>aside · preview</div>
+        <div class="ft">F1 … F10</div>
+      </div>
+      <div style="display:grid;gap:1rem;grid-template-columns:auto 1fr;align-items:start">
+        <div class="sketch sketch--mobile" aria-label="Mobile layout sketch">
+          <div class="hd">header</div><div>tabs</div><div style="border-color:var(--g2-accent);min-height:80px">main</div><div>aside</div><div>F1 F2 F9 F10</div>
+        </div>
+        <div class="scale" aria-label="Spacing scale">
+          <div><span>space-1 · 4px</span><i style="width:4px"></i></div>
+          <div><span>space-2 · 8px</span><i style="width:8px"></i></div>
+          <div><span>space-3 · 12px</span><i style="width:12px"></i></div>
+          <div><span>space-4 · 16px</span><i style="width:16px"></i></div>
+          <div><span>space-6 · 24px</span><i style="width:24px"></i></div>
+          <div><span>space-8 · 32px</span><i style="width:32px"></i></div>
+          <div><span>space-12 · 48px</span><i style="width:48px"></i></div>
+          <div><span>measure · 65ch</span><i style="width:100%;max-width:65ch"></i></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================================ §11 -->
+  <section class="sec" id="a11y">
+    <header>
+      <span class="label"><span class="cyr">ДОСТУП</span> · §11 Accessibility</span>
+      <h2>Built in, then gated</h2>
+      <p>The owner of this suite reads with dyslexia and ADHD. That is a design input, not a footnote: body text is sans with a generous line height, labels are short and placed where the eye lands, every state is also a shape, and nothing moves unless asked.</p>
+    </header>
+    <div class="grid">
+      <div class="frame"><span class="frame__title">КОНТРАСТ</span><p class="t-sm">Body text ≥ 7:1, secondary text ≥ 4.5:1, placeholders and disabled ≥ 3:1. The generator exits non-zero otherwise; §1 recomputes it live.</p></div>
+      <div class="frame"><span class="frame__title">ФОРМА, НЕ ЦВЕТ</span><p class="t-sm">Every state has a shape as well as a colour: stamps have glyphs, rows have <code>▸</code>, errors start with <code>✗</code>, frames have weight.</p></div>
+      <div class="frame"><span class="frame__title">КЛАВИАТУРА</span><p class="t-sm">Focus is always visible (bright-gold outline). Primary actions show their key. Tab order follows the ledger: top to bottom, label to value.</p></div>
+      <div class="frame"><span class="frame__title">ДВИЖЕНИЕ</span><p class="t-sm">No ambient animation. A stamp may land once on a decision; <code>prefers-reduced-motion</code> turns even that off.</p></div>
+      <div class="frame"><span class="frame__title">ЧТЕНИЕ</span><p class="t-sm">Measure 65ch, paragraphs of two to four sentences, one idea each. Mono only where the eye scans, not where it reads.</p></div>
+      <div class="frame"><span class="frame__title">ЯЗЫК</span><p class="t-sm">Cyrillic labels always pair with a word the reader knows. A Cyrillic-only element is decoration, and decoration is out of canon.</p></div>
+    </div>
+  </section>
+
+  <!-- ================================================================ §12 -->
+  <section class="sec" id="canon">
+    <header>
+      <span class="label"><span class="cyr">ВНЕ КАНОНА</span> · §12 Out of canon</span>
+      <h2>What the bureau does not do</h2>
+      <p>The fastest way to make this look like a costume is any item in the left column. The right column is what the standard does instead.</p>
+    </header>
+    <div class="nono">
+      <div class="row"><span class="x">✗</span><span class="no">Faux Cyrillic: ЯUSSIAИ, ИIRVYTEKH</span><span class="yes"><strong>Real words,</strong> paired with English. Russian readers see "yaussiai" in the fake.</span></div>
+      <div class="row"><span class="x">✗</span><span class="no">Hammer and sickle, red stars on everything, real states or leaders</span><span class="yes"><strong>Borrowed grammar:</strong> F-keys, ДСП corner, form grid, numbered documents. One ★ in the masthead.</span></div>
+      <div class="row"><span class="x">✗</span><span class="no">Rounded corners, drop shadows, gradients, glassmorphism</span><span class="yes"><strong>Flat surfaces,</strong> a panel ramp, frame weight for depth.</span></div>
+      <div class="row"><span class="x">✗</span><span class="no">Monospace paragraphs</span><span class="yes"><strong>Mono for chrome,</strong> PT Sans for prose, PT Serif on paper.</span></div>
+      <div class="row"><span class="x">✗</span><span class="no">Gold and red on every element</span><span class="yes"><strong>Field quiet.</strong> Gold is focus; red is a decision or a fault.</span></div>
+      <div class="row"><span class="x">✗</span><span class="no">Stamps as decoration, stamps for progress</span><span class="yes"><strong>One stamp per record,</strong> only for a terminal decision. Blocks for progress.</span></div>
+      <div class="row"><span class="x">✗</span><span class="no">CRT scanlines, screen curvature, flicker</span><span class="yes"><strong>The era is in type, frames and words.</strong> Not in making the screen worse.</span></div>
+      <div class="row"><span class="x">✗</span><span class="no">Browser alerts and confirms</span><span class="yes"><strong>A dialog is a form</strong> inside an authority frame.</span></div>
+      <div class="row"><span class="x">✗</span><span class="no">Light mode by OS preference</span><span class="yes"><strong>Paper is a theme the user picks,</strong> not a mode the system flips.</span></div>
+      <div class="row"><span class="x">✗</span><span class="no">Anything from Arstotzka or the FBC</span><span class="yes"><strong>Atmosphere only.</strong> Names, symbols and language are the suite's own.</span></div>
+    </div>
+  </section>
+
+  <footer class="colophon">
+    <div class="sig">
+      <div class="ruled label" style="max-width:24rem">ОФИЦИАЛЬНО</div>
+      <span>Approved for circulation to all bureaus of the suite.</span>
+      <span class="name">— Director Norman</span>
+      <span class="cyr">С честью, Генсек · Слава НИРВЫТЕХ</span>
+      <span class="t-xs">glory-to-design · СТАНДАРТ № 001 · 2026-10-24 · AGPL-3.0-or-later</span>
+    </div>
+    <svg class="stamp stamp--gold" viewBox="0 0 320 320" role="img" aria-label="Approved, official release">
+      <g filter="url(#ink)" fill="none" stroke="currentColor"><circle cx="160" cy="160" r="140" stroke-width="4"></circle><circle cx="160" cy="160" r="120" stroke-width="4"></circle><circle cx="160" cy="160" r="112" stroke-width="2"></circle></g>
+      <g fill="currentColor" font-family="JetBrains Mono, ui-monospace, monospace" font-weight="700" text-anchor="middle">
+        <text font-size="22" letter-spacing="5"><textPath href="#arc-top" startOffset="50%">ОДОБРЕНО</textPath></text>
+        <text font-size="16" letter-spacing="4" font-weight="600"><textPath href="#arc-bot" startOffset="50%">APPROVED</textPath></text>
+        <text x="160" y="160" font-size="72">✓</text>
+        <text x="160" y="190" font-size="14" letter-spacing="2">OFFICIAL RELEASE</text>
+        <text x="160" y="210" font-size="11" letter-spacing="3" font-weight="600">NIRVYTEKH</text>
+      </g>
+    </svg>
+  </footer>
+</div>
+
+<dialog class="form" id="confirm-dialog" aria-labelledby="cd-title">
+  <div class="casefile__head">
+    <div class="ledger">
+      <div class="row"><span class="k">действие</span><span class="lead"></span><span class="v" id="cd-title">Revoke permit NV-2026-04</span></div>
+      <div class="row"><span class="k">citizen</span><span class="lead"></span><span class="v">Volkov, Marina</span></div>
+      <div class="row"><span class="k">reversible</span><span class="lead"></span><span class="v cyr">НЕТ · no</span></div>
+    </div>
+  </div>
+  <div class="casefile__body"><p>The permit is withdrawn and the citizen is notified. The Directorate of Internal Affairs receives a copy. Type the permit number to confirm.</p>
+    <div class="field"><label class="label" for="cd-input">Permit number</label><div class="bracket"><input class="input" id="cd-input" type="text" placeholder="NV-2026-04"></div></div>
+  </div>
+  <div class="actions">
+    <button class="btn btn--ghost" type="button" id="cd-cancel">Cancel <kbd>esc</kbd></button>
+    <button class="btn btn--danger" type="button" id="cd-ok">Revoke <kbd>⏎</kbd></button>
+  </div>
+</dialog>
+<div id="toast-host" aria-live="polite"></div>
+
+<script>
+(function () {
+  var root = document.documentElement;
+  var ROLES = {
+    'well': 'deepest surface', 'bg': 'page background', 'bg-alt': 'lifted band', 'panel': 'cards, forms', 'panel-alt': 'selected, banner', 'selection': 'hover / selected row',
+    'fg-bright': 'headings', 'fg': 'body text', 'muted': 'secondary (AA)', 'faint': 'placeholder (3:1)', 'accent-ink': 'text on gold',
+    'accent': 'gold · focus, links', 'accent-bright': 'focus ring, hover', 'border': 'frame', 'border-faint': 'rules, grid', 'signal': 'stamp red (graphics)', 'signal-text': 'stamp red (text)', 'signal-bg': 'rejected wash', 'note': 'second hue', 'note-bg': 'note wash',
+    'ok': 'success', 'warn': 'warning', 'bad': 'error', 'info': 'information'
+  };
+  var GATES = [['fg','bg',7],['fg-bright','bg',7],['fg','panel',7],['muted','bg',4.5],['faint','bg',3],['accent','bg',4.5],['accent-ink','accent',4.5],['note','note-bg',4.5],['ok','bg',4.5],['warn','bg',4.5],['bad','bg',4.5],['info','bg',4.5],['signal-text','bg',4.5],['signal','bg',3]];
+
+  function tok(name) { return getComputedStyle(root).getPropertyValue('--g2-' + name).trim(); }
+  function lum(hex) {
+    var h = hex.replace('#', ''); if (h.length !== 6) return 0;
+    var c = [0, 2, 4].map(function (i) { var v = parseInt(h.substr(i, 2), 16) / 255; return v <= 0.04045 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); });
+    return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
+  }
+  function contrast(a, b) { var la = lum(a), lb = lum(b); var hi = Math.max(la, lb), lo = Math.min(la, lb); return (hi + 0.05) / (lo + 0.05); }
+
+  function renderSwatches() {
+    document.querySelectorAll('.swatches').forEach(function (grid) {
+      grid.innerHTML = '';
+      grid.getAttribute('data-tokens').split(/\s+/).forEach(function (name) {
+        var el = document.createElement('div'); el.className = 'sw';
+        el.innerHTML = '<div class="sw__chip" style="background:var(--g2-' + name + ')"></div><div class="sw__body"><span class="sw__name">' + name + '</span><span class="sw__hex">' + tok(name) + '</span><span class="sw__role">' + (ROLES[name] || '') + '</span></div>';
+        grid.appendChild(el);
+      });
+    });
+    var tb = document.querySelector('#contrast-table tbody'); tb.innerHTML = '';
+    GATES.forEach(function (g) {
+      var r = contrast(tok(g[0]), tok(g[1])); var ok = r >= g[2];
+      var tr = document.createElement('tr');
+      tr.innerHTML = '<td class="mono">' + g[0] + ' on ' + g[1] + '</td><td class="num">' + r.toFixed(2) + '</td><td class="num">' + g[2] + '</td><td class="' + (ok ? 'pass' : 'fail') + '">' + (ok ? 'ОДОБРЕНО' : 'ОТКАЗАНО') + '</td>';
+      tb.appendChild(tr);
+    });
+  }
+
+  function setTheme(paper) {
+    root.classList.toggle('theme-paper', paper);
+    document.getElementById('theme-bureau').setAttribute('aria-pressed', String(!paper));
+    document.getElementById('theme-paper').setAttribute('aria-pressed', String(paper));
+    try { localStorage.setItem('g2-theme', paper ? 'paper' : 'bureau'); } catch (e) {}
+    renderSwatches();
+  }
+  document.getElementById('theme-bureau').addEventListener('click', function () { setTheme(false); });
+  document.getElementById('theme-paper').addEventListener('click', function () { setTheme(true); });
+  var saved = null; try { saved = localStorage.getItem('g2-theme'); } catch (e) {}
+  setTheme(saved === 'paper');
+
+  // index: mark the section in view
+  var links = Array.prototype.slice.call(document.querySelectorAll('.index a'));
+  var secs = links.map(function (a) { return document.querySelector(a.getAttribute('href')); });
+  function markActive() {
+    var y = window.scrollY + 120, cur = 0;
+    secs.forEach(function (s, i) { if (s && s.offsetTop <= y) cur = i; });
+    links.forEach(function (a, i) { a.classList.toggle('is-active', i === cur); });
+  }
+  window.addEventListener('scroll', markActive, { passive: true }); markActive();
+
+  // demo tabs
+  var tabs = document.querySelectorAll('.demo-tabs [role=tab]');
+  tabs.forEach(function (t) {
+    t.addEventListener('click', function () {
+      tabs.forEach(function (o) { o.setAttribute('aria-selected', 'false'); document.getElementById(o.getAttribute('aria-controls')).hidden = true; });
+      t.setAttribute('aria-selected', 'true'); document.getElementById(t.getAttribute('aria-controls')).hidden = false;
+    });
+  });
+
+  // slips
+  var host = document.getElementById('toast-host'), n = 0;
+  function slip(kind, label, text) {
+    var el = document.createElement('div'); el.className = 'slip slip--' + kind;
+    var t = new Date(); var hh = String(t.getHours()).padStart(2, '0') + ':' + String(t.getMinutes()).padStart(2, '0');
+    el.innerHTML = '<span class="label">' + label + '</span><div class="slip__text">' + text + '</div><span class="t-xs muted mono">' + hh + '</span>';
+    host.appendChild(el); setTimeout(function () { el.remove(); }, 4500);
+  }
+  document.getElementById('btn-toast').addEventListener('click', function () { n += 1; slip('ok', 'СПРАВКА', '<strong>Filed.</strong> Slip № ' + String(n).padStart(3, '0') + ' entered the queue.'); });
+  document.getElementById('btn-save').addEventListener('click', function () { slip('info', 'ЧЕРНОВИК', '<strong>Draft saved.</strong> Not yet filed.'); });
+  document.getElementById('demo-form').addEventListener('submit', function (e) { e.preventDefault(); slip('bad', 'ОТКАЗ', '<strong>Not filed.</strong> Permit number has eight digits after the prefix.'); document.getElementById('f-id').focus(); });
+
+  // dialog as a form
+  var dlg = document.getElementById('confirm-dialog');
+  function openDlg() { if (typeof dlg.showModal === 'function') dlg.showModal(); else dlg.setAttribute('open', ''); document.getElementById('cd-input').value = ''; }
+  function closeDlg() { if (typeof dlg.close === 'function') dlg.close(); else dlg.removeAttribute('open'); }
+  document.getElementById('btn-dialog').addEventListener('click', openDlg);
+  document.getElementById('btn-danger').addEventListener('click', openDlg);
+  document.getElementById('cd-cancel').addEventListener('click', closeDlg);
+  document.getElementById('cd-ok').addEventListener('click', function () {
+    if (document.getElementById('cd-input').value.trim() !== 'NV-2026-04') { slip('warn', 'ВНИМАНИЕ', '<strong>Type the permit number</strong> exactly as shown to confirm.'); return; }
+    closeDlg(); slip('bad', 'ОТКАЗАНО', '<strong>Permit revoked.</strong> Internal Affairs has a copy.');
+  });
+})();
+</script>
