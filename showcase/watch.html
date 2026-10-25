@@ -1,0 +1,868 @@
+<title>Стандарт Watch</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=PT+Sans:ital,wght@0,400;0,700;1,400&family=PT+Serif:ital,wght@0,400;0,700;1,400&display=swap">
+<link rel="stylesheet" href="tokens.css">
+<style>
+  /* Layout concept: the same standard sheet as the GUI and TUI pages, but every example
+     is a 240 px disc (<div class="watch">) standing for the Galaxy Watch6 Classic 47 mm:
+     480 x 480 physical pixels at density 2, so 1 CSS px here = 1 dp on the wrist.
+     Tokens come from tokens.css (generated). Page-local tokens only below. */
+  :root { --sheet: 1100px; --tab-h: 2.75rem; --d: 240px; }
+  html, body { background: var(--g2-bg); }
+  body {
+    color: var(--g2-fg); font-family: var(--g2-font-body); font-size: 1.0625rem; line-height: 1.55;
+    padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 0 4rem;
+    -webkit-font-smoothing: antialiased;
+  }
+  body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--g2-bg); }
+  * { box-sizing: border-box; }
+  * { scrollbar-width: thin; scrollbar-color: var(--g2-border) var(--g2-well); }
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: var(--g2-well); }
+  ::-webkit-scrollbar-thumb { background: var(--g2-border); border: 2px solid var(--g2-well); }
+  ::-webkit-scrollbar-thumb:hover { background: var(--g2-accent); }
+  ::-webkit-scrollbar-corner { background: var(--g2-well); }
+  h1, h2, h3 { margin: 0; text-wrap: balance; color: var(--g2-fg-bright); font-weight: 700; }
+  p { margin: 0; max-width: var(--g2-measure); }
+  a { color: var(--g2-accent); text-decoration-color: var(--g2-border); text-underline-offset: 0.15em; }
+  :focus-visible { outline: 2px solid var(--g2-accent-bright); outline-offset: 2px; }
+  ::selection { background: var(--g2-accent); color: var(--g2-accent-ink); }
+  code, kbd, .mono { font-family: var(--g2-font-mono); font-size: 0.92em; }
+  code { color: var(--g2-fg-bright); background: var(--g2-well); padding: 0.05em 0.35em; }
+  kbd { color: var(--g2-accent); border: 1px solid var(--g2-border); padding: 0 0.4em; font-size: 0.8em; }
+  .sheet { max-width: var(--sheet); margin: 0 auto; display: grid; gap: 3.5rem; }
+  .label { font-family: var(--g2-font-mono); font-size: var(--g2-text-xs); text-transform: uppercase; letter-spacing: var(--g2-tracking-label); color: var(--g2-muted); }
+  .cyr { color: var(--g2-signal-text); }
+  .muted { color: var(--g2-muted); }
+  .t-sm { font-size: var(--g2-text-sm); } .t-xs { font-size: var(--g2-text-xs); }
+  .prose { max-width: var(--g2-measure); display: grid; gap: 0.75rem; }
+
+  .masthead { position: relative; margin-top: 2.25rem; padding: 2.75rem 1.5rem 1.75rem; background: var(--g2-panel); border: var(--g2-rule-strong) solid var(--g2-border); display: grid; grid-template-columns: 1fr auto; gap: 1.5rem; align-items: center; }
+  .masthead .tab { position: absolute; top: -1.5rem; left: 1.25rem; height: 1.5rem; padding: 0 0.75rem; background: var(--g2-panel); border: var(--g2-rule-strong) solid var(--g2-border); border-bottom: 0; display: flex; align-items: center; }
+  .corner { position: absolute; top: 0.75rem; right: 0.75rem; padding: 0.2rem 0.6rem; border: var(--g2-rule) solid var(--g2-signal); color: var(--g2-signal-text); font-family: var(--g2-font-mono); font-size: var(--g2-text-xs); letter-spacing: var(--g2-tracking-label); text-transform: uppercase; transform: rotate(-2deg); }
+  .logo { font-family: var(--g2-font-mono); font-weight: 700; letter-spacing: var(--g2-tracking-logo); font-size: clamp(2rem, 6vw, 3.6rem); color: var(--g2-accent); line-height: 1; }
+  .star { color: var(--g2-signal); font-size: 1.4rem; line-height: 1; margin: 0.6rem 0 0.4rem; }
+  .masthead h1 { font-family: var(--g2-font-mono); font-size: var(--g2-text-md); letter-spacing: 0.1em; text-transform: uppercase; color: var(--g2-signal-text); }
+  .meta { font-family: var(--g2-font-mono); font-size: var(--g2-text-sm); margin-top: 0.5rem; }
+  .toolbar { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1.25rem; }
+  .btn { display: inline-flex; align-items: center; gap: 0.5em; padding: 0.55rem 1rem; cursor: pointer; font-family: var(--g2-font-mono); font-size: var(--g2-text-sm); letter-spacing: 0.02em; font-weight: 600; border: var(--g2-rule) solid var(--g2-border); background: var(--g2-panel); color: var(--g2-fg); text-decoration: none; }
+  .btn:hover { background: var(--g2-panel-alt); color: var(--g2-fg-bright); border-color: var(--g2-accent); }
+  .btn--ghost { background: transparent; border-color: transparent; color: var(--g2-muted); }
+  .toggle { display: inline-flex; border: var(--g2-rule) solid var(--g2-border); }
+  .toggle .btn { border: 0; }
+  .toggle .btn[aria-pressed="true"] { background: var(--g2-accent); color: var(--g2-accent-ink); }
+
+  .index { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--g2-bg); border-bottom: var(--g2-rule) solid var(--g2-border); margin: 0 calc(-1 * max(16px, env(safe-area-inset-left, 0px))); padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+  .index ul { list-style: none; margin: 0 auto; padding: 0; max-width: var(--sheet); display: flex; flex-wrap: wrap; gap: 2px; }
+  .index a { display: block; height: var(--tab-h); padding: 0 0.9rem; line-height: var(--tab-h); white-space: nowrap; font-family: var(--g2-font-mono); font-size: var(--g2-text-xs); letter-spacing: var(--g2-tracking-label); text-transform: uppercase; color: var(--g2-muted); text-decoration: none; border: var(--g2-rule) solid transparent; border-bottom: 0; }
+  .index a:hover { color: var(--g2-fg-bright); }
+  .index a.is-active { color: var(--g2-accent); border-color: var(--g2-border); background: var(--g2-panel); }
+
+  .sec { display: grid; gap: 1.5rem; scroll-margin-top: calc(var(--tab-h) + 1rem); }
+  .sec > header { display: grid; gap: 0.35rem; }
+  .sec h2 { font-size: var(--g2-text-xl); }
+  .sec h2 .sec-no { font-family: var(--g2-font-mono); font-weight: 400; font-size: 0.55em; color: var(--g2-muted); letter-spacing: var(--g2-tracking-label); vertical-align: middle; margin-right: 0.35em; }
+  .grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); }
+  .grid > * { min-width: 0; }
+  .frame { position: relative; border: var(--g2-rule) solid var(--g2-border); background: var(--g2-panel); padding: 1.5rem 1.25rem 1.25rem; }
+  .frame--authority { border: 4px double var(--g2-accent); }
+  .frame__title { position: absolute; top: -0.65em; left: 0.9rem; padding: 0 0.5rem; background: inherit; font-family: var(--g2-font-mono); font-size: var(--g2-text-xs); letter-spacing: var(--g2-tracking-label); color: var(--g2-muted); }
+  .frame--authority .frame__title { color: var(--g2-accent); text-transform: uppercase; font-weight: 600; }
+  .note-box { border-left: 3px solid var(--g2-note); background: var(--g2-note-bg); padding: 0.75rem 1rem; }
+  .note-box .label { color: var(--g2-note); }
+  .tablewrap { overflow-x: auto; border: var(--g2-rule) solid var(--g2-border); background: var(--g2-panel); }
+  table { width: 100%; border-collapse: collapse; font-size: var(--g2-text-sm); font-variant-numeric: tabular-nums; }
+  th { font-family: var(--g2-font-mono); font-size: var(--g2-text-xs); letter-spacing: var(--g2-tracking-label); text-transform: uppercase; color: var(--g2-muted); text-align: left; padding: 0.6rem 0.75rem; border-bottom: var(--g2-rule) solid var(--g2-border); font-weight: 600; }
+  td { padding: 0.5rem 0.75rem; border-bottom: var(--g2-rule) solid var(--g2-border-faint); vertical-align: top; }
+  tr:last-child td { border-bottom: 0; }
+  td.mono { font-family: var(--g2-font-mono); color: var(--g2-fg-bright); white-space: nowrap; }
+
+  /* ---------------------------------------------------------------- the wrist */
+  .shelf { display: flex; flex-wrap: wrap; gap: 1.5rem 2rem; justify-content: center; align-items: start; }
+  figure { margin: 0; min-width: 0; display: grid; gap: 0.5rem; justify-items: center; }
+  .caption { font-family: var(--g2-font-mono); font-size: var(--g2-text-xs); color: var(--g2-muted); max-width: calc(var(--d) + 40px); text-align: center; line-height: 1.45; }
+  .caption strong { color: var(--g2-fg); }
+
+  /* the hardware: a steel case with the Classic's rotating bezel, ticks every 6 degrees */
+  .watch { position: relative; width: calc(var(--d) + 40px); aspect-ratio: 1; border-radius: 50%; background: var(--g2-panel-alt); border: 2px solid var(--g2-border); display: grid; place-items: center; max-width: 100%; }
+  .watch::before { content: ""; position: absolute; inset: 5px; border-radius: 50%;
+    background: repeating-conic-gradient(from -0.6deg, var(--g2-border) 0deg 1.2deg, transparent 1.2deg 6deg);
+    -webkit-mask: radial-gradient(circle, transparent 0 calc(50% - 12px), var(--g2-fg) calc(50% - 12px)); mask: radial-gradient(circle, transparent 0 calc(50% - 12px), var(--g2-fg) calc(50% - 12px)); }
+  .watch::after { content: ""; position: absolute; top: 50%; right: -9px; width: 7px; height: 22px; margin-top: -11px; background: var(--g2-border); }
+  .watch .disc { position: relative; z-index: 1; }
+
+  /* the screen: 240 x 240 dp, the bureau's field. Content lives in the inscribed square. */
+  .disc { width: var(--d); aspect-ratio: 1; border-radius: 50%; overflow: hidden; background: var(--g2-bg); color: var(--g2-fg); border: 1px solid var(--g2-border-faint);
+    font-family: var(--g2-font-mono); font-size: 12px; line-height: 1.25; font-variant-numeric: tabular-nums;
+    display: grid; grid-template-rows: auto 1fr auto; padding: 22px 30px 20px; text-align: center; }
+  .disc--aod { background: var(--g2-well); color: var(--g2-muted); }
+  .disc--paper { background: var(--g2-bg); }
+  .disc > * { min-width: 0; }
+  .d-top, .d-bot { display: grid; gap: 4px; justify-items: center; }
+  .d-mid { display: grid; align-content: center; gap: 6px; justify-items: center; }
+  .d-mid--start { align-content: start; padding-top: 6px; }
+  .d-label { font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--g2-muted); }
+  .d-label.cyr { color: var(--g2-signal-text); }
+  .d-label.ok { color: var(--g2-ok); } .d-label.warn { color: var(--g2-warn); } .d-label.bad { color: var(--g2-bad); } .d-label.info { color: var(--g2-info); } .d-label.acc { color: var(--g2-accent); }
+  .d-time { font-size: 44px; font-weight: 700; line-height: 1; color: var(--g2-fg-bright); letter-spacing: -0.02em; }
+  .disc--aod .d-time { font-weight: 400; color: var(--g2-accent); }
+  .d-big { font-size: 28px; font-weight: 700; line-height: 1.05; color: var(--g2-fg-bright); }
+  .d-key { font-size: 14px; font-weight: 600; color: var(--g2-fg-bright); }
+  .d-body { font-family: var(--g2-font-sans); font-size: 14px; line-height: 1.3; color: var(--g2-fg); }
+  .d-fine { font-size: 10px; color: var(--g2-muted); }
+  .d-rule { width: 100%; border-top: 1px solid var(--g2-border-faint); }
+  .d-rule--strong { border-top: 2px solid var(--g2-border); }
+
+  /* ledger row: KEY ....: value, the bureau's one data shape, folded to the wrist */
+  .d-ledger { width: 100%; display: grid; gap: 3px; text-align: left; font-size: 11px; }
+  .d-ledger .row { display: flex; gap: 4px; align-items: baseline; }
+  .d-ledger .k { color: var(--g2-muted); text-transform: uppercase; letter-spacing: 0.08em; font-size: 10px; flex: none; }
+  .d-ledger .dots { flex: 1; border-bottom: 1px dotted var(--g2-faint); transform: translateY(-3px); }
+  .d-ledger .v { color: var(--g2-fg-bright); flex: none; }
+
+  /* buttons: 48 dp square targets, the bureau has no rounded corners. The circle is the hardware. */
+  .d-actions { display: flex; gap: 10px; justify-content: center; }
+  .d-btn { width: 48px; height: 48px; display: grid; place-items: center; border: 1px solid var(--g2-border); background: var(--g2-panel); color: var(--g2-fg); font-size: 16px; font-weight: 700; }
+  .d-btn--primary { background: var(--g2-accent); color: var(--g2-accent-ink); border-color: var(--g2-accent); }
+  .d-btn--danger { border-color: var(--g2-signal); color: var(--g2-signal-text); }
+  .d-btn--wide { width: 112px; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; }
+  .d-btn--record { width: 64px; height: 64px; border: 2px solid var(--g2-signal); background: var(--g2-signal-bg); color: var(--g2-signal-text); font-size: 22px; }
+  .d-btn--record.is-live { background: var(--g2-signal); color: var(--g2-fg-bright); }
+
+  /* stamp: one, centered, tilted. Decision colours as in protocol. */
+  .d-stamp { display: inline-grid; gap: 1px; justify-items: center; padding: 5px 10px; border: 2px solid currentColor; text-transform: uppercase; letter-spacing: 0.1em; font-size: 11px; font-weight: 700; transform: rotate(-4deg); line-height: 1.15; }
+  .d-stamp small { font-size: 8px; font-weight: 400; letter-spacing: 0.08em; }
+  .d-stamp.ok { color: var(--g2-ok); } .d-stamp.bad { color: var(--g2-bad); } .d-stamp.info { color: var(--g2-info); } .d-stamp.warn { color: var(--g2-warn); }
+
+  /* list: ▸ cursor, selection wash, one row per 32 dp so the bezel steps are legible */
+  .d-list { width: calc(100% + 24px); margin: 0 -12px; display: grid; text-align: left; font-size: 12px; }
+  .d-list .row { display: grid; grid-template-columns: minmax(14px, auto) 1fr auto; gap: 6px; align-items: center; min-height: 32px; padding: 0 10px; border-bottom: 1px solid var(--g2-border-faint); }
+  .d-list .cur, .d-list .d-chk { white-space: nowrap; }
+  .d-list .row:last-child { border-bottom: 0; }
+  .d-list .row.sel { background: var(--g2-selection); }
+  .d-list .cur { color: var(--g2-accent); font-weight: 700; }
+  .d-list .t { color: var(--g2-fg); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .d-list .row.sel .t { color: var(--g2-fg-bright); }
+  .d-list .meta { color: var(--g2-muted); font-size: 10px; }
+  .d-list .done .t { color: var(--g2-muted); text-decoration: line-through; text-decoration-color: var(--g2-faint); }
+  .d-chk { color: var(--g2-accent); font-weight: 700; }
+  .d-chk.on { color: var(--g2-ok); }
+
+  /* glyph blocks: waveform and progress drawn with the TUI's shade ramp */
+  .d-wave { display: flex; gap: 2px; align-items: center; height: 36px; }
+  .d-wave i { display: block; width: 4px; height: calc(var(--h) * 1%); background: var(--g2-signal); }
+  .d-wave.idle i { background: var(--g2-faint); }
+  .d-blocks { font-size: 12px; letter-spacing: 0.02em; color: var(--g2-accent); }
+  .d-blocks .off { color: var(--g2-border-faint); }
+  .d-pips { display: flex; gap: 6px; justify-content: center; }
+  .d-pips i { display: block; width: 8px; height: 8px; border: 1px solid var(--g2-border); }
+  .d-pips i.on { background: var(--g2-accent); border-color: var(--g2-accent); }
+
+  /* status row for the system watch: glyph + word + colour, never colour alone */
+  .d-status { width: 100%; display: grid; gap: 4px; text-align: left; font-size: 11px; }
+  .d-status .row { display: grid; grid-template-columns: 12px 1fr auto; gap: 6px; align-items: baseline; }
+  .d-status .g { font-weight: 700; } .d-status .ok { color: var(--g2-ok); } .d-status .warn { color: var(--g2-warn); } .d-status .bad { color: var(--g2-bad); } .d-status .m { color: var(--g2-muted); font-size: 10px; }
+
+  /* the inscribed square, drawn over a disc when the page is explaining the geometry */
+  .disc--geometry { padding: 0; display: grid; place-items: center; }
+  .geo { position: absolute; inset: 0; }
+  .geo .sq { position: absolute; left: 50%; top: 50%; width: 170px; height: 170px; margin: -85px 0 0 -85px; border: 1px dashed var(--g2-note); }
+  .geo .inset { position: absolute; inset: 12px; border-radius: 50%; border: 1px dashed var(--g2-info); }
+  .geo .tag { position: absolute; font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; padding: 1px 4px; background: var(--g2-bg); }
+  .geo .tag.sq-tag { left: 50%; transform: translateX(-50%); top: 36px; color: var(--g2-note); }
+  .geo .tag.in-tag { left: 50%; transform: translateX(-50%); bottom: 22px; color: var(--g2-info); }
+  .geo .tap { position: absolute; left: 50%; top: 50%; width: 48px; height: 48px; margin: -24px 0 0 -24px; border: 1px solid var(--g2-accent); display: grid; place-items: center; color: var(--g2-accent); font-size: 9px; letter-spacing: 0.06em; }
+  .geo .px { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); margin-top: 52px; font-size: 10px; color: var(--g2-muted); }
+
+  /* the bezel arrow: a hint drawn outside the disc, on the case */
+  .watch .hint { position: absolute; z-index: 2; top: -4px; left: 50%; transform: translateX(-50%); font-family: var(--g2-font-mono); font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--g2-accent); background: var(--g2-bg); padding: 0 6px; border: 1px solid var(--g2-border); }
+
+  /* small type specimen used in §1 */
+  .spec { display: grid; gap: 0.5rem; font-family: var(--g2-font-mono); }
+  .spec .row { display: grid; grid-template-columns: 5.5rem 1fr auto; gap: 1rem; align-items: baseline; border-bottom: var(--g2-rule) solid var(--g2-border-faint); padding-bottom: 0.4rem; }
+  .spec .row:last-child { border-bottom: 0; }
+  .spec .sz { color: var(--g2-muted); font-size: var(--g2-text-xs); letter-spacing: var(--g2-tracking-label); text-transform: uppercase; }
+  .spec .use { color: var(--g2-muted); font-size: var(--g2-text-xs); text-align: right; }
+  .spec .sample { color: var(--g2-fg-bright); line-height: 1.1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+  .nono { display: grid; gap: 0.6rem; }
+  .nono .row { display: grid; grid-template-columns: 1.2rem 1fr 1fr; gap: 0.75rem; align-items: baseline; padding-bottom: 0.6rem; border-bottom: var(--g2-rule) solid var(--g2-border-faint); font-size: var(--g2-text-sm); }
+  .nono .x { color: var(--g2-signal-text); font-family: var(--g2-font-mono); font-weight: 700; }
+  .nono .no { color: var(--g2-muted); text-decoration: line-through; text-decoration-color: var(--g2-signal); }
+  .nono .yes strong { color: var(--g2-fg-bright); }
+  .colophon { display: grid; gap: 1.5rem; padding-top: 1.5rem; border-top: var(--g2-rule-strong) solid var(--g2-border); }
+  .colophon .ledger { font-family: var(--g2-font-mono); font-size: var(--g2-text-sm); border: var(--g2-rule) solid var(--g2-border); padding: 1rem 1.25rem; display: grid; gap: 0.3rem; max-width: 40rem; }
+  .colophon .ledger .row { display: flex; gap: 0.5rem; align-items: baseline; }
+  .colophon .ledger .k { color: var(--g2-muted); flex: none; }
+  .colophon .ledger .dots { flex: 1; border-bottom: 1px dotted var(--g2-faint); transform: translateY(-4px); }
+  .colophon .ledger .v { color: var(--g2-fg-bright); flex: none; }
+  .sig-block { font-family: var(--g2-font-mono); font-size: var(--g2-text-sm); color: var(--g2-muted); display: grid; gap: 0.25rem; }
+  .sig-block .name { color: var(--g2-fg-bright); font-style: italic; }
+
+  @media (max-width: 720px) {
+    .masthead { grid-template-columns: 1fr; padding-top: 3rem; }
+    .masthead .watch { display: none; }
+    .index ul { flex-wrap: nowrap; overflow-x: auto; }
+    .corner { top: 0.5rem; right: 0.5rem; font-size: 0.62rem; }
+    .nono .row { grid-template-columns: 1.2rem 1fr; } .nono .yes { grid-column: 2; }
+    .spec .row { grid-template-columns: 4.5rem 1fr; } .spec .use { grid-column: 2; text-align: left; }
+  }
+  :root.theme-paper body, :root[data-theme="paper"] body { line-height: 1.65; }
+  @media print { .index, .toolbar { display: none !important; } body { padding: 0; } .masthead { margin-top: 0; } .sec { break-inside: avoid; } }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="sheet">
+
+  <header class="masthead">
+    <span class="tab label">СТАНДАРТ № 003 · WATCH</span>
+    <span class="corner">ДСП · Экз. № 1</span>
+    <div>
+      <div class="logo">СТАНДАРТ</div>
+      <div class="star">★</div>
+      <h1>Bureau of Computational Technology · Design Standard, watch surface</h1>
+      <div class="meta"><span class="muted">Нирская Вычислительная Техника</span></div>
+      <div class="meta"><span class="muted">Директор:</span> Норман <span class="muted">· Дата:</span> 2026-10-24 <span class="muted">· Scope:</span> Wear OS · Galaxy Watch6 Classic 47 mm · Compose for Wear OS · Watch Face Format</div>
+      <div class="toolbar">
+        <div class="toggle" role="group" aria-label="Theme">
+          <button class="btn" id="theme-bureau" aria-pressed="true" type="button">БЮРО · bureau</button>
+          <button class="btn" id="theme-paper" aria-pressed="false" type="button">БЛАНК · paper</button>
+        </div>
+        <a class="btn btn--ghost" href="#canon">Out of canon <kbd>§11</kbd></a>
+      </div>
+    </div>
+    <div class="watch" aria-hidden="true">
+      <div class="disc">
+        <div class="d-top"><span class="d-label cyr">СБ · 24 ОКТ</span></div>
+        <div class="d-mid">
+          <div class="d-time">23:38</div>
+          <div class="d-ledger">
+            <div class="row"><span class="k">Казна</span><span class="dots"></span><span class="v">1 due</span></div>
+            <div class="row"><span class="k">Дела</span><span class="dots"></span><span class="v">3 open</span></div>
+          </div>
+        </div>
+        <div class="d-bot"><span class="d-blocks">████████<span class="off">██</span></span><span class="d-fine">battery 81 %</span></div>
+      </div>
+    </div>
+  </header>
+
+  <nav class="index" aria-label="Sections">
+    <ul>
+      <li><a href="#svodka">§0 Сводка</a></li>
+      <li><a href="#scale">§1 Масштаб</a></li>
+      <li><a href="#aod">§2 Дежурный экран</a></li>
+      <li><a href="#face">§3 Циферблат</a></li>
+      <li><a href="#tiles">§4 Плитки</a></li>
+      <li><a href="#notes">§5 Заметка</a></li>
+      <li><a href="#treasury">§6 Казна</a></li>
+      <li><a href="#notify">§7 Уведомления</a></li>
+      <li><a href="#tasks">§8 Дела</a></li>
+      <li><a href="#watch">§9 Надзор</a></li>
+      <li><a href="#input">§10 Ввод</a></li>
+      <li><a href="#canon">§11 Вне канона</a></li>
+    </ul>
+  </nav>
+
+  <!-- ================================================================ §0 -->
+  <section class="sec" id="svodka">
+    <header>
+      <h2><span class="sec-no">§0</span> <span class="cyr">СВОДКА</span> · One glance, one action, one stamp</h2>
+      <p>This is the third surface of the g2 design system, after the GUI and the terminal. Same seeds, same token names, same stamps, same label grammar. What changes is the canvas: a 480 × 480 disc on the wrist, read for about five seconds at a time, often in ambient light, often with one hand busy. Every disc on this page is drawn only with the tokens in §1, so the paper toggle above re-renders the whole wrist.</p>
+    </header>
+    <div class="grid">
+      <div class="frame frame--authority">
+        <span class="frame__title">ТРИ ПРАВИЛА · the three rules</span>
+        <div class="prose t-sm">
+          <p><strong>1. One screen, one decision.</strong> A disc shows one document and asks one question. The answer is a stamp. Anything that needs a second question is a second screen, reached by the bezel.</p>
+          <p><strong>2. The bezel is the cursor.</strong> Rotating steps the <code>▸</code> through a list or a stack of cards, exactly as <kbd>j</kbd>/<kbd>k</kbd> do in the terminal. Tap selects. Swipe right is back. The screen never asks for a scrollbar.</p>
+          <p><strong>3. The field stays dark.</strong> On an OLED a lit pixel is the expense. The warm near-black costs almost nothing, so the bureau's palette is also the battery policy. Always-on keeps under fifteen percent of the pixels lit.</p>
+        </div>
+      </div>
+      <div class="frame">
+        <span class="frame__title">ПОТРЕБИТЕЛИ · consumers</span>
+        <div class="tablewrap" style="border:0">
+          <table>
+            <thead><tr><th>surface</th><th>stack</th><th>reads</th></tr></thead>
+            <tbody>
+              <tr><td class="mono">watch face</td><td>Watch Face Format (declarative XML)</td><td>hex from <code>tokens.toml</code>, hand-copied once; the format has no variables</td></tr>
+              <tr><td class="mono">apps · tiles</td><td>Compose for Wear OS · Material 3</td><td><code>tokens/tokens.kt</code>, generated: one <code>object</code> per theme</td></tr>
+              <tr><td class="mono">complications</td><td>Watch Face Format data sources</td><td>text only; the face paints them in its own tokens</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="note-box">
+      <div class="label">ПРИМЕЧАНИЕ · note</div>
+      <p class="t-sm">The wrist is the only surface where the bureau's square frames meet a round canvas. The decision: frames stay square and sit inside the circle. The circle is the hardware, like the bezel of a monitor; the standard does not bend its forms to it. Rim text, curved along the edge, is allowed on the watch face only (§3).</p>
+    </div>
+  </section>
+
+  <!-- ================================================================ §1 -->
+  <section class="sec" id="scale">
+    <header>
+      <h2><span class="sec-no">§1</span> <span class="cyr">МАСШТАБ</span> · Same tokens, wrist scale</h2>
+      <p>No new colour exists for the watch. The token table is the one in <code>tokens/tokens.css</code> and <code>tokens.toml</code>; §2 adds a usage rule for always-on, not a token. What is new is the scale. The Galaxy Watch6 Classic 47 mm is 480 × 480 physical pixels at density 2, so the design grid is 240 × 240 dp and every disc on this page is drawn at 1 CSS px = 1 dp.</p>
+    </header>
+    <div class="grid">
+      <figure>
+        <div class="watch">
+          <div class="disc disc--geometry">
+            <div class="geo">
+              <div class="inset"></div>
+              <div class="sq"></div>
+              <span class="tag sq-tag">inscribed square · 170 dp</span>
+              <div class="tap">48 dp</div>
+              <span class="px">240 × 240 dp</span>
+              <span class="tag in-tag">12 dp rim · no text</span>
+            </div>
+          </div>
+        </div>
+        <figcaption class="caption"><strong>Geometry.</strong> Text and ledgers live inside the inscribed square (240 ÷ √2 ≈ 170 dp). The one exception is the top label, capped at 18 characters (table). The outer 12 dp carry only rules, arcs and the rim date. Touch targets are 48 × 48 dp, the Wear OS floor.</figcaption>
+      </figure>
+      <div style="display:grid;gap:1rem">
+        <div class="frame">
+          <span class="frame__title">ТИП · type scale, in sp</span>
+          <div class="spec">
+            <div class="row"><span class="sz">44 · time</span><span class="sample" style="font-size:44px;font-weight:700">23:38</span><span class="use">watch face, one per disc</span></div>
+            <div class="row"><span class="sz">28 · figure</span><span class="sample" style="font-size:28px;font-weight:700">R$ 1.240</span><span class="use">the one number a screen is about</span></div>
+            <div class="row"><span class="sz">14 · body</span><span class="sample" style="font-size:14px;font-family:var(--g2-font-sans)">Pay the electricity bill</span><span class="use">PT Sans, two lines at most</span></div>
+            <div class="row"><span class="sz">12 · key</span><span class="sample" style="font-size:12px">ВОДА .....: 18 OCT</span><span class="use">ledger rows, list rows (floor for essential text)</span></div>
+            <div class="row"><span class="sz">10 · label</span><span class="sample" style="font-size:10px;letter-spacing:.12em;text-transform:uppercase">ЗАМЕТКА · NOTE</span><span class="use">Cyrillic labels, meta (floor for secondary text)</span></div>
+          </div>
+        </div>
+        <div class="tablewrap">
+          <table>
+            <thead><tr><th>rule</th><th>value</th><th>why</th></tr></thead>
+            <tbody>
+              <tr><td>canvas</td><td class="mono">240 × 240 dp</td><td>480 px at density 2; 1.5 in, about 453 ppi</td></tr>
+              <tr><td>touch target</td><td class="mono">≥ 48 × 48 dp</td><td>Wear OS app quality, WO-V2</td></tr>
+              <tr><td>text floor</td><td class="mono">12 sp · 10 sp</td><td>essential · secondary, WO-V14; follow the system font size</td></tr>
+              <tr><td>list row</td><td class="mono">32 dp</td><td>one bezel detent per row, finger-safe when two rows are the target</td></tr>
+              <tr><td>lines of body</td><td class="mono">≤ 2</td><td>a third line leaves the inscribed square</td></tr>
+              <tr><td>top label</td><td class="mono">≤ 18 chars</td><td>it sits 22 dp under the rim, where the chord is about 138 dp; 10 sp mono with 0.12 em tracking spends 7.2 dp per glyph. To fit, drop the English twin first, then the glyph, never the Cyrillic word</td></tr>
+              <tr><td>always-on</td><td class="mono">≤ 15 % OPR</td><td>on-pixel ratio, Watch Face Studio rule; §2</td></tr>
+              <tr><td>corners · shadows</td><td class="mono">0 · none</td><td>same as every surface; the circle is the case, not the design</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================================ §2 -->
+  <section class="sec" id="aod">
+    <header>
+      <h2><span class="sec-no">§2</span> <span class="cyr">ДЕЖУРНЫЙ ЭКРАН</span> · Always-on is a usage rule, not a theme</h2>
+      <p>When the wrist drops, the screen goes to its duty state. The budget is fifteen percent of the pixels, counted by brightness, so the bureau's duty screen is text on <code>well</code>: the time in regular-weight gold, one ledger line, nothing filled, no stamp. Paper has no duty state; paper is for reading, not for waiting.</p>
+    </header>
+    <div class="shelf">
+      <figure>
+        <div class="watch">
+          <div class="disc">
+            <div class="d-top"><span class="d-label cyr">СБ · 24 ОКТ</span></div>
+            <div class="d-mid">
+              <div class="d-time">23:38</div>
+              <div class="d-ledger">
+                <div class="row"><span class="k">Казна</span><span class="dots"></span><span class="v">1 due</span></div>
+                <div class="row"><span class="k">Дела</span><span class="dots"></span><span class="v">3 open</span></div>
+              </div>
+            </div>
+            <div class="d-bot"><span class="d-blocks">████████<span class="off">██</span></span><span class="d-fine">battery 81 %</span></div>
+          </div>
+        </div>
+        <figcaption class="caption"><strong>Interactive.</strong> Bold time, two ledger rows, battery as ten blocks. Full tokens.</figcaption>
+      </figure>
+      <figure>
+        <div class="watch">
+          <div class="disc disc--aod">
+            <div class="d-top"></div>
+            <div class="d-mid">
+              <div class="d-time">23:38</div>
+              <div class="d-fine">КАЗНА · 1 due</div>
+            </div>
+            <div class="d-bot"></div>
+          </div>
+        </div>
+        <figcaption class="caption"><strong>Duty state.</strong> Same layout, same positions, so nothing jumps when the wrist lifts. Regular weight, <code>accent</code> and <code>muted</code> only, no fills, no rules.</figcaption>
+      </figure>
+      <div class="frame" style="max-width:22rem">
+        <span class="frame__title">ПРАВИЛО · the duty rule</span>
+        <div class="prose t-sm">
+          <p>Allowed on duty: <code>accent</code>, <code>muted</code>, <code>faint</code>, one glyph. Not allowed: <code>accent</code> fills, <code>selection</code> wash, stamps, the waveform, any colour of state.</p>
+          <p>Measure with the AOD analyzer in Watch Face Studio before publishing a face. A disc that passes here can still fail there if the white-pixel reading is used; keep headroom.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================================ §3 -->
+  <section class="sec" id="face">
+    <header>
+      <h2><span class="sec-no">§3</span> <span class="cyr">ЦИФЕРБЛАТ</span> · The watch face is a document header</h2>
+      <p>A bureau form opens with a framed ledger: number, title, directorate, date. The watch face is that header with the time where the title goes. Two complications at most, as ledger rows, fed by the apps below. The rim carries the date in the state's voice; the inscribed square carries everything the citizen reads.</p>
+    </header>
+    <div class="shelf">
+      <figure>
+        <div class="watch">
+          <div class="disc">
+            <div class="d-top"><span class="d-label cyr">СУББОТА · 24.10</span><span class="d-rule d-rule--strong"></span></div>
+            <div class="d-mid">
+              <div class="d-time">23:38</div>
+              <div class="d-ledger">
+                <div class="row"><span class="k">Казна</span><span class="dots"></span><span class="v">R$ 184 · 2d</span></div>
+                <div class="row"><span class="k">Дела</span><span class="dots"></span><span class="v">3 open</span></div>
+                <div class="row"><span class="k">Шаги</span><span class="dots"></span><span class="v">6 412</span></div>
+              </div>
+            </div>
+            <div class="d-bot"><span class="d-rule"></span><span class="d-fine">★ НИРВЫТЕХ · 81 %</span></div>
+          </div>
+        </div>
+        <figcaption class="caption"><strong>Ledger face.</strong> The default. Heavy rule under the date, light rule over the footer: the frame weights of the TUI, flattened to two lines.</figcaption>
+      </figure>
+      <figure>
+        <div class="watch">
+          <div class="disc">
+            <div class="d-top"><span class="d-label">ДСП · Экз. № 1</span></div>
+            <div class="d-mid">
+              <div class="d-time">23:38</div>
+              <div class="d-label acc">24 · 10 · 2026</div>
+              <div class="d-stamp ok">ОДОБРЕНО<small>APPROVED · 3 / 3 DONE</small></div>
+            </div>
+            <div class="d-bot"><span class="d-fine">Директор: Норман</span></div>
+          </div>
+        </div>
+        <figcaption class="caption"><strong>Stamp face.</strong> The one face that carries a stamp: the day's verdict, computed from the task app. ОДОБРЕНО when the list is clear, К СВЕДЕНИЮ when it is not. Never ОТКАЗАНО; the state does not reject a day.</figcaption>
+      </figure>
+      <figure>
+        <div class="watch">
+          <div class="disc disc--aod">
+            <div class="d-top"></div>
+            <div class="d-mid">
+              <div class="d-time">23:38</div>
+              <div class="d-fine">24 · 10</div>
+            </div>
+            <div class="d-bot"></div>
+          </div>
+        </div>
+        <figcaption class="caption"><strong>Either face, on duty.</strong> Time and date only. The stamp and the ledger return with the wrist.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ================================================================ §4 -->
+  <section class="sec" id="tiles">
+    <header>
+      <h2><span class="sec-no">§4</span> <span class="cyr">ПЛИТКИ</span> · A tile is one sheet of the ledger</h2>
+      <p>Tiles sit one bezel turn to the right of the face. Each is a single filed sheet: a Cyrillic title with its English twin, one figure or one list of three, one 48 dp action. A tile never scrolls; if it needs to, it is an app.</p>
+    </header>
+    <div class="shelf">
+      <figure>
+        <div class="watch">
+          <span class="hint">▸ bezel · 1 / 4</span>
+          <div class="disc">
+            <div class="d-top"><span class="d-label cyr">КАЗНА · treasury</span></div>
+            <div class="d-mid">
+              <div class="d-label">due in 2 days</div>
+              <div class="d-big">R$ 184,20</div>
+              <div class="d-body">Electricity · October</div>
+            </div>
+            <div class="d-bot"><div class="d-actions"><div class="d-btn d-btn--wide d-btn--primary">Mark paid</div></div></div>
+          </div>
+        </div>
+        <figcaption class="caption"><strong>Treasury tile.</strong> One figure, one action. The figure is 28 sp bold; the rest is 14 and 10.</figcaption>
+      </figure>
+      <figure>
+        <div class="watch">
+          <span class="hint">▸ bezel · 2 / 4</span>
+          <div class="disc">
+            <div class="d-top"><span class="d-label cyr">ДЕЛА · tasks</span></div>
+            <div class="d-mid">
+              <div class="d-list">
+                <div class="row"><span class="d-chk">[ ]</span><span class="t">Call the bank</span><span class="meta">today</span></div>
+                <div class="row"><span class="d-chk">[ ]</span><span class="t">Renew the bus card</span><span class="meta">mon</span></div>
+                <div class="row done"><span class="d-chk on">[✓]</span><span class="t">Send the invoice</span><span class="meta"></span></div>
+              </div>
+            </div>
+            <div class="d-bot"><span class="d-fine">2 open · 1 filed</span></div>
+          </div>
+        </div>
+        <figcaption class="caption"><strong>Task tile.</strong> Three rows, 32 dp each. Tapping a checkbox files the row; it stays visible, struck through, until the tile refreshes.</figcaption>
+      </figure>
+      <figure>
+        <div class="watch">
+          <span class="hint">▸ bezel · 3 / 4</span>
+          <div class="disc">
+            <div class="d-top"><span class="d-label cyr">ЗАМЕТКА · note</span></div>
+            <div class="d-mid">
+              <div class="d-actions"><div class="d-btn d-btn--record">●</div></div>
+              <div class="d-fine">hold to record · release to file</div>
+            </div>
+            <div class="d-bot"><span class="d-fine">last: 21:04 · 0:38</span></div>
+          </div>
+        </div>
+        <figcaption class="caption"><strong>Note tile.</strong> The record button is the one 64 dp target in the system; it is also the only red fill outside a stamp.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ================================================================ §5 -->
+  <section class="sec" id="notes">
+    <header>
+      <h2><span class="sec-no">§5</span> <span class="cyr">ЗАМЕТКА</span> · Voice notes are dictated and filed</h2>
+      <p>The citizen dictates; the bureau files. Three screens: recording, the filed slip, the shelf of notes. The waveform is the TUI's block ramp standing up. Transcription, when it exists, arrives later on the phone; the watch only promises a timestamp and a file number.</p>
+    </header>
+    <div class="shelf">
+      <figure>
+        <div class="watch">
+          <div class="disc">
+            <div class="d-top"><span class="d-label bad">● ЗАПИСЬ</span></div>
+            <div class="d-mid">
+              <div class="d-wave" aria-hidden="true"><i style="--h:30"></i><i style="--h:55"></i><i style="--h:80"></i><i style="--h:45"></i><i style="--h:95"></i><i style="--h:60"></i><i style="--h:35"></i><i style="--h:70"></i><i style="--h:100"></i><i style="--h:50"></i><i style="--h:25"></i><i style="--h:65"></i><i style="--h:85"></i><i style="--h:40"></i><i style="--h:20"></i><i style="--h:60"></i><i style="--h:75"></i><i style="--h:30"></i></div>
+              <div class="d-big">0:12</div>
+            </div>
+            <div class="d-bot"><div class="d-actions"><div class="d-btn d-btn--record is-live">■</div></div><span class="d-fine">release to file · swipe to discard</span></div>
+          </div>
+        </div>
+        <figcaption class="caption"><strong>Recording.</strong> The only screen with a live red fill. The counter is the 28 sp figure. Haptic: one short pulse on start, one long on file.</figcaption>
+      </figure>
+      <figure>
+        <div class="watch">
+          <div class="disc">
+            <div class="d-top"><span class="d-label cyr">ЗАМЕТКА № 0417</span></div>
+            <div class="d-mid">
+              <div class="d-stamp ok">ОДОБРЕНО<small>FILED · 23:38</small></div>
+              <div class="d-ledger">
+                <div class="row"><span class="k">Длит.</span><span class="dots"></span><span class="v">0:38</span></div>
+                <div class="row"><span class="k">Текст</span><span class="dots"></span><span class="v">on phone</span></div>
+              </div>
+            </div>
+            <div class="d-bot"><div class="d-actions"><div class="d-btn">▸</div><div class="d-btn d-btn--danger">✗</div></div></div>
+          </div>
+        </div>
+        <figcaption class="caption"><strong>Filed slip.</strong> Appears for three seconds, then returns to the shelf. Play and discard are the two 48 dp targets; discard asks nothing, it files a reversal on the phone.</figcaption>
+      </figure>
+      <figure>
+        <div class="watch">
+          <span class="hint">▸ bezel · 2 / 9</span>
+          <div class="disc">
+            <div class="d-top"><span class="d-label cyr">АРХИВ · notes</span></div>
+            <div class="d-mid d-mid--start">
+              <div class="d-list">
+                <div class="row"><span></span><span class="t">0418 · 23:38</span><span class="meta">0:38</span></div>
+                <div class="row sel"><span class="cur">▸</span><span class="t">0417 · 21:04</span><span class="meta">1:12</span></div>
+                <div class="row"><span></span><span class="t">0416 · 18:50</span><span class="meta">0:09</span></div>
+                <div class="row"><span></span><span class="t">0415 · yesterday</span><span class="meta">2:40</span></div>
+              </div>
+            </div>
+            <div class="d-bot"><span class="d-fine">9 filed · 2 untranscribed</span></div>
+          </div>
+        </div>
+        <figcaption class="caption"><strong>The shelf.</strong> Notes are numbered, not titled; the watch cannot type. The cursor row takes the <code>selection</code> wash, the count sits in the footer as in the TUI frame.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ================================================================ §6 -->
+  <section class="sec" id="treasury">
+    <header>
+      <h2><span class="sec-no">§6</span> <span class="cyr">КАЗНА</span> · A payment reminder is a direct order</h2>
+      <p>Money on the wrist is a reminder, never a ledger to browse. The notification is a ПРИКАЗ: the state tells the citizen that a sum is due, with a date, and offers exactly two answers. Paid files it with an ОДОБРЕНО. Defer refiles it for tomorrow and says so. Amounts are the one place the figure size is mandatory.</p>
+    </header>
+    <div class="shelf">
+      <figure>
+        <div class="watch">
+          <div class="disc">
+            <div class="d-top"><span class="d-label info">ПРИКАЗ · due</span></div>
+            <div class="d-mid">
+              <div class="d-big">R$ 184,20</div>
+              <div class="d-body">Electricity · October</div>
+              <div class="d-ledger">
+                <div class="row"><span class="k">Срок</span><span class="dots"></span><span class="v">26 OCT · 2d</span></div>
+              </div>
+            </div>
+            <div class="d-bot"><div class="d-actions"><div class="d-btn d-btn--primary">✓</div><div class="d-btn">+1d</div></div></div>
+          </div>
+        </div>
+        <figcaption class="caption"><strong>Due notice.</strong> ПРИКАЗ in <code>info</code>, the stamp blue of protocol. Two targets, the primary filled gold. The amount uses tabular figures and the citizen's locale.</figcaption>
+      </figure>
+      <figure>
+        <div class="watch">
+          <div class="disc">
+            <div class="d-top"><span class="d-label warn">К СВЕДЕНИЮ · late</span></div>
+            <div class="d-mid">
+              <div class="d-big">R$ 92,00</div>
+              <div class="d-body">Internet · September</div>
+              <div class="d-ledger">
+                <div class="row"><span class="k">Срок</span><span class="dots"></span><span class="v">−3d</span></div>
+              </div>
+            </div>
+            <div class="d-bot"><div class="d-actions"><div class="d-btn d-btn--primary">✓</div><div class="d-btn">+1d</div></div></div>
+          </div>
+        </div>
+        <figcaption class="caption"><strong>Overdue.</strong> The label turns К СВЕДЕНИЮ in <code>warn</code>; the figure does not turn red. Red is for a rejection, and the citizen has not been rejected, only reminded.</figcaption>
+      </figure>
+      <figure>
+        <div class="watch">
+          <div class="disc">
+            <div class="d-top"><span class="d-label cyr">КАЗНА · October</span></div>
+            <div class="d-mid">
+              <div class="d-stamp ok">ОДОБРЕНО<small>PAID · 23:39</small></div>
+              <div class="d-ledger">
+                <div class="row"><span class="k">Оплачено</span><span class="dots"></span><span class="v">4 / 6</span></div>
+                <div class="row"><span class="k">Осталось</span><span class="dots"></span><span class="v">R$ 276,00</span></div>
+              </div>
+              <div class="d-pips"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></div>
+            </div>
+            <div class="d-bot"><span class="d-fine">next: water · 30 OCT</span></div>
+          </div>
+        </div>
+        <figcaption class="caption"><strong>Receipt.</strong> After Paid: the stamp, the month's count as six pips, the next due. Three seconds, then back to the face. No confetti; the bureau does not celebrate compliance.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ================================================================ §7 -->
+  <section class="sec" id="notify">
+    <header>
+      <h2><span class="sec-no">§7</span> <span class="cyr">УВЕДОМЛЕНИЯ</span> · Every notification is a filed slip</h2>
+      <p>One shape for all of them: a Cyrillic label with its state colour, a 14 sp line in PT Sans, one meta row, up to two 48 dp actions. The label grammar is the stamp grammar. Haptics are part of the shape and are written down, because colour never carries state alone on the wrist either. The top label is capped at 18 characters (§1), and the English twin is the first thing to go, so a slip may read <code>✗ ОТКАЗАНО</code> alone; the body sentence carries the rest.</p>
+    </header>
+    <div class="shelf">
+      <figure>
+        <div class="watch">
+          <div class="disc">
+            <div class="d-top"><span class="d-label ok">✓ ОДОБРЕНО · done</span></div>
+            <div class="d-mid">
+              <div class="d-body">Backup of <strong>chronopolis</strong> finished.</div>
+              <div class="d-fine">23:31 · 48 GB · 12 min</div>
+            </div>
+            <div class="d-bot"><div class="d-actions"><div class="d-btn">✓</div></div></div>
+          </div>
+        </div>
+        <figcaption class="caption"><strong>Approve.</strong> One short pulse. Dismiss is the only action.</figcaption>
+      </figure>
+      <figure>
+        <div class="watch">
+          <div class="disc">
+            <div class="d-top"><span class="d-label warn">! К СВЕДЕНИЮ</span></div>
+            <div class="d-mid">
+              <div class="d-body">PR #214 awaits your review for 2 days.</div>
+              <div class="d-fine">glory-to-gensek · Nilton</div>
+            </div>
+            <div class="d-bot"><div class="d-actions"><div class="d-btn d-btn--wide">Open on phone</div><div class="d-btn">✓</div></div></div>
+          </div>
+        </div>
+        <figcaption class="caption"><strong>Review.</strong> Two short pulses. The wide target hands off to the phone; the watch does not pretend it can review code.</figcaption>
+      </figure>
+      <figure>
+        <div class="watch">
+          <div class="disc">
+            <div class="d-top"><span class="d-label bad">✗ ОТКАЗАНО</span></div>
+            <div class="d-mid">
+              <div class="d-body">Deploy of <strong>dablog</strong> rejected: tests red.</div>
+              <div class="d-fine">CI · 23:35 · 3 failing</div>
+            </div>
+            <div class="d-bot"><div class="d-actions"><div class="d-btn d-btn--wide">Open on phone</div><div class="d-btn">✓</div></div></div>
+          </div>
+        </div>
+        <figcaption class="caption"><strong>Reject.</strong> One long pulse. The label is red; the body stays cream. The reason is in the sentence, as the canon requires of a rejection.</figcaption>
+      </figure>
+    </div>
+    <div class="tablewrap" style="max-width:48rem">
+      <table>
+        <thead><tr><th>level</th><th>label</th><th>colour</th><th>glyph</th><th>haptic</th><th>actions</th></tr></thead>
+        <tbody>
+          <tr><td>approve · done</td><td class="mono">ОДОБРЕНО</td><td class="mono">ok</td><td class="mono">✓</td><td>one short</td><td>dismiss</td></tr>
+          <tr><td>order · due</td><td class="mono">ПРИКАЗ</td><td class="mono">info</td><td class="mono">▸</td><td>two short</td><td>primary + defer</td></tr>
+          <tr><td>review · waiting</td><td class="mono">К СВЕДЕНИЮ</td><td class="mono">warn</td><td class="mono">!</td><td>two short</td><td>hand-off + dismiss</td></tr>
+          <tr><td>reject · failed</td><td class="mono">ОТКАЗАНО</td><td class="mono">bad</td><td class="mono">✗</td><td>one long</td><td>hand-off + dismiss</td></tr>
+          <tr><td>note · fyi</td><td class="mono">ЗАМЕТКА</td><td class="mono">note</td><td class="mono">▌</td><td>none</td><td>dismiss</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ================================================================ §8 -->
+  <section class="sec" id="tasks">
+    <header>
+      <h2><span class="sec-no">§8</span> <span class="cyr">ДЕЛА</span> · Tasks are checked, never typed</h2>
+      <p>The watch adds no task. It checks, defers and dictates. The list is the tile's list, longer, stepped by the bezel; the detail is a single sheet with the two answers. A new task is a voice note that the phone promotes.</p>
+    </header>
+    <div class="shelf">
+      <figure>
+        <div class="watch">
+          <span class="hint">▸ bezel · 3 / 7</span>
+          <div class="disc">
+            <div class="d-top"><span class="d-label cyr">ДЕЛА · today</span></div>
+            <div class="d-mid d-mid--start">
+              <div class="d-list">
+                <div class="row done"><span class="d-chk on">[✓]</span><span class="t">Send the invoice</span><span class="meta"></span></div>
+                <div class="row"><span class="d-chk">[ ]</span><span class="t">Call the bank</span><span class="meta">14:00</span></div>
+                <div class="row sel"><span class="d-chk">[ ]</span><span class="t">Renew the bus card</span><span class="meta">mon</span></div>
+                <div class="row"><span class="d-chk">[ ]</span><span class="t">Water the balcony</span><span class="meta"></span></div>
+              </div>
+            </div>
+            <div class="d-bot"><span class="d-fine">3 open · 1 filed · 3 later</span></div>
+          </div>
+        </div>
+        <figcaption class="caption"><strong>List.</strong> Checkbox as <code>[ ]</code> and <code>[✓]</code>, the GUI's form glyphs. The bezel moves the wash; tapping the row opens the sheet, tapping the box files it in place.</figcaption>
+      </figure>
+      <figure>
+        <div class="watch">
+          <div class="disc">
+            <div class="d-top"><span class="d-label cyr">ДЕЛО № 3</span></div>
+            <div class="d-mid">
+              <div class="d-body">Renew the bus card before Monday.</div>
+              <div class="d-ledger">
+                <div class="row"><span class="k">Срок</span><span class="dots"></span><span class="v">MON · 2d</span></div>
+                <div class="row"><span class="k">Откуда</span><span class="dots"></span><span class="v">note 0415</span></div>
+              </div>
+            </div>
+            <div class="d-bot"><div class="d-actions"><div class="d-btn d-btn--primary">✓</div><div class="d-btn">+1d</div></div></div>
+          </div>
+        </div>
+        <figcaption class="caption"><strong>Sheet.</strong> The task's origin is a ledger row: the note it came from, or the phone. Done and defer, the same pair as treasury. The pair never changes order across the system.</figcaption>
+      </figure>
+      <figure>
+        <div class="watch">
+          <div class="disc">
+            <div class="d-top"><span class="d-label cyr">ДЕЛА · today</span></div>
+            <div class="d-mid">
+              <div class="d-stamp ok">ОДОБРЕНО<small>ALL FILED · 7 / 7</small></div>
+              <div class="d-fine">The Directorate notes your compliance.</div>
+            </div>
+            <div class="d-bot"><span class="d-fine">tomorrow: 2 scheduled</span></div>
+          </div>
+        </div>
+        <figcaption class="caption"><strong>Empty state.</strong> Not a blank screen, a stamped one. The sentence is the whole celebration.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ================================================================ §9 -->
+  <section class="sec" id="watch">
+    <header>
+      <h2><span class="sec-no">§9</span> <span class="cyr">НАДЗОР</span> · System watch is a status board, read at arm's length</h2>
+      <p>Servers, jobs, the home cluster: one row each, glyph plus word plus colour, the terminal's status line folded five times. No graphs. A sparkline at 240 dp is a rumour; a number with a trend glyph is a fact.</p>
+    </header>
+    <div class="shelf">
+      <figure>
+        <div class="watch">
+          <div class="disc">
+            <div class="d-top"><span class="d-label cyr">НАДЗОР · systems</span></div>
+            <div class="d-mid">
+              <div class="d-status">
+                <div class="row"><span class="g ok">✓</span><span>chronopolis</span><span class="m">ok · 14d</span></div>
+                <div class="row"><span class="g ok">✓</span><span>dablog</span><span class="m">ok · 200</span></div>
+                <div class="row"><span class="g warn">!</span><span>modal · gpu</span><span class="m">warn · $12</span></div>
+                <div class="row"><span class="g bad">✗</span><span>ci · gensek</span><span class="m">bad · 3 red</span></div>
+                <div class="row"><span class="g ok">✓</span><span>backup</span><span class="m">ok · 23:31</span></div>
+              </div>
+            </div>
+            <div class="d-bot"><span class="d-fine">4 ok · 1 warn · 1 bad</span></div>
+          </div>
+        </div>
+        <figcaption class="caption"><strong>Board.</strong> Five rows at most; the sixth is a second screen. Sorted by severity, then by name. The footer count is the summary the glance reads first.</figcaption>
+      </figure>
+      <figure>
+        <div class="watch">
+          <div class="disc">
+            <div class="d-top"><span class="d-label warn">! К СВЕДЕНИЮ</span></div>
+            <div class="d-mid">
+              <div class="d-big">$ 12,40</div>
+              <div class="d-body">Modal GPU app running · 3 h 12</div>
+              <div class="d-blocks">██████<span class="off">████</span></div>
+            </div>
+            <div class="d-bot"><div class="d-actions"><div class="d-btn d-btn--wide d-btn--danger">Stop app</div></div></div>
+          </div>
+        </div>
+        <figcaption class="caption"><strong>Detail.</strong> The one destructive action in the system is a wide red-outlined target, never filled, and it asks for a hold of one second. The blocks show the daily budget spent.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ================================================================ §10 -->
+  <section class="sec" id="input">
+    <header>
+      <h2><span class="sec-no">§10</span> <span class="cyr">ВВОД</span> · The input ledger</h2>
+      <p>Every gesture on the Classic maps to one terminal gesture. The mapping is fixed across apps, so a citizen who learned the TUI already knows the watch.</p>
+    </header>
+    <div class="tablewrap" style="max-width:52rem">
+      <table>
+        <thead><tr><th>watch</th><th>does</th><th>terminal twin</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">bezel ↻ / ↺</td><td>moves the <code>▸</code> cursor one row or one card per detent</td><td class="mono">j / k</td></tr>
+          <tr><td class="mono">tap row</td><td>opens the sheet</td><td class="mono">Enter</td></tr>
+          <tr><td class="mono">tap checkbox</td><td>files the row in place</td><td class="mono">Space</td></tr>
+          <tr><td class="mono">swipe right</td><td>back one sheet</td><td class="mono">Esc</td></tr>
+          <tr><td class="mono">hold 1 s</td><td>confirms a destructive action (the only hold)</td><td class="mono">confirm form</td></tr>
+          <tr><td class="mono">hold record</td><td>dictates; release files</td><td class="mono">inline edit box</td></tr>
+          <tr><td class="mono">home key</td><td>watch face</td><td class="mono">F1 · home</td></tr>
+          <tr><td class="mono">back key</td><td>same as swipe right</td><td class="mono">Esc</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ================================================================ §11 -->
+  <section class="sec" id="canon">
+    <header>
+      <h2><span class="sec-no">§11</span> <span class="cyr">ВНЕ КАНОНА</span> · What the wrist does not do</h2>
+      <p>The GUI and TUI lists apply. These are the watch-specific ways to turn the standard into a costume, or the battery into a casualty.</p>
+    </header>
+    <div class="nono">
+      <div class="row"><span class="x">✗</span><span class="no">Rounded cards because the screen is round</span><span class="yes"><strong>Square frames inside the circle.</strong> The case is round; the standard is not.</span></div>
+      <div class="row"><span class="x">✗</span><span class="no">Curved text anywhere but the face's rim date</span><span class="yes"><strong>Straight lines in the inscribed square.</strong> Curved labels are decoration.</span></div>
+      <div class="row"><span class="x">✗</span><span class="no">A filled gold or red field on always-on</span><span class="yes"><strong>Text on <code>well</code>, regular weight,</strong> under fifteen percent lit.</span></div>
+      <div class="row"><span class="x">✗</span><span class="no">Three actions on one disc</span><span class="yes"><strong>Two at most,</strong> primary left, always the same pair for the same question.</span></div>
+      <div class="row"><span class="x">✗</span><span class="no">Charts, sparklines, rings of progress</span><span class="yes"><strong>A figure, a trend glyph, ten blocks.</strong> The ring is the bezel's job.</span></div>
+      <div class="row"><span class="x">✗</span><span class="no">Typing on the wrist</span><span class="yes"><strong>Dictate, check, defer.</strong> Text is written on the phone.</span></div>
+      <div class="row"><span class="x">✗</span><span class="no">Red for an overdue amount</span><span class="yes"><strong>Red is a rejection.</strong> Overdue is К СВЕДЕНИЮ in <code>warn</code>.</span></div>
+      <div class="row"><span class="x">✗</span><span class="no">Celebration screens, confetti, streaks</span><span class="yes"><strong>A stamp and one sentence.</strong> The Directorate notes compliance.</span></div>
+      <div class="row"><span class="x">✗</span><span class="no">Hex codes in Compose</span><span class="yes"><strong><code>G2Bureau.accent</code>,</strong> from the generated <code>tokens.kt</code>.</span></div>
+      <div class="row"><span class="x">✗</span><span class="no">A paper theme on always-on</span><span class="yes"><strong>Duty state is always the bureau.</strong> Paper is for reading with the wrist raised.</span></div>
+    </div>
+  </section>
+
+  <footer class="colophon">
+    <div class="ledger">
+      <div class="row"><span class="k">СТАНДАРТ №</span><span class="dots"></span><span class="v">003 · WATCH</span></div>
+      <div class="row"><span class="k">COMPANIONS</span><span class="dots"></span><span class="v">№ 001 GUI · № 002 TUI</span></div>
+      <div class="row"><span class="k">DEVICE</span><span class="dots"></span><span class="v">Galaxy Watch6 Classic 47 mm · 480 × 480</span></div>
+      <div class="row"><span class="k">TOKENS</span><span class="dots"></span><span class="v">tokens/tokens.kt · generated 2026-10-24</span></div>
+      <div class="row"><span class="k">APPROVED BY</span><span class="dots"></span><span class="v">Director Norman</span></div>
+      <div class="row"><span class="k">LICENSE</span><span class="dots"></span><span class="v">AGPL-3.0-or-later</span></div>
+    </div>
+    <div class="sig-block">
+      <span class="name">— Director Norman</span>
+      <span class="t-xs">glory-to-design · showcase/watch.html · 2026-10-24 · С честью, Генсек</span>
+    </div>
+  </footer>
+</div>
+
+<script>
+(function () {
+  var root = document.documentElement;
+  function setTheme(paper) {
+    root.classList.toggle('theme-paper', paper);
+    document.getElementById('theme-bureau').setAttribute('aria-pressed', String(!paper));
+    document.getElementById('theme-paper').setAttribute('aria-pressed', String(paper));
+    try { localStorage.setItem('g2-theme', paper ? 'paper' : 'bureau'); } catch (e) {}
+  }
+  document.getElementById('theme-bureau').addEventListener('click', function () { setTheme(false); });
+  document.getElementById('theme-paper').addEventListener('click', function () { setTheme(true); });
+  var saved = null; try { saved = localStorage.getItem('g2-theme'); } catch (e) {}
+  setTheme(saved === 'paper');
+
+  var links = Array.prototype.slice.call(document.querySelectorAll('.index a'));
+  var secs = links.map(function (a) { return document.querySelector(a.getAttribute('href')); });
+  function markActive() {
+    var y = window.scrollY + 120, cur = 0;
+    secs.forEach(function (s, i) { if (s && s.offsetTop <= y) cur = i; });
+    links.forEach(function (a, i) { a.classList.toggle('is-active', i === cur); });
+  }
+  window.addEventListener('scroll', markActive, { passive: true }); markActive();
+})();
+</script>

@@ -1,9 +1,9 @@
 # glory-to-design
 
 СТАНДАРТ · the design system of the Mashinograd / NIRVYTEKH bureau suite
-(`glory-to-*`, "g2"). Two surfaces, one voice: a **GUI** system (web, desktop and
-mobile) and a **TUI** system (terminal). Everything else in the suite consumes
-this repo; nothing here depends on any other repo.
+(`glory-to-*`, "g2"). Three surfaces, one voice: a **GUI** system (web, desktop and
+mobile), a **TUI** system (terminal) and a **WATCH** system (Wear OS, the wrist).
+Everything else in the suite consumes this repo; nothing here depends on any other repo.
 
 ## What lives here
 
@@ -11,19 +11,21 @@ this repo; nothing here depends on any other repo.
 |---|---|---|
 | `tokens/tokens.css` | GUI tokens, generated. Dark-first `:root`, `[data-theme="paper"]` variant. | web projects, Super Productivity / Obsidian themes |
 | `tokens/tokens.toml` | TUI tokens, generated. Master trio + overrides, gensek `themes.toml` shape, plus the resolved table. | `glory-to-gensek`, `glory-to-protocol`, tuicr |
+| `tokens/tokens.kt` | Watch / Compose tokens, generated. One Kotlin `object` per theme; Material 3 fold in the header. | the future Wear OS app; any Compose consumer |
 | `tokens/contrast-report.md` | Generated WCAG report for every load-bearing pair. | humans, before changing a seed |
 | `tools/derive_tokens.py` | The only source of truth for colors. Edit seeds here, never in the generated files. | whoever changes the palette |
 | `tools/align_term.py` | Normalizes the `<pre class="term">` mockups in `showcase/tui.html`: column-exact frames, fixed-width glyph cells. `--check` is the gate. | whoever edits a terminal mockup |
 | `showcase/gui.html` | GUI system: spec and living showcase in one page. | published as a claude.ai artifact |
 | `showcase/tui.html` | TUI system: spec and living showcase in one page. | published as a claude.ai artifact |
+| `showcase/watch.html` | WATCH system (Wear OS, Galaxy Watch6 Classic 47 mm): spec and living showcase, 240 dp discs at 1 px = 1 dp. | published as a claude.ai artifact |
 | `DESIGN.md` | Principles, decisions and their dates, what was rejected and why. | before proposing a change |
 | `docs/canon.md` | The bureau's vocabulary, titles, documents, stamps, salutes, language rules. | before writing any public copy in the suite |
 | `docs/references.md` | Eastern-bloc computing and print references, with sources. | when a new component needs a precedent |
 
 ## Rules of the house
 
-- **Generated files are generated.** `tokens/*.css`, `tokens/*.toml` and the report
-  come from `python3 tools/derive_tokens.py`. A hand edit there is overwritten on the
+- **Generated files are generated.** `tokens/*.css`, `tokens/*.toml`, `tokens/*.kt` and
+  the report come from `python3 tools/derive_tokens.py`. A hand edit there is overwritten on the
   next run and is a bug.
 - **A color is a token or it does not exist.** Showcase pages and downstream repos
   speak only in semantic tokens (`bg`, `fg`, `accent`, `signal`, `ok`, `warn`…), never
@@ -52,11 +54,13 @@ this repo; nothing here depends on any other repo.
 
 ## How the surfaces relate
 
-GUI and TUI share **seeds, semantics and voice**, not pixels. Same master trio, same
-token names, same stamp vocabulary, same label grammar (`КИРИЛЛИЦА · English`). The
-GUI renders frames as CSS borders and stamps as SVG; the TUI renders frames as
-box-drawing glyphs and stamps as text blocks. When a component exists on one surface
-and not the other, the spec says so instead of forcing a bad translation.
+GUI, TUI and WATCH share **seeds, semantics and voice**, not pixels. Same master trio,
+same token names, same stamp vocabulary, same label grammar (`КИРИЛЛИЦА · English`).
+The GUI renders frames as CSS borders and stamps as SVG; the TUI renders frames as
+box-drawing glyphs and stamps as text blocks; the WATCH renders square frames inside a
+round case, one decision per disc, and keeps always-on under 15 % lit pixels. When a
+component exists on one surface and not the others, the spec says so instead of
+forcing a bad translation.
 
 ## Open items
 

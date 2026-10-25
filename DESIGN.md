@@ -77,8 +77,19 @@ cursor, table, progress blocks `█▓▒░`, help-as-directive overlay, confir
 dimmed screen, command palette, scroll counts in the frame, narrow mode under 80 columns, boot
 ledger, fatal error as a rejected form.
 
+**WATCH** (Wear OS, Galaxy Watch6 Classic 47 mm first). Canvas 240 × 240 dp (480 px at
+density 2); text and ledgers inside the inscribed square (170 dp), the outer 12 dp for
+rules and the rim date only. Components: ledger face and stamp face, duty (always-on)
+state, tiles as single sheets, voice-note recording / filed slip / shelf, treasury due
+notice / overdue / receipt, notification slip (label + body + meta + two 48 dp
+actions), task list / sheet / stamped empty state, system board (five rows, glyph +
+word + colour), input ledger (bezel = cursor, swipe right = back, hold = confirm).
+No new tokens; two new usage rules (duty state, square frames in a round case).
+
 Shared: seeds, token names, stamp vocabulary, label grammar, frame weights, the
-80-column ledger width (`FORM_WIDTH = 80` in protocol).
+80-column ledger width (`FORM_WIDTH = 80` in protocol). The watch adds the 48 dp
+target, the 32 dp list row, the 18-character top label (the chord 22 dp under the rim)
+and the 12 / 10 sp text floors from the Wear OS quality guidelines.
 
 ## Decisions
 
@@ -97,6 +108,14 @@ Shared: seeds, token names, stamp vocabulary, label grammar, frame weights, the
 | 2026-10-24 | **Dose plena stays on the masthead** (logo, star, seal, ДСП corner, ОФИЦИАЛЬНО rule, seal again in the footer). | trim the footer rule and the masthead corner (frontend-design review) | Owner's call, second time asked. The review's "remove one accessory" is noted, not applied. |
 | 2026-10-24 | **One motion in the system**: the masthead seal lands once on load (420 ms, transform only), off under `prefers-reduced-motion`. | no motion; also landing decision stamps | The review asked for one orchestrated moment; the stamp is the bureau's most characteristic gesture. Decision stamps stay still for now. |
 | 2026-10-24 | GUI leans **office-PC tier** (CP866 box drawing, dialogs), TUI leans **terminal tier** (uppercase as semantic, one accent at a time). | blend both on every screen | One hardware tier per surface avoids anachronism (see `docs/references.md`). |
+| 2026-10-24 | **Third surface: WATCH**, Galaxy Watch6 Classic 47 mm as the reference device, Compose for Wear OS as the app stack. | phone-first mobile spec; a generic "wearable" section inside the GUI page | Owner's call: a design standard for the device on the wrist is the bait for an app. The GUI page already covers mobile web; the wrist has its own geometry, input and power budget. |
+| 2026-10-24 | **Frames stay square inside the round canvas.** The circle is the case, not the design. Curved text only for the rim date on a watch face. | round cards and ring progress (Material 3 for Wear); curved labels everywhere | The bureau has no rounded corners on any surface; bending the forms to the glass would make the watch a different system. Ring progress is the bezel's job. |
+| 2026-10-24 | **Always-on is a usage rule, not a theme**: text on `well`, regular weight, `accent` + `muted` + `faint`, no fills, no stamps, under 15 % on-pixel ratio. Paper has no duty state. | a derived `aod` theme in the seed table; dimming the bureau theme | Samsung's Watch Face Studio rejects faces over 15 % OPR; a theme would invite fills. The rule keeps positions fixed so nothing jumps when the wrist lifts. |
+| 2026-10-24 | **The watch types nothing.** Tasks are checked, deferred or dictated; voice notes are numbered, not titled; text is written on the phone. | an on-watch keyboard; on-watch transcription in the UI | 240 dp cannot carry a keyboard and the bureau's voice; dictation is the inline edit box of the wrist. Transcription may arrive later from the phone. |
+| 2026-10-24 | **Two actions per disc, same pair for the same question** (done · defer, play · discard, hand-off · dismiss), primary on the left. | three-button rows; swipe actions as the only path | One screen, one decision. A fixed pair is learnable blind, which is how a watch is used. |
+| 2026-10-25 | **Tap confirms; hold (1 s) is reserved for destructive actions.** The ✓ on treasury, tasks and notifications is a tap, also where it asserts a fact the app cannot verify ("paid"). | hold-to-stamp on fact assertions (gold fills the 48 dp square over 1 s, then the ОДОБРЕНО stamp lands); hold on every ✓ | Owner's call for the initial version, with the stated worry that an impulsive tap files something by mistake. Tap is the Wear OS convention and keeps the task list fast. Revisit after real use; the hold-to-stamp design is kept below. |
+| 2026-10-24 | **Red is a rejection, not an overdue amount.** Overdue is К СВЕДЕНИЮ in `warn`. | red figures for late payments (every banking app) | The stamp grammar is the state grammar; the citizen who is late has been reminded, not rejected. |
+| 2026-10-24 | **`tokens/tokens.kt` is generated** alongside the CSS and TOML: one Kotlin `object` per theme, Material 3 fold documented in the header. Watch Face Format has no variables and copies hex by hand from `tokens.toml`. | hand-written `Color.kt` in the future app repo | A color is a token or it does not exist; the app must read the same generated table as the web and the terminal. |
 
 ## Rejected for now, not forever
 
@@ -106,6 +125,17 @@ Shared: seeds, token names, stamp vocabulary, label grammar, frame weights, the
   already ship them; duplicating would create a second source of truth.
 - Landing decision stamps on the GUI (after *File request*, say): protocol plans animated
   stamps for `0.5.0`; the GUI has the `.is-landing` keyframes on the masthead seal only.
+- A 43 mm variant of the watch page (432 × 432, 216 dp): same rules, smaller square; drawn
+  when a 43 mm device exists in the household.
+- Curved rim text as a general watch component: allowed on the face's date only, see
+  Decisions. Revisit if a real face needs a second arc.
+- Hold-to-stamp for fact assertions (treasury "paid"): a 1 s press fills the button from the
+  bottom in gold, release early cancels, completion lands the ОДОБРЕНО stamp with the
+  masthead's 420 ms drop. It would be the WATCH surface's one motion, turning "one motion
+  in the system" into "one per surface". Parked on 2026-10-25 in favour of plain tap; the
+  owner's worry about impulsive taps is the reason to bring it back.
+- Charts on the wrist: the GUI's one-hue bar chart does not survive 240 dp; a figure with
+  a trend glyph and ten blocks replace it. Revisit with a real data app.
 
 ## Migration notes for consuming repos
 

@@ -20,13 +20,14 @@
 
 ## СВОДКА · TL;DR
 
-The design system of the Mashinograd / NIRVYTEKH bureau suite (`glory-to-*`). Two
+The design system of the Mashinograd / NIRVYTEKH bureau suite (`glory-to-*`). Three
 surfaces, one voice:
 
 | Surface | Showcase | Tokens |
 |---|---|---|
 | **GUI** (web, desktop and mobile) | `showcase/gui.html` | `tokens/tokens.css` |
 | **TUI** (terminal) | `showcase/tui.html` | `tokens/tokens.toml` |
+| **WATCH** (Wear OS, Galaxy Watch6 Classic 47 mm) | `showcase/watch.html` | `tokens/tokens.kt` |
 
 Warm near-black field, gold for focus, stamp red for decisions, box-drawing frames
 whose weight carries state, Cyrillic labels paired with English. An optional **paper**
@@ -44,6 +45,10 @@ Web: `<link rel="stylesheet" href="tokens/tokens.css">`, then style with
 Terminal (Rust or Python): read `tokens/tokens.toml`. `[themes.bureau]` is the
 gensek-shaped master trio; `[resolved.bureau]` is the full table for consumers that do
 not derive in OKLab themselves.
+
+Watch (Compose for Wear OS): drop `tokens/tokens.kt` into a source set and paint with
+`G2Bureau.accent` and friends. The header says how the table folds into a Material 3
+`ColorScheme`. Watch faces built with Watch Face Format copy the hex from `tokens.toml`.
 
 ## АРХИВ · Documents
 
