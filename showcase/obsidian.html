@@ -7,8 +7,8 @@
 <style>
   /* Layout concept: the same standard sheet as the GUI, TUI and WATCH pages. Every example
      is a <div class="ob theme-dark"> standing for an Obsidian window: the real theme
-     (showcase/obsidian.css, bundled from tokens/tokens.obsidian.css + obsidian/src/theme.css
-     + the snippets) is loaded above and applies to the real Obsidian class names inside.
+     (showcase/obsidian.css, written by glory-to-kartoteka/tools/build.py --showcase: the theme
+     bundle + the snippets) is loaded above and applies to the real Obsidian class names inside.
      The .ob block below only stands in for app.css layout: it consumes the contract
      variables the way Obsidian does and sets no colour of its own. */
   :root { --sheet: 1100px; --tab-h: 2.75rem; }
@@ -271,7 +271,7 @@
       <div class="star">★</div>
       <h1>Bureau of Computational Technology · Design Standard, Obsidian surface</h1>
       <div class="meta"><span class="muted">Нирская Вычислительная Техника</span></div>
-      <div class="meta"><span class="muted">Директор:</span> Норман <span class="muted">· Дата:</span> 2026-10-25 <span class="muted">· Scope:</span> Obsidian 1.4+ · theme <code>Nirvytekh</code> · snippets for Kanban, Bases, Dataview</div>
+      <div class="meta"><span class="muted">Директор:</span> Норман <span class="muted">· Дата:</span> 2026-10-25 <span class="muted">· Scope:</span> Obsidian 1.4+ · theme <code>Nirvytekh</code> (repo <code>glory-to-kartoteka</code>) · snippets for Kanban, Bases, Dataview</div>
       <div class="toolbar">
         <div class="toggle" role="group" aria-label="Theme">
           <button class="btn" id="theme-bureau" aria-pressed="true" type="button">БЮРО · bureau</button>
@@ -324,23 +324,28 @@
       </div>
       <div class="frame">
         <span class="frame__title">СЛОИ · the layers</span>
-<pre class="ledger-pre"><span class="k">tokens/tokens.obsidian.css</span>  <span class="c">generated</span>  tokens on .theme-dark / .theme-light,
+<pre class="ledger-pre"><span class="c">glory-to-design (this standard)</span>
+<span class="k">tokens/tokens.obsidian.css</span>  <span class="c">generated</span>  tokens on .theme-dark / .theme-light,
                             the contract mapped onto them
-<span class="k">obsidian/src/theme.css</span>      <span class="c">by hand</span>    the component layer, tokens only
-<span class="k">obsidian/theme.css</span>          <span class="c">generated</span>  the two above, bundled: what Obsidian loads
-<span class="k">obsidian/manifest.json</span>      <span class="c">by hand</span>    name Nirvytekh, minAppVersion 1.4.0
-<span class="k">obsidian/snippets/g2-*.css</span>  <span class="c">by hand</span>    one plugin each: kanban, bases, dataview
-<span class="k">tools/install_obsidian.py</span>   <span class="c">by hand</span>    copies theme and snippets into a vault</pre>
+<span class="c">glory-to-kartoteka (the theme)</span>
+<span class="k">tokens/tokens.obsidian.css</span>  <span class="c">vendored</span>   synced from the standard by tools/build.py
+<span class="k">src/theme.css</span>               <span class="c">by hand</span>    the component layer, tokens only
+<span class="k">theme.css</span>                   <span class="c">generated</span>  contract + component layer: what Obsidian loads
+<span class="k">manifest.json</span>               <span class="c">by hand</span>    name Nirvytekh, minAppVersion 1.4.0
+<span class="k">snippets/g2-*.css</span>           <span class="c">by hand</span>    one plugin each: kanban, bases, dataview
+<span class="k">tools/install.py</span>            <span class="c">by hand</span>    copies theme and snippets into a vault</pre>
       </div>
     </div>
     <div class="grid">
       <div class="frame">
         <span class="frame__title">УСТАНОВКА · install</span>
-<pre class="ledger-pre"><span class="c"># regenerate tokens, contrast report and the bundled theme</span>
+<pre class="ledger-pre"><span class="c"># in glory-to-design: regenerate tokens, contrast report and the contract</span>
 python3 tools/derive_tokens.py
-<span class="c"># copy theme + snippets into one vault, or every vault Obsidian knows</span>
-python3 tools/install_obsidian.py --vault ~/vault
-python3 tools/install_obsidian.py --all --dry-run
+<span class="c"># in glory-to-kartoteka: sync the contract, gate on hex, bundle theme.css</span>
+python3 tools/build.py --showcase
+<span class="c"># copy theme + snippets into one vault, or every registered vault already on Nirvytekh</span>
+python3 tools/install.py --vault ~/vault
+python3 tools/install.py --all --dry-run
 <span class="c"># then in Obsidian: Settings › Appearance › Themes › Nirvytekh,</span>
 <span class="c"># and enable the g2-* snippets you want under CSS snippets</span></pre>
       </div>
@@ -768,7 +773,7 @@ python3 tools/install_obsidian.py --all --dry-run
       <div class="row"><span class="x">✗</span><span class="no">"Adapt to system" for the colour scheme</span><span class="yes"><strong>The user picks dark or light.</strong> Paper is opt-in, by canon.</span></div>
       <div class="row"><span class="x">✗</span><span class="no">Embedded font files</span><span class="yes"><strong>Font stacks with fallbacks.</strong> Install PT Sans, PT Serif and JetBrains Mono for the full set.</span></div>
       <div class="row"><span class="x">✗</span><span class="no">Styling make.md spaces and stickers</span><span class="yes"><strong>The vault's own gold icon set stays the vault's.</strong> The theme does not reach into make.md's DOM.</span></div>
-      <div class="row"><span class="x">✗</span><span class="no">Editing <code>obsidian/theme.css</code> by hand</span><span class="yes"><strong>Edit <code>obsidian/src/theme.css</code></strong> and run the generator; the bundle is overwritten.</span></div>
+      <div class="row"><span class="x">✗</span><span class="no">Editing <code>theme.css</code> by hand</span><span class="yes"><strong>Edit <code>src/theme.css</code> in <code>glory-to-kartoteka</code></strong> and run its build; the bundle is overwritten.</span></div>
     </div>
   </section>
 
@@ -776,7 +781,7 @@ python3 tools/install_obsidian.py --all --dry-run
     <div class="ledger">
       <div class="row"><span class="k">СТАНДАРТ №</span><span class="dots"></span><span class="v">004 · OBSIDIAN</span></div>
       <div class="row"><span class="k">COMPANIONS</span><span class="dots"></span><span class="v">№ 001 GUI · № 002 TUI · № 003 WATCH</span></div>
-      <div class="row"><span class="k">HOST</span><span class="dots"></span><span class="v">Obsidian 1.4+ · theme Nirvytekh 1.0.0</span></div>
+      <div class="row"><span class="k">HOST</span><span class="dots"></span><span class="v">Obsidian 1.4+ · theme Nirvytekh 1.0.0 · glory-to-kartoteka</span></div>
       <div class="row"><span class="k">TOKENS</span><span class="dots"></span><span class="v">tokens/tokens.obsidian.css · generated 2026-10-25</span></div>
       <div class="row"><span class="k">APPROVED BY</span><span class="dots"></span><span class="v">Director Norman</span></div>
       <div class="row"><span class="k">LICENSE</span><span class="dots"></span><span class="v">AGPL-3.0-or-later</span></div>

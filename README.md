@@ -28,7 +28,7 @@ surfaces, one voice:
 | **GUI** (web, desktop and mobile) | `showcase/gui.html` | `tokens/tokens.css` |
 | **TUI** (terminal) | `showcase/tui.html` | `tokens/tokens.toml` |
 | **WATCH** (Wear OS, Galaxy Watch6 Classic 47 mm) | `showcase/watch.html` | `tokens/tokens.kt` |
-| **OBSIDIAN** (the vaults) | `showcase/obsidian.html` | `tokens/tokens.obsidian.css` → `obsidian/theme.css` |
+| **OBSIDIAN** (the vaults) | `showcase/obsidian.html` | `tokens/tokens.obsidian.css` → [`glory-to-kartoteka`](https://github.com/niltonfrederico/glory-to-kartoteka) |
 
 Warm near-black field, gold for focus, stamp red for decisions, box-drawing frames
 whose weight carries state, Cyrillic labels paired with English. An optional **paper**
@@ -51,10 +51,10 @@ Watch (Compose for Wear OS): drop `tokens/tokens.kt` into a source set and paint
 `G2Bureau.accent` and friends. The header says how the table folds into a Material 3
 `ColorScheme`. Watch faces built with Watch Face Format copy the hex from `tokens.toml`.
 
-Obsidian: `python3 tools/install_obsidian.py --vault ~/vault` (or `--all` for every vault
-Obsidian knows, `--dry-run` to look first) copies the theme `Nirvytekh` and the `g2-*`
-snippets into `.obsidian/`. Pick the theme and the snippets in Settings › Appearance;
-light mode is the paper form.
+Obsidian: `tokens/tokens.obsidian.css` is the contract (g2 tokens on `.theme-dark` /
+`.theme-light`, Obsidian's variables mapped onto them). The theme that consumes it,
+`Nirvytekh`, with its snippets and installer, is the sibling repo
+[`glory-to-kartoteka`](https://github.com/niltonfrederico/glory-to-kartoteka).
 
 ## АРХИВ · Documents
 

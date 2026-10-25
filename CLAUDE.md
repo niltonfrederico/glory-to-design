@@ -13,18 +13,14 @@ Everything else in the suite consumes this repo; nothing here depends on any oth
 | `tokens/tokens.css` | GUI tokens, generated. Dark-first `:root`, `[data-theme="paper"]` variant. | web projects, Super Productivity / Obsidian themes |
 | `tokens/tokens.toml` | TUI tokens, generated. Master trio + overrides, gensek `themes.toml` shape, plus the resolved table. | `glory-to-gensek`, `glory-to-protocol`, tuicr |
 | `tokens/tokens.kt` | Watch / Compose tokens, generated. One Kotlin `object` per theme; Material 3 fold in the header. | the future Wear OS app; any Compose consumer |
-| `tokens/tokens.obsidian.css` | Obsidian tokens, generated. g2 tokens on `.theme-dark` / `.theme-light`, Obsidian's CSS variable contract mapped onto them. | `obsidian/theme.css` (bundled from it), any vault |
-| `obsidian/src/theme.css` | The hand-written component layer of the Obsidian theme. Tokens only. | whoever changes how a note looks |
-| `obsidian/theme.css` · `manifest.json` | The installable theme `Nirvytekh`: **`theme.css` is generated** (contract + src), the manifest is by hand. | `tools/install_obsidian.py`, the vaults |
-| `obsidian/snippets/g2-*.css` | One defensive snippet per plugin: kanban, bases, dataview. Installed next to the theme, enabled per vault. | the vaults that run those plugins |
-| `tools/install_obsidian.py` | Copies theme and snippets into one vault or every vault Obsidian knows (`--all`, `--dry-run`). Never edits `appearance.json`. | whoever installs |
+| `tokens/tokens.obsidian.css` | Obsidian tokens, generated. g2 tokens on `.theme-dark` / `.theme-light`, Obsidian's CSS variable contract mapped onto them. | `glory-to-kartoteka` (the theme repo), which vendors it and bundles its component layer on top |
 | `tokens/contrast-report.md` | Generated WCAG report for every load-bearing pair. | humans, before changing a seed |
 | `tools/derive_tokens.py` | The only source of truth for colors. Edit seeds here, never in the generated files. | whoever changes the palette |
 | `tools/align_term.py` | Normalizes the `<pre class="term">` mockups in `showcase/tui.html`: column-exact frames, fixed-width glyph cells. `--check` is the gate. | whoever edits a terminal mockup |
 | `showcase/gui.html` | GUI system: spec and living showcase in one page. | published as a claude.ai artifact |
 | `showcase/tui.html` | TUI system: spec and living showcase in one page. | published as a claude.ai artifact |
 | `showcase/watch.html` | WATCH system (Wear OS, Galaxy Watch6 Classic 47 mm): spec and living showcase, 240 dp discs at 1 px = 1 dp. | published as a claude.ai artifact |
-| `showcase/obsidian.html` | OBSIDIAN system: spec and living showcase. Mock windows use Obsidian's real class names with the real theme (`showcase/obsidian.css`, generated bundle + snippets) loaded on top. | published as a claude.ai artifact |
+| `showcase/obsidian.html` | OBSIDIAN system: spec and living showcase. Mock windows use Obsidian's real class names with the real theme loaded on top (`showcase/obsidian.css`, written by `glory-to-kartoteka/tools/build.py --showcase`: theme + snippets). | published as a claude.ai artifact |
 | `DESIGN.md` | Principles, decisions and their dates, what was rejected and why. | before proposing a change |
 | `docs/canon.md` | The bureau's vocabulary, titles, documents, stamps, salutes, language rules. | before writing any public copy in the suite |
 | `docs/references.md` | Eastern-bloc computing and print references, with sources. | when a new component needs a precedent |
@@ -32,9 +28,10 @@ Everything else in the suite consumes this repo; nothing here depends on any oth
 ## Rules of the house
 
 - **Generated files are generated.** `tokens/*.css`, `tokens/*.toml`, `tokens/*.kt`, the
-  report, `obsidian/theme.css`, `showcase/tokens.css` and `showcase/obsidian.css` come from
-  `python3 tools/derive_tokens.py`. A hand edit there is overwritten on the next run and is a
-  bug. The Obsidian component layer is edited in `obsidian/src/theme.css`.
+  report and `showcase/tokens.css` come from `python3 tools/derive_tokens.py`;
+  `showcase/obsidian.css` comes from `glory-to-kartoteka/tools/build.py --showcase`. A hand
+  edit in any of them is overwritten on the next run and is a bug. The Obsidian theme itself
+  (component layer, snippets, installer) lives in `glory-to-kartoteka`, not here.
 - **A color is a token or it does not exist.** Showcase pages and downstream repos
   speak only in semantic tokens (`bg`, `fg`, `accent`, `signal`, `ok`, `warn`…), never
   in hex. The one exception is the seed table inside the derivation script.
@@ -73,11 +70,10 @@ forcing a bad translation.
 
 ## Open items
 
-- The June `Nirvytekh` theme is still what the vaults have installed until
-  `tools/install_obsidian.py --all` (plus `--vault` for `zoloto-durakov`, which is outside
-  the registry) runs with Obsidian closed. `the.hunt`'s `hunt-style.css` keeps raw hex for
-  Kanban lanes and Bases verdicts until it is rewritten with `--g2-lane` and tokens (recipe
-  in `showcase/obsidian.html` §7, §8).
+- The Obsidian theme moved to `glory-to-kartoteka` on 2026-10-25, the day it was written.
+  Install and deploy state live in that repo's `CLAUDE.md`. When a seed changes here, run
+  `derive_tokens.py`, then `glory-to-kartoteka/tools/build.py --showcase` so the spec page's
+  `showcase/obsidian.css` and the theme stay on the same tokens.
 - Legacy palettes still live in `glory-to-protocol` (slate `#16181d`) and
   `glory-to-gensek` (teal `#0b1f2a`). The canonical theme is the warm one from this
   repo; migration is per repo, on its own schedule. See `DESIGN.md` → Decisions.
