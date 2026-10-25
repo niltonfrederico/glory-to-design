@@ -86,6 +86,21 @@ actions), task list / sheet / stamped empty state, system board (five rows, glyp
 word + colour), input ledger (bezel = cursor, swipe right = back, hold = confirm).
 No new tokens; two new usage rules (duty state, square frames in a round case).
 
+**OBSIDIAN** (the vaults: `_ideas`, `the.hunt`, `zoloto-durakov`). The one host with a
+token contract of its own: `tokens/tokens.obsidian.css` (generated) puts the g2 tokens on
+`.theme-dark` (bureau) and `.theme-light` (paper) and maps Obsidian's CSS variables onto
+them once, with the accent as HSL, every token as an RGB triple and the extended palette
+folded onto the bureau's hues. `obsidian/src/theme.css` is the component layer, bundled
+by the generator into the installable `obsidian/theme.css`. Components: the sheet
+(headings mono with rules, body in the system face, blockquote as a note, code in the
+well), properties as the document header, tables as ledgers, tags as outline chips,
+callouts as stamped notices (`[!approved]` `[!rejected]` `[!order]` `[!review]`, plus
+the usual types folded onto six colours), window chrome on the well / panel / field ramp,
+menus and modals as framed forms, notice as a filed slip, empty pane as a blank form.
+Plugin layers are snippets, one per plugin: `g2-kanban` (despatch board, lane colour
+through `--g2-lane`), `g2-bases` (filterable ledger, decision words in stamp colours),
+`g2-dataview` (inline fields, error as a rejected form). No new tokens.
+
 Shared: seeds, token names, stamp vocabulary, label grammar, frame weights, the
 80-column ledger width (`FORM_WIDTH = 80` in protocol). The watch adds the 48 dp
 target, the 32 dp list row, the 18-character top label (the chord 22 dp under the rim)
@@ -114,6 +129,13 @@ and the 12 / 10 sp text floors from the Wear OS quality guidelines.
 | 2026-10-24 | **The watch types nothing.** Tasks are checked, deferred or dictated; voice notes are numbered, not titled; text is written on the phone. | an on-watch keyboard; on-watch transcription in the UI | 240 dp cannot carry a keyboard and the bureau's voice; dictation is the inline edit box of the wrist. Transcription may arrive later from the phone. |
 | 2026-10-24 | **Two actions per disc, same pair for the same question** (done · defer, play · discard, hand-off · dismiss), primary on the left. | three-button rows; swipe actions as the only path | One screen, one decision. A fixed pair is learnable blind, which is how a watch is used. |
 | 2026-10-25 | **Tap confirms; hold (1 s) is reserved for destructive actions.** The ✓ on treasury, tasks and notifications is a tap, also where it asserts a fact the app cannot verify ("paid"). | hold-to-stamp on fact assertions (gold fills the 48 dp square over 1 s, then the ОДОБРЕНО stamp lands); hold on every ✓ | Owner's call for the initial version, with the stated worry that an impulsive tap files something by mistake. Tap is the Wear OS convention and keeps the task list fast. Revisit after real use; the hold-to-stamp design is kept below. |
+| 2026-10-25 | **Fourth surface: OBSIDIAN**, replacing the June `Nirvytekh` theme (hand palette, serif body, dark only) that ran in every registered vault. | keep the vault theme as a consumer outside the system; restyle each vault with snippets only | Owner's call. The vault is read more than any other surface; seven hand-copied theme folders had already drifted from the tokens. The theme name stays `Nirvytekh`. |
+| 2026-10-25 | **The Obsidian theme lives in this repo** (`obsidian/`), with spec and contract. Vaults install from here. | a sibling `glory-to-*` repo (the direktiva pattern); keep the source in `zoloto-durakov/_code` | One source for three vaults; the direktiva split exists because Super Productivity's theme contract is experimental, and Obsidian's is stable. |
+| 2026-10-25 | **Body text in Obsidian follows the system**: PT Sans on the bureau, PT Serif on paper. | keep IBM Plex Serif as a surface exception (the June choice, "legible in long sessions") | Principle 5 was written for a dyslexic reader and the vault is where the long sessions happen. Serif remains on paper, which is where the June reasoning holds. |
+| 2026-10-25 | **`.theme-light` is paper.** The user picks it in Settings › Appearance; "adapt to system" is left off. | dark only, `.theme-light` repainted dark (the direktiva stance) | Obsidian's switch is the opt-in the system asks for. Repainting light as dark hides a user choice. |
+| 2026-10-25 | **Contract first, selectors second; plugin DOM only in snippets.** `--radius-*`, `--shadow-*`, fonts, every colour slot go through Obsidian's variables; Kanban, Bases and Dataview get one defensive snippet each. | component selectors everywhere (the June theme); plugin rules inside the theme | The contract is Obsidian's stable surface; plugin markup is not. A plugin update breaks one snippet, not the vault. |
+| 2026-10-25 | **Tags are outline chips; blockquotes are notes.** No gold-filled tags in running text; the quote takes `note`, not `signal`. | the June theme's filled gold tags and red quote rule | Field quiet, accent as event (principle 2); red marks a decision and a quotation decides nothing. |
+| 2026-10-25 | **Kanban lane colour is a vault decision** exposed as `--g2-lane`; the system snippet sets structure only. The vault maps its columns to the stamp grammar in its own snippet, tokens only. | colouring lanes 1..n from this repo; a `g2-hunt.css` here | The lane vocabulary belongs to the board. `the.hunt`'s `hunt-style.css` (slate, violet, blue, amber, green in raw hex) is the migration target, not a template. |
 | 2026-10-24 | **Red is a rejection, not an overdue amount.** Overdue is К СВЕДЕНИЮ in `warn`. | red figures for late payments (every banking app) | The stamp grammar is the state grammar; the citizen who is late has been reminded, not rejected. |
 | 2026-10-24 | **`tokens/tokens.kt` is generated** alongside the CSS and TOML: one Kotlin `object` per theme, Material 3 fold documented in the header. Watch Face Format has no variables and copies hex by hand from `tokens.toml`. | hand-written `Color.kt` in the future app repo | A color is a token or it does not exist; the app must read the same generated table as the web and the terminal. |
 
@@ -134,6 +156,14 @@ and the 12 / 10 sp text floors from the Wear OS quality guidelines.
   masthead's 420 ms drop. It would be the WATCH surface's one motion, turning "one motion
   in the system" into "one per surface". Parked on 2026-10-25 in favour of plain tap; the
   owner's worry about impulsive taps is the reason to bring it back.
+- Styling make.md (spaces, stickers, the vault's gold icon set) from this repo: its DOM is
+  undocumented and the icon set is the vault's own decision (2026-06-26). Revisit if a
+  second vault adopts make.md.
+- A `g2-hunt.css` in this repo mapping the.hunt's nine Kanban lanes and Bases verdicts:
+  that vocabulary is the vault's; the recipe is in `showcase/obsidian.html` §7 and §8.
+- Embedding font files in the theme: the three vaults are on one machine with the fonts
+  installed; a `@font-face` block would add weight to every vault for a case that does
+  not exist yet.
 - Charts on the wrist: the GUI's one-hue bar chart does not survive 240 dp; a figure with
   a trend glyph and ten blocks replace it. Revisit with a real data app.
 
@@ -146,5 +176,13 @@ and the 12 / 10 sp text floors from the Wear OS quality guidelines.
   `bg`, `.border` → `border`.
 - **glory-to-gensek** `themes.toml`: add `[themes.bureau]` from this repo's toml as the
   default; keep `gensek` (teal) shipped for anyone who prefers it.
+- **Obsidian vaults**: the June `deploy.fish` had put `Nirvytekh` into every registered
+  vault (seven of eight on 2026-10-25; `zoloto-durakov` is outside the registry and takes
+  `--vault`). `python3 tools/install_obsidian.py --all` replaces `.obsidian/themes/Nirvytekh/`
+  in the vaults already on it (the generator's bundle) and drops the `g2-*` snippets into
+  `.obsidian/snippets/`; the previous `theme.css` is kept beside it as `theme.css.prev` once. Enable the snippets per vault in Settings › Appearance.
+  `zoloto-durakov/_code/nirvytekh/` is superseded and can be retired. `the.hunt`'s
+  `hunt-style.css`: keep the header-card and striping rules if wanted, rewrite the lane
+  and verdict colours as `--g2-lane` / token rules (recipe in the showcase §7, §8).
 - **glory-to-direktiva** `nirvytekh.css`: already on the warm palette. Replace the
   `--nv-*` block with `@import` of `tokens.css` and alias `--nv-* → --g2-*`.

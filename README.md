@@ -20,7 +20,7 @@
 
 ## СВОДКА · TL;DR
 
-The design system of the Mashinograd / NIRVYTEKH bureau suite (`glory-to-*`). Three
+The design system of the Mashinograd / NIRVYTEKH bureau suite (`glory-to-*`). Four
 surfaces, one voice:
 
 | Surface | Showcase | Tokens |
@@ -28,6 +28,7 @@ surfaces, one voice:
 | **GUI** (web, desktop and mobile) | `showcase/gui.html` | `tokens/tokens.css` |
 | **TUI** (terminal) | `showcase/tui.html` | `tokens/tokens.toml` |
 | **WATCH** (Wear OS, Galaxy Watch6 Classic 47 mm) | `showcase/watch.html` | `tokens/tokens.kt` |
+| **OBSIDIAN** (the vaults) | `showcase/obsidian.html` | `tokens/tokens.obsidian.css` → `obsidian/theme.css` |
 
 Warm near-black field, gold for focus, stamp red for decisions, box-drawing frames
 whose weight carries state, Cyrillic labels paired with English. An optional **paper**
@@ -49,6 +50,11 @@ not derive in OKLab themselves.
 Watch (Compose for Wear OS): drop `tokens/tokens.kt` into a source set and paint with
 `G2Bureau.accent` and friends. The header says how the table folds into a Material 3
 `ColorScheme`. Watch faces built with Watch Face Format copy the hex from `tokens.toml`.
+
+Obsidian: `python3 tools/install_obsidian.py --vault ~/vault` (or `--all` for every vault
+Obsidian knows, `--dry-run` to look first) copies the theme `Nirvytekh` and the `g2-*`
+snippets into `.obsidian/`. Pick the theme and the snippets in Settings › Appearance;
+light mode is the paper form.
 
 ## АРХИВ · Documents
 

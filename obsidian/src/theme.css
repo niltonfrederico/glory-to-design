@@ -1,0 +1,282 @@
+/* ============================================================================
+   NIRVYTEKH · Obsidian theme, component layer (hand-written)
+   Бюро НИРВЫТЕХ · glory-to-design · showcase/obsidian.html is the spec
+
+   Everything above this block in the bundled theme.css is generated: the g2 tokens
+   under .theme-dark / .theme-light and Obsidian's CSS variable contract mapped onto
+   them. This layer speaks only in --g2-* tokens and Obsidian's own vars. A hex here
+   is a bug. Plugin DOM (Kanban, Bases, Dataview) is never touched here; it lives in
+   obsidian/snippets/, one defensive file per plugin.
+   ============================================================================ */
+
+/* ---------------------------------------------------------- 1. chrome is mono */
+/* Mono is the chrome, not the prose (DESIGN.md principle 5). The body font comes
+   from the contract (sans on the bureau, serif on paper); these are the ledgers. */
+.nav-folder-title-content,
+.nav-file-title-content,
+.tree-item-inner,
+.workspace-tab-header-inner-title,
+.view-header-title,
+.status-bar-item,
+.titlebar-text,
+.search-result-file-title,
+.metadata-property-key-input,
+.metadata-properties-heading,
+.setting-item-heading .setting-item-name,
+.modal-title,
+.prompt-input,
+.suggestion-item,
+.notice,
+.empty-state-title,
+.markdown-embed-title,
+.copy-code-button {
+  font-family: var(--g2-font-mono);
+}
+
+/* ledger keys: uppercase with tracking is semantic, not decoration */
+.nav-folder-title-content,
+.view-header-title,
+.metadata-property-key-input,
+.metadata-properties-heading,
+.setting-item-heading .setting-item-name,
+.modal-title,
+.empty-state-title,
+.markdown-embed-title {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.nav-folder-title-content { font-size: var(--g2-text-xs); color: var(--g2-muted); }
+.nav-file-title-content { font-size: var(--g2-text-sm); }
+.nav-file-title.is-active { border-left: 2px solid var(--g2-accent); }
+.nav-file-tag { font-family: var(--g2-font-mono); font-size: 0.65rem; letter-spacing: 0.06em; border: 1px solid var(--g2-border-faint); background: transparent; color: var(--g2-faint); border-radius: 0; }
+
+.view-header-title { font-size: var(--g2-text-sm); color: var(--g2-accent); }
+.view-header { border-bottom: 1px solid var(--g2-border-faint); }
+
+/* tabs are folder tabs: the active one carries a gold top rule */
+.workspace-tab-header-container { background: var(--g2-well); border-bottom: 1px solid var(--g2-border-faint); }
+.workspace-tab-header-inner-title { font-size: var(--g2-text-xs); letter-spacing: 0.02em; }
+.workspace-tab-header.is-active .workspace-tab-header-inner { border-top: 2px solid var(--g2-accent); }
+.workspace-tab-header { border-radius: 0; }
+
+.workspace-ribbon { border-right: 1px solid var(--g2-border-faint); }
+.workspace-ribbon.mod-right { border-left: 1px solid var(--g2-border-faint); border-right: 0; }
+.status-bar { border-top: 1px solid var(--g2-border-faint); font-size: var(--g2-text-xs); }
+.status-bar-item { font-variant-numeric: tabular-nums; }
+
+/* no floating cards anywhere: menus, popovers, prompts and modals are stamped paper */
+.menu, .suggestion-container, .popover, .hover-popover, .modal, .prompt, .notice, .workspace-leaf-resize-handle {
+  box-shadow: none;
+}
+.menu, .suggestion-container, .popover, .hover-popover { border: 1px solid var(--g2-border); background: var(--g2-panel); border-radius: 0; }
+.menu-separator { border-color: var(--g2-border-faint); }
+.modal { border: 2px solid var(--g2-border); }
+.modal-title { font-size: var(--g2-text-md); color: var(--g2-accent); }
+.prompt { border: 2px solid var(--g2-border); }
+.suggestion-item.is-selected { background: var(--g2-selection); color: var(--g2-fg-bright); }
+.notice { border: 1px solid var(--g2-border); border-top: 2px solid var(--g2-accent); background: var(--g2-panel); color: var(--g2-fg); font-size: var(--g2-text-sm); border-radius: 0; }
+.notice.mod-warning, .notice:has(.mod-warning) { border-top-color: var(--g2-signal); }
+
+.setting-item { border-top: 1px solid var(--g2-border-faint); }
+.setting-item-heading .setting-item-name { font-size: var(--g2-text-xs); color: var(--g2-muted); }
+.vertical-tab-nav-item { border-radius: 0; }
+.vertical-tab-nav-item.is-active { color: var(--g2-accent); background: var(--g2-selection); border-left: 2px solid var(--g2-accent); }
+.vertical-tab-header-group-title { font-family: var(--g2-font-mono); font-size: var(--g2-text-xs); text-transform: uppercase; letter-spacing: 0.08em; }
+
+.empty-state-title { font-size: var(--g2-text-sm); color: var(--g2-muted); }
+.empty-state-action { font-family: var(--g2-font-mono); color: var(--g2-accent); }
+
+/* ---------------------------------------------------------- 2. buttons, inputs */
+/* buttons are sentence case (decision 2026-10-24); uppercase stays on stamps and keys */
+button, .dropdown, input[type="text"], input[type="search"], input[type="email"], input[type="password"], input[type="number"], textarea {
+  border-radius: 0;
+  font-family: var(--g2-font-mono);
+  font-size: var(--g2-text-sm);
+}
+button { border: 1px solid var(--g2-border); background: var(--g2-panel); color: var(--g2-fg); box-shadow: none; }
+button:hover { background: var(--g2-panel-alt); color: var(--g2-fg-bright); border-color: var(--g2-accent); }
+button.mod-cta { background: var(--g2-accent); color: var(--g2-accent-ink); border-color: var(--g2-accent); font-weight: 600; }
+button.mod-cta:hover { background: var(--g2-accent-bright); border-color: var(--g2-accent-bright); color: var(--g2-accent-ink); }
+button.mod-warning { background: transparent; color: var(--g2-signal-text); border-color: var(--g2-signal); }
+button.mod-warning:hover { background: var(--g2-signal-bg); color: var(--g2-signal-text); }
+.clickable-icon { border-radius: 0; }
+.clickable-icon:hover { background: var(--g2-selection); }
+input[type="text"], input[type="search"], input[type="email"], input[type="password"], input[type="number"], textarea, .dropdown {
+  border: 1px solid var(--g2-border-faint); background: var(--g2-well); color: var(--g2-fg);
+}
+input:focus, textarea:focus, .dropdown:focus { border-color: var(--g2-accent); box-shadow: none; outline: 0; }
+.checkbox-container { border-radius: 0; background: var(--g2-panel-alt); border: 1px solid var(--g2-border); }
+.checkbox-container::after { border-radius: 0; background: var(--g2-muted); }
+.checkbox-container.is-enabled { background: var(--g2-accent); border-color: var(--g2-accent); }
+.checkbox-container.is-enabled::after { background: var(--g2-accent-ink); }
+.slider { border-radius: 0; }
+.slider::-webkit-slider-thumb { border-radius: 0; background: var(--g2-accent); }
+
+/* ---------------------------------------------------------- 3. the sheet */
+.markdown-preview-view, .markdown-source-view { font-feature-settings: "liga" 0; }
+.cm-s-obsidian .cm-active.cm-line { background: color-mix(in srgb, var(--g2-accent) 5%, transparent); }
+::selection { background: var(--g2-selection); color: var(--g2-fg-bright); }
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-thumb { border-radius: 0; border: 2px solid var(--g2-well); }
+
+/* headings: mono, bright ink, the first two uppercase with a rule beneath */
+body {
+  --h1-font: var(--g2-font-mono); --h2-font: var(--g2-font-mono); --h3-font: var(--g2-font-mono);
+  --h4-font: var(--g2-font-mono); --h5-font: var(--g2-font-mono); --h6-font: var(--g2-font-mono);
+  --h1-weight: 700; --h2-weight: 700; --h3-weight: 600; --h4-weight: 600; --h5-weight: 600; --h6-weight: 600;
+  --h1-size: 1.75em; --h2-size: 1.35em; --h3-size: 1.1em; --h4-size: 1em; --h5-size: 0.9em; --h6-size: 0.85em;
+  --inline-title-font: var(--g2-font-mono);
+  --inline-title-weight: 700;
+  --inline-title-size: 1.75em;
+  --inline-title-color: var(--g2-fg-bright);
+  --list-marker-color: var(--g2-muted);
+  --list-indent: 1.75em;
+  --toggle-thumb-radius: 0;
+  --toggle-thumb-color: var(--g2-fg-bright);
+}
+.markdown-rendered h1, .markdown-rendered h2, .cm-s-obsidian .cm-header-1, .cm-s-obsidian .cm-header-2, .inline-title {
+  text-transform: uppercase; letter-spacing: 0.06em;
+}
+.markdown-rendered h3, .cm-s-obsidian .cm-header-3 { letter-spacing: 0.03em; }
+.markdown-rendered h1, .inline-title { border-bottom: 2px solid var(--g2-border); padding-bottom: 0.25em; }
+.markdown-rendered h2 { border-bottom: 1px solid var(--g2-border-faint); padding-bottom: 0.15em; }
+.HyperMD-header-1 { border-bottom: 2px solid var(--g2-border); }
+.HyperMD-header-2 { border-bottom: 1px solid var(--g2-border-faint); }
+
+/* the horizontal rule is a double rule, the hr of a ledger */
+.markdown-rendered hr, .cm-s-obsidian .cm-hr { border: 0; border-top: 3px double var(--g2-border); }
+
+/* prose marks */
+.markdown-rendered strong, .cm-s-obsidian .cm-strong { color: var(--bold-color); }
+.markdown-rendered mark, .cm-s-obsidian .cm-highlight { background: var(--text-highlight-bg); color: inherit; }
+.markdown-rendered a.internal-link, .cm-s-obsidian .cm-hmd-internal-link { text-underline-offset: 0.15em; }
+.markdown-rendered a.external-link { text-underline-offset: 0.15em; }
+.markdown-rendered ul > li::marker { color: var(--g2-muted); }
+.task-list-item-checkbox { border-radius: 0; }
+.task-list-item.is-checked { color: var(--g2-faint); }
+
+/* code: a well with a faint frame; the block gets the full frame */
+.markdown-rendered code, .cm-s-obsidian span.cm-inline-code {
+  border: 1px solid var(--g2-border-faint); padding: 0 0.3em; border-radius: 0;
+}
+.markdown-rendered pre { border: 1px solid var(--g2-border); border-radius: 0; background: var(--g2-well); }
+.markdown-rendered pre code { border: 0; padding: 0; }
+.cm-s-obsidian .HyperMD-codeblock { background: var(--g2-well); }
+.cm-s-obsidian .HyperMD-codeblock-begin { border-top: 1px solid var(--g2-border); }
+.cm-s-obsidian .HyperMD-codeblock-end { border-bottom: 1px solid var(--g2-border); }
+.copy-code-button { border: 1px solid var(--g2-border-faint); border-radius: 0; font-size: var(--g2-text-xs); background: var(--g2-panel); color: var(--g2-muted); }
+
+/* blockquote is a note: the second hue, a left rule, a wash. Red is for decisions. */
+.markdown-rendered blockquote { border-left: 3px solid var(--g2-note); background: var(--g2-note-bg); padding: 0.6em 1em; margin-inline: 0; border-radius: 0; }
+.cm-s-obsidian .HyperMD-quote { background: var(--g2-note-bg); border-left: 3px solid var(--g2-note); }
+.cm-s-obsidian .HyperMD-quote .cm-formatting-quote { color: var(--g2-note); }
+
+/* tables are ledgers: mono uppercase keys, a frame, tabular figures */
+.markdown-rendered table { border: 1px solid var(--g2-border); border-collapse: collapse; font-variant-numeric: tabular-nums; font-size: var(--g2-text-sm); }
+.markdown-rendered th { font-family: var(--g2-font-mono); font-size: var(--g2-text-xs); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600; color: var(--g2-muted); text-align: left; border: 0; border-bottom: 1px solid var(--g2-border); }
+.markdown-rendered td { border: 0; border-bottom: 1px solid var(--g2-border-faint); vertical-align: top; }
+.markdown-rendered tr:last-child td { border-bottom: 0; }
+.table-cell-wrapper { border-radius: 0; }
+
+/* embeds and transclusions: a framed excerpt with its title as a ledger key */
+.markdown-embed { border: 1px solid var(--g2-border-faint); border-left: 2px solid var(--g2-border); background: var(--g2-bg-alt); padding: 0.5em 1em; border-radius: 0; }
+.markdown-embed-title { font-size: var(--g2-text-xs); color: var(--g2-muted); }
+.markdown-embed-link { color: var(--g2-muted); }
+
+/* tags: outline chips, mono, never a filled gold field in running text */
+a.tag, .cm-s-obsidian span.cm-hashtag {
+  font-family: var(--g2-font-mono); font-size: 0.8em; letter-spacing: 0.04em; text-decoration: none;
+}
+a.tag { border: 1px solid var(--g2-border); padding: 0.05em 0.5em; border-radius: 0; color: var(--g2-accent); background: transparent; }
+a.tag:hover { background: var(--g2-accent); color: var(--g2-accent-ink); border-color: var(--g2-accent); }
+.cm-s-obsidian span.cm-hashtag { color: var(--g2-accent); }
+.cm-s-obsidian span.cm-hashtag-begin { border: 1px solid var(--g2-border); border-right: 0; padding-left: 0.4em; }
+.cm-s-obsidian span.cm-hashtag-end { border: 1px solid var(--g2-border); border-left: 0; padding-right: 0.4em; }
+
+/* ---------------------------------------------------------- 4. properties */
+/* the frontmatter is the document header: a framed ledger of KEY: value rows */
+.metadata-container { border: 1px solid var(--g2-border); background: var(--g2-panel); padding: 0.5em 0.9em; margin-bottom: 1.5em; border-radius: 0; }
+.metadata-properties-heading { font-size: var(--g2-text-xs); color: var(--g2-muted); }
+.metadata-property { border-bottom: 1px solid var(--g2-border-faint); border-radius: 0; }
+.metadata-property:last-child { border-bottom: 0; }
+.metadata-property:focus-within { border-color: var(--g2-accent); }
+.metadata-property-key-input { font-size: var(--g2-text-xs); }
+.metadata-property-value { font-size: var(--g2-text-sm); }
+.metadata-property-icon { color: var(--g2-faint); }
+.metadata-add-button { font-family: var(--g2-font-mono); font-size: var(--g2-text-xs); color: var(--g2-muted); }
+.multi-select-pill { border: 1px solid var(--g2-border); background: transparent; color: var(--g2-accent); border-radius: 0; font-family: var(--g2-font-mono); font-size: var(--g2-text-xs); }
+.multi-select-pill:hover { border-color: var(--g2-accent); }
+.multi-select-pill.is-active { background: var(--g2-selection); }
+
+/* ---------------------------------------------------------- 5. callouts */
+/* A callout is a stamped notice: one 1px frame in its own colour, a mono uppercase
+   title, the panel behind. The four canon decisions get their stamp word as an
+   eyebrow. Types fold onto the bureau's hues: ok, signal, warn, info, note, muted. */
+.callout {
+  border: 1px solid rgb(var(--callout-color));
+  background: var(--g2-panel);
+  padding: 0;
+  margin: 1.25em 0;
+  mix-blend-mode: normal;
+}
+.callout-title {
+  font-family: var(--g2-font-mono);
+  font-size: var(--g2-text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+  color: rgb(var(--callout-color));
+  background: color-mix(in srgb, rgb(var(--callout-color)) 10%, transparent);
+  padding: 0.45em 0.9em;
+  gap: 0.5em;
+}
+.callout-title-inner { color: inherit; }
+.callout-icon { color: inherit; }
+.callout-content { padding: 0.6em 0.9em 0.75em; }
+.callout-content > :first-child { margin-top: 0; }
+.callout-content > :last-child { margin-bottom: 0; }
+.callout.is-collapsible .callout-title { cursor: pointer; }
+.callout-fold { color: inherit; }
+
+/* approve · ОДОБРЕНО */
+.callout[data-callout="success"], .callout[data-callout="check"], .callout[data-callout="done"], .callout[data-callout="approved"] { --callout-color: var(--g2-ok-rgb); }
+/* reject · ОТКАЗАНО */
+.callout[data-callout="failure"], .callout[data-callout="fail"], .callout[data-callout="missing"], .callout[data-callout="danger"], .callout[data-callout="error"], .callout[data-callout="bug"], .callout[data-callout="rejected"] { --callout-color: var(--g2-signal-text-rgb); }
+/* order · ПРИКАЗ */
+.callout[data-callout="todo"], .callout[data-callout="order"] { --callout-color: var(--g2-info-rgb); }
+/* review · К СВЕДЕНИЮ */
+.callout[data-callout="warning"], .callout[data-callout="caution"], .callout[data-callout="attention"], .callout[data-callout="review"] { --callout-color: var(--g2-warn-rgb); }
+/* the rest: notes in the second hue, info in steel, questions in amber, quotes muted */
+.callout[data-callout="note"], .callout[data-callout="abstract"], .callout[data-callout="summary"], .callout[data-callout="tldr"], .callout[data-callout="tip"], .callout[data-callout="hint"], .callout[data-callout="important"], .callout[data-callout="example"] { --callout-color: var(--g2-note-rgb); }
+.callout[data-callout="info"] { --callout-color: var(--g2-info-rgb); }
+.callout[data-callout="question"], .callout[data-callout="help"], .callout[data-callout="faq"] { --callout-color: var(--g2-warn-rgb); }
+.callout[data-callout="quote"], .callout[data-callout="cite"] { --callout-color: var(--g2-muted-rgb); }
+
+/* the stamp eyebrow: Cyrillic first, as every stamp in the suite */
+.callout[data-callout="success"] .callout-title-inner::before, .callout[data-callout="check"] .callout-title-inner::before, .callout[data-callout="done"] .callout-title-inner::before, .callout[data-callout="approved"] .callout-title-inner::before { content: "ОДОБРЕНО · "; }
+.callout[data-callout="failure"] .callout-title-inner::before, .callout[data-callout="fail"] .callout-title-inner::before, .callout[data-callout="danger"] .callout-title-inner::before, .callout[data-callout="error"] .callout-title-inner::before, .callout[data-callout="rejected"] .callout-title-inner::before { content: "ОТКАЗАНО · "; }
+.callout[data-callout="todo"] .callout-title-inner::before, .callout[data-callout="order"] .callout-title-inner::before { content: "ПРИКАЗ · "; }
+.callout[data-callout="warning"] .callout-title-inner::before, .callout[data-callout="caution"] .callout-title-inner::before, .callout[data-callout="attention"] .callout-title-inner::before, .callout[data-callout="review"] .callout-title-inner::before { content: "К СВЕДЕНИЮ · "; }
+.callout-title-inner::before { font-weight: 400; opacity: 0.85; }
+
+/* the stamped types hide the generic icon: the word is the mark */
+.callout[data-callout="approved"] .callout-icon, .callout[data-callout="rejected"] .callout-icon, .callout[data-callout="order"] .callout-icon, .callout[data-callout="review"] .callout-icon { display: none; }
+
+/* ---------------------------------------------------------- 6. search, outline */
+.search-result-file-title { font-size: var(--g2-text-sm); }
+.search-result-file-matched-text { background: var(--text-highlight-bg); color: inherit; }
+.search-result-file-match { border-left: 1px solid var(--g2-border-faint); }
+.search-input-container input { border: 1px solid var(--g2-border-faint); }
+.tree-item-self.is-active, .tree-item-self.is-selected { background: var(--g2-selection); }
+.tag-pane-tag-count { font-family: var(--g2-font-mono); font-size: var(--g2-text-xs); color: var(--g2-faint); }
+
+/* ---------------------------------------------------------- 7. paper */
+/* .theme-light is the paper form. The contract already swaps the tokens and the body
+   serif; the only extra rule is a looser line for the serif. */
+.theme-light .markdown-preview-view, .theme-light .markdown-source-view { line-height: 1.65; }
+
+/* ---------------------------------------------------------- 8. reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration: 0s !important; animation-duration: 0s !important; }
+}

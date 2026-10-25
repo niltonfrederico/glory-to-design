@@ -1,0 +1,819 @@
+<title>Стандарт Obsidian</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=PT+Sans:ital,wght@0,400;0,700;1,400&family=PT+Serif:ital,wght@0,400;0,700;1,400&display=swap">
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="obsidian.css">
+<style>
+  /* Layout concept: the same standard sheet as the GUI, TUI and WATCH pages. Every example
+     is a <div class="ob theme-dark"> standing for an Obsidian window: the real theme
+     (showcase/obsidian.css, bundled from tokens/tokens.obsidian.css + obsidian/src/theme.css
+     + the snippets) is loaded above and applies to the real Obsidian class names inside.
+     The .ob block below only stands in for app.css layout: it consumes the contract
+     variables the way Obsidian does and sets no colour of its own. */
+  :root { --sheet: 1100px; --tab-h: 2.75rem; }
+  html, body { background: var(--g2-bg); }
+  body {
+    color: var(--g2-fg); font-family: var(--g2-font-body); font-size: 1.0625rem; line-height: 1.55;
+    padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 0 4rem;
+    -webkit-font-smoothing: antialiased;
+  }
+  body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--g2-bg); }
+  * { box-sizing: border-box; }
+  * { scrollbar-width: thin; scrollbar-color: var(--g2-border) var(--g2-well); }
+  h1, h2, h3 { margin: 0; text-wrap: balance; color: var(--g2-fg-bright); font-weight: 700; }
+  p { margin: 0; max-width: var(--g2-measure); }
+  a { color: var(--g2-accent); text-decoration-color: var(--g2-border); text-underline-offset: 0.15em; }
+  :focus-visible { outline: 2px solid var(--g2-accent-bright); outline-offset: 2px; }
+  code, kbd, .mono { font-family: var(--g2-font-mono); font-size: 0.92em; }
+  .sheet code:not(.ob code), .sheet kbd:not(.ob kbd) { color: var(--g2-fg-bright); background: var(--g2-well); padding: 0.05em 0.35em; border: 0; }
+  .sheet kbd:not(.ob kbd) { color: var(--g2-accent); border: 1px solid var(--g2-border); padding: 0 0.4em; font-size: 0.8em; background: transparent; }
+  .sheet { max-width: var(--sheet); margin: 0 auto; display: grid; gap: 3.5rem; }
+  .label { font-family: var(--g2-font-mono); font-size: var(--g2-text-xs); text-transform: uppercase; letter-spacing: var(--g2-tracking-label); color: var(--g2-muted); }
+  .cyr { color: var(--g2-signal-text); }
+  .muted { color: var(--g2-muted); }
+  .t-sm { font-size: var(--g2-text-sm); } .t-xs { font-size: var(--g2-text-xs); }
+  .prose { max-width: var(--g2-measure); display: grid; gap: 0.75rem; }
+
+  .masthead { position: relative; margin-top: 2.25rem; padding: 2.75rem 1.5rem 1.75rem; background: var(--g2-panel); border: var(--g2-rule-strong) solid var(--g2-border); display: grid; grid-template-columns: 1fr minmax(0, 380px); gap: 1.5rem; align-items: center; }
+  .masthead .tab { position: absolute; top: -1.5rem; left: 1.25rem; height: 1.5rem; padding: 0 0.75rem; background: var(--g2-panel); border: var(--g2-rule-strong) solid var(--g2-border); border-bottom: 0; display: flex; align-items: center; }
+  .corner { position: absolute; top: 0.75rem; right: 0.75rem; padding: 0.2rem 0.6rem; border: var(--g2-rule) solid var(--g2-signal); color: var(--g2-signal-text); font-family: var(--g2-font-mono); font-size: var(--g2-text-xs); letter-spacing: var(--g2-tracking-label); text-transform: uppercase; transform: rotate(-2deg); }
+  .logo { font-family: var(--g2-font-mono); font-weight: 700; letter-spacing: var(--g2-tracking-logo); font-size: clamp(2rem, 6vw, 3.6rem); color: var(--g2-accent); line-height: 1; }
+  .star { color: var(--g2-signal); font-size: 1.4rem; line-height: 1; margin: 0.6rem 0 0.4rem; }
+  .masthead h1 { font-family: var(--g2-font-mono); font-size: var(--g2-text-md); letter-spacing: 0.1em; text-transform: uppercase; color: var(--g2-signal-text); }
+  .meta { font-family: var(--g2-font-mono); font-size: var(--g2-text-sm); margin-top: 0.5rem; }
+  .toolbar { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1.25rem; }
+  .btn { display: inline-flex; align-items: center; gap: 0.5em; padding: 0.55rem 1rem; cursor: pointer; font-family: var(--g2-font-mono); font-size: var(--g2-text-sm); letter-spacing: 0.02em; font-weight: 600; border: var(--g2-rule) solid var(--g2-border); background: var(--g2-panel); color: var(--g2-fg); text-decoration: none; }
+  .btn:hover { background: var(--g2-panel-alt); color: var(--g2-fg-bright); border-color: var(--g2-accent); }
+  .btn--ghost { background: transparent; border-color: transparent; color: var(--g2-muted); }
+  .toggle { display: inline-flex; border: var(--g2-rule) solid var(--g2-border); }
+  .toggle .btn { border: 0; }
+  .toggle .btn[aria-pressed="true"] { background: var(--g2-accent); color: var(--g2-accent-ink); }
+
+  .index { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--g2-bg); border-bottom: var(--g2-rule) solid var(--g2-border); margin: 0 calc(-1 * max(16px, env(safe-area-inset-left, 0px))); padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+  .index ul { list-style: none; margin: 0 auto; padding: 0; max-width: var(--sheet); display: flex; flex-wrap: wrap; gap: 2px; }
+  .index a { display: block; height: var(--tab-h); padding: 0 0.9rem; line-height: var(--tab-h); white-space: nowrap; font-family: var(--g2-font-mono); font-size: var(--g2-text-xs); letter-spacing: var(--g2-tracking-label); text-transform: uppercase; color: var(--g2-muted); text-decoration: none; border: var(--g2-rule) solid transparent; border-bottom: 0; }
+  .index a:hover { color: var(--g2-fg-bright); }
+  .index a.is-active { color: var(--g2-accent); border-color: var(--g2-border); background: var(--g2-panel); }
+
+  .sec { display: grid; gap: 1.5rem; scroll-margin-top: calc(var(--tab-h) + 1rem); }
+  .sec > header { display: grid; gap: 0.35rem; }
+  .sec h2 { font-size: var(--g2-text-xl); }
+  .sec h2 .sec-no { font-family: var(--g2-font-mono); font-weight: 400; font-size: 0.55em; color: var(--g2-muted); letter-spacing: var(--g2-tracking-label); vertical-align: middle; margin-right: 0.35em; }
+  .sec h3 { font-family: var(--g2-font-mono); font-size: var(--g2-text-sm); letter-spacing: var(--g2-tracking-label); text-transform: uppercase; color: var(--g2-muted); font-weight: 600; }
+  .grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); }
+  .grid > * { min-width: 0; }
+  .grid--wide { grid-template-columns: repeat(auto-fit, minmax(min(100%, 480px), 1fr)); }
+  .frame { position: relative; border: var(--g2-rule) solid var(--g2-border); background: var(--g2-panel); padding: 1.5rem 1.25rem 1.25rem; }
+  .frame--authority { border: 4px double var(--g2-accent); }
+  .frame__title { position: absolute; top: -0.65em; left: 0.9rem; padding: 0 0.5rem; background: inherit; font-family: var(--g2-font-mono); font-size: var(--g2-text-xs); letter-spacing: var(--g2-tracking-label); color: var(--g2-muted); }
+  .frame--authority .frame__title { color: var(--g2-accent); text-transform: uppercase; font-weight: 600; }
+  .note-box { border-left: 3px solid var(--g2-note); background: var(--g2-note-bg); padding: 0.75rem 1rem; }
+  .note-box .label { color: var(--g2-note); }
+  .tablewrap { overflow-x: auto; border: var(--g2-rule) solid var(--g2-border); background: var(--g2-panel); }
+  .sheet > .sec table.spec-table { width: 100%; border-collapse: collapse; font-size: var(--g2-text-sm); font-variant-numeric: tabular-nums; }
+  .spec-table th { font-family: var(--g2-font-mono); font-size: var(--g2-text-xs); letter-spacing: var(--g2-tracking-label); text-transform: uppercase; color: var(--g2-muted); text-align: left; padding: 0.6rem 0.75rem; border-bottom: var(--g2-rule) solid var(--g2-border); font-weight: 600; }
+  .spec-table td { padding: 0.5rem 0.75rem; border-bottom: var(--g2-rule) solid var(--g2-border-faint); vertical-align: top; }
+  .spec-table tr:last-child td { border-bottom: 0; }
+  .spec-table td.mono { font-family: var(--g2-font-mono); color: var(--g2-fg-bright); white-space: nowrap; }
+  .ledger-pre { font-family: var(--g2-font-mono); font-size: var(--g2-text-sm); border: var(--g2-rule) solid var(--g2-border); padding: 1rem 1.25rem; margin: 0; overflow-x: auto; color: var(--g2-fg); background: var(--g2-well); line-height: 1.6; }
+  .ledger-pre .k { color: var(--g2-muted); }
+  .ledger-pre .c { color: var(--g2-faint); }
+  figure { margin: 0; min-width: 0; display: grid; gap: 0.5rem; }
+  .caption { font-family: var(--g2-font-mono); font-size: var(--g2-text-xs); color: var(--g2-muted); line-height: 1.45; }
+  .caption strong { color: var(--g2-fg); }
+  .swatch { display: inline-block; width: 0.9em; height: 0.9em; vertical-align: -0.1em; border: 1px solid var(--g2-border); margin-right: 0.4em; }
+
+  /* ------------------------------------------------------------ the Obsidian window
+     Stand-in for app.css layout. Consumes the contract variables; sets no colour itself. */
+  .ob { background: var(--background-primary); color: var(--text-normal); font-family: var(--font-text-theme); font-size: 15px; line-height: 1.5; border: 1px solid var(--g2-border); overflow: hidden; min-width: 0; }
+  .ob * { box-sizing: border-box; }
+  .ob p { max-width: none; margin: 0 0 0.9em; }
+  .ob .view-content { padding: 1.25rem 1.5rem; }
+  .ob .view-content--tight { padding: 1rem; }
+  .ob-window { display: grid; grid-template-columns: 40px 200px 1fr; grid-template-rows: auto 1fr auto; min-height: 420px; }
+  .ob-window .workspace-ribbon { grid-row: 1 / 3; background: var(--ribbon-background); display: grid; align-content: start; justify-items: center; gap: 10px; padding-top: 8px; }
+  .ob-window .side-dock-ribbon-action { color: var(--icon-color); font-family: var(--font-monospace-theme); font-size: 13px; width: 28px; height: 28px; display: grid; place-items: center; }
+  .ob-window .side-dock-ribbon-action.is-active { color: var(--icon-color-active); }
+  .ob-window .mod-left-split { grid-row: 1 / 3; background: var(--background-secondary); border-right: 1px solid var(--divider-color); display: grid; grid-template-rows: auto 1fr; min-width: 0; }
+  .ob-window .mod-root { grid-column: 3; display: grid; grid-template-rows: auto auto 1fr; min-width: 0; }
+  .ob-window .status-bar { grid-column: 1 / -1; display: flex; gap: 14px; justify-content: flex-end; padding: 3px 12px; background: var(--status-bar-background); color: var(--status-bar-text-color); }
+  .nav-header { padding: 6px 8px; display: flex; gap: 6px; border-bottom: 1px solid var(--divider-color); }
+  .nav-action-button { color: var(--icon-color); font-family: var(--font-monospace-theme); font-size: 12px; padding: 2px 5px; }
+  .nav-files-container { padding: 6px 4px; }
+  .nav-folder-title, .nav-file-title { display: flex; align-items: center; gap: 6px; padding: 3px 8px; color: var(--nav-item-color); min-width: 0; }
+  .nav-folder-title { color: var(--nav-item-color); }
+  .nav-file-title.is-active { background: var(--nav-item-background-active); color: var(--nav-item-color-active); }
+  .nav-folder-collapse-indicator { color: var(--nav-collapse-icon-color); font-size: 10px; width: 10px; }
+  .nav-folder-children { margin-left: 14px; border-left: 1px solid var(--nav-indentation-guide-color); padding-left: 2px; }
+  .nav-file-title-content, .nav-folder-title-content { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .nav-file-tag { margin-left: auto; padding: 0 4px; }
+  .workspace-tab-header-container { display: flex; align-items: stretch; height: 36px; }
+  .workspace-tab-header { display: flex; align-items: stretch; color: var(--tab-text-color); }
+  .workspace-tab-header.is-active { color: var(--tab-text-color-focused-active-current); background: var(--tab-background-active); }
+  .workspace-tab-header-inner { display: flex; align-items: center; padding: 0 14px; border-right: 1px solid var(--tab-outline-color); border-top: 2px solid transparent; }
+  .view-header { display: flex; align-items: center; justify-content: space-between; padding: 6px 14px; background: var(--background-primary); }
+  .view-actions { display: flex; gap: 10px; color: var(--icon-color); font-family: var(--font-monospace-theme); font-size: 12px; }
+  .status-bar-item { white-space: nowrap; }
+
+  /* reading view */
+  .markdown-rendered h1, .markdown-rendered h2, .markdown-rendered h3, .markdown-rendered h4 { margin: 0 0 0.5em; line-height: 1.2; }
+  .markdown-rendered h1 { font-family: var(--h1-font); font-size: var(--h1-size); font-weight: var(--h1-weight); color: var(--h1-color); }
+  .markdown-rendered h2 { font-family: var(--h2-font); font-size: var(--h2-size); font-weight: var(--h2-weight); color: var(--h2-color); margin-top: 1.2em; }
+  .markdown-rendered h3 { font-family: var(--h3-font); font-size: var(--h3-size); font-weight: var(--h3-weight); color: var(--h3-color); margin-top: 1em; }
+  .markdown-rendered h4 { font-family: var(--h4-font); font-size: var(--h4-size); font-weight: var(--h4-weight); color: var(--h4-color); }
+  .markdown-rendered a.internal-link { color: var(--link-color); text-decoration: var(--link-decoration); text-decoration-color: var(--link-decoration-color); }
+  .markdown-rendered a.external-link { color: var(--link-external-color); text-decoration: var(--link-external-decoration); }
+  .markdown-rendered a.is-unresolved { color: var(--link-unresolved-color); text-decoration-style: var(--link-unresolved-decoration-style); text-decoration-color: var(--link-unresolved-decoration-color); }
+  .markdown-rendered strong { color: var(--bold-color); } .markdown-rendered em { color: var(--italic-color); }
+  .markdown-rendered code { font-family: var(--font-monospace-theme); font-size: 0.88em; background: var(--code-background); color: var(--code-normal); }
+  .markdown-rendered pre { padding: 0.8em 1em; margin: 0 0 1em; overflow-x: auto; font-size: 0.88em; line-height: 1.5; position: relative; }
+  .markdown-rendered pre code { background: transparent; }
+  .markdown-rendered .token.keyword, .markdown-rendered .cm-keyword { color: var(--code-keyword); }
+  .markdown-rendered .token.string { color: var(--code-string); }
+  .markdown-rendered .token.function { color: var(--code-function); }
+  .markdown-rendered .token.comment { color: var(--code-comment); }
+  .markdown-rendered .token.property { color: var(--code-property); }
+  .copy-code-button { position: absolute; top: 6px; right: 6px; padding: 1px 6px; }
+  .markdown-rendered ul, .markdown-rendered ol { margin: 0 0 0.9em; padding-left: var(--list-indent); }
+  .markdown-rendered li { margin: 0.15em 0; }
+  .markdown-rendered ul.contains-task-list { list-style: none; padding-left: 0.4em; }
+  .task-list-item { display: flex; gap: 0.55em; align-items: baseline; }
+  .task-list-item-checkbox { appearance: none; width: 15px; height: 15px; flex: none; border: 1px solid var(--checkbox-border-color); background: transparent; display: inline-grid; place-items: center; margin: 0; transform: translateY(2px); }
+  .task-list-item-checkbox:checked { background: var(--checkbox-color); border-color: var(--checkbox-color); }
+  .task-list-item-checkbox:checked::after { content: "✓"; color: var(--checkbox-marker-color); font-size: 11px; font-weight: 700; font-family: var(--font-monospace-theme); line-height: 1; }
+  .task-list-item.is-checked { text-decoration: line-through; text-decoration-color: var(--checklist-done-color); }
+  .markdown-rendered blockquote { margin: 0 0 1em; color: var(--blockquote-color); }
+  .markdown-rendered blockquote p:last-child { margin-bottom: 0; }
+  .markdown-rendered mark { background: var(--text-highlight-bg); }
+  .markdown-rendered hr { margin: 1.25em 0; }
+  .markdown-rendered table { width: 100%; margin: 0 0 1em; }
+  .markdown-rendered th, .markdown-rendered td { padding: 0.45em 0.7em; }
+  .markdown-rendered tr:nth-child(even) td { background: var(--table-row-alt-background); }
+  .markdown-embed { margin: 0 0 1em; }
+  .markdown-embed-title { display: block; margin-bottom: 0.3em; }
+  .markdown-embed .markdown-embed-content p:last-child { margin-bottom: 0; }
+  a.tag { display: inline-block; line-height: 1.5; margin-right: 0.15em; }
+  .ob .callout-title { display: flex; align-items: center; }
+  .ob .callout-icon { width: 1.1em; text-align: center; font-family: var(--font-monospace-theme); }
+  .ob .callout-fold { margin-left: auto; font-size: 10px; }
+  .ob .callout-content p:last-child { margin-bottom: 0; }
+  .ob .callout.is-collapsed .callout-content { display: none; }
+  .metadata-container { }
+  .metadata-properties-heading { padding: 4px 0 6px; }
+  .metadata-property { display: grid; grid-template-columns: 9.5rem 1fr; gap: 0.75rem; align-items: baseline; padding: 5px 0; }
+  .metadata-property-key { display: flex; gap: 6px; align-items: baseline; color: var(--metadata-label-text-color); min-width: 0; }
+  .metadata-property-icon { font-family: var(--font-monospace-theme); font-size: 11px; }
+  .metadata-property-value { color: var(--metadata-input-text-color); min-width: 0; }
+  .multi-select-pill { display: inline-block; padding: 0 0.5em; margin: 0 4px 2px 0; line-height: 1.6; }
+  .metadata-add-button { padding: 4px 0 0; display: inline-block; }
+  .inline-title { font-family: var(--inline-title-font); font-weight: var(--inline-title-weight); font-size: var(--inline-title-size); color: var(--inline-title-color); margin: 0 0 0.6em; line-height: 1.2; }
+
+  /* chrome pieces shown on their own */
+  .ob-stage { padding: 1rem; display: grid; gap: 1rem; align-content: start; }
+  .ob-stage--row { grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); align-items: start; }
+  .ob button { padding: 6px 14px; cursor: pointer; font-weight: 500; }
+  .ob input[type="text"], .ob input[type="search"] { padding: 6px 10px; width: 100%; font-family: var(--font-interface-theme); }
+  .ob .dropdown { padding: 6px 28px 6px 10px; appearance: none; }
+  .ob .setting-item { display: grid; grid-template-columns: 1fr auto; gap: 1rem; align-items: center; padding: 10px 0; }
+  .ob .setting-item-name { font-weight: 600; }
+  .ob .setting-item-description { color: var(--text-muted); font-size: 13px; }
+  .ob .setting-item-heading { grid-template-columns: 1fr; padding-bottom: 2px; }
+  .ob .setting-item-heading .setting-item-name { font-weight: 600; }
+  .checkbox-container { display: inline-block; position: relative; width: 40px; height: 22px; cursor: pointer; vertical-align: middle; }
+  .checkbox-container::after { content: ""; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; transition: left 120ms; }
+  .checkbox-container.is-enabled::after { left: 20px; }
+  .menu { display: inline-grid; min-width: 14rem; padding: 4px 0; }
+  .menu-item { display: flex; gap: 10px; align-items: center; padding: 5px 12px; color: var(--text-normal); }
+  .menu-item.selected { background: var(--background-modifier-hover); color: var(--text-normal); }
+  .menu-item-icon { color: var(--icon-color); font-family: var(--font-monospace-theme); font-size: 12px; width: 1.2em; }
+  .menu-separator { height: 1px; border-top: 1px solid; margin: 4px 0; }
+  .modal { padding: 1.25rem 1.5rem; display: grid; gap: 0.75rem; max-width: 30rem; }
+  .modal-title { margin: 0; }
+  .modal-content p { color: var(--text-muted); font-size: 14px; }
+  .modal-button-container { display: flex; gap: 0.6rem; justify-content: flex-end; }
+  .prompt { max-width: 30rem; display: grid; }
+  .prompt-input { padding: 10px 14px; border: 0; border-bottom: 1px solid var(--g2-border-faint); background: var(--background-primary); color: var(--text-normal); width: 100%; }
+  .prompt-results { display: grid; max-height: 12rem; overflow: hidden; }
+  .suggestion-item { padding: 6px 14px; display: flex; justify-content: space-between; gap: 1rem; font-size: 14px; }
+  .suggestion-item .muted { font-size: 12px; }
+  .notice-container { display: grid; gap: 0.5rem; justify-items: end; }
+  .notice { padding: 8px 14px; max-width: 24rem; }
+  .empty-state { display: grid; gap: 0.5rem; justify-items: center; padding: 2rem 1rem; text-align: center; }
+  .empty-state-action { font-size: 14px; }
+  .search-result { padding: 6px 10px; }
+  .search-result-file-title { display: flex; gap: 6px; }
+  .search-result-file-matches { margin-left: 14px; font-size: 13px; }
+  .search-result-file-match { padding: 3px 8px; margin: 2px 0; }
+
+  /* plugin stages */
+  .kanban-plugin { padding: 1rem; overflow-x: auto; }
+  .kanban-plugin__board { display: flex; align-items: flex-start; }
+  .kanban-plugin__lane { flex: none; width: 220px; display: grid; }
+  .kanban-plugin__lane-header-wrapper { display: flex; justify-content: space-between; align-items: center; padding: 8px 10px; }
+  .kanban-plugin__lane-items { display: grid; gap: 8px; padding: 8px; min-height: 60px; }
+  .kanban-plugin__item { padding: 8px 10px; }
+  .kanban-plugin__item-title { margin: 0; }
+  .kanban-plugin__item-metadata { display: flex; gap: 8px; flex-wrap: wrap; padding-top: 6px; margin-top: 6px; }
+  .kanban-plugin__item-tags { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 6px; }
+  .kanban-plugin__item-tag { padding: 0 5px; }
+  .kanban-plugin__new-item-button { padding: 4px 8px; margin: 0 8px 8px; text-align: left; }
+  /* the vault recipe, as the.hunt would write it in its own snippet: lanes get a stamp colour */
+  .ob-hunt .kanban-plugin__board > .kanban-plugin__lane:nth-of-type(1) { --g2-lane: var(--g2-muted); }
+  .ob-hunt .kanban-plugin__board > .kanban-plugin__lane:nth-of-type(2) { --g2-lane: var(--g2-info); }
+  .ob-hunt .kanban-plugin__board > .kanban-plugin__lane:nth-of-type(3) { --g2-lane: var(--g2-warn); }
+  .ob-hunt .kanban-plugin__board > .kanban-plugin__lane:nth-of-type(4) { --g2-lane: var(--g2-ok); }
+  .ob-hunt .kanban-plugin__board > .kanban-plugin__lane:nth-of-type(5) { --g2-lane: var(--g2-bad); }
+  .bases-view { padding: 0; }
+  .bases-toolbar { display: flex; gap: 0.6rem; align-items: center; padding: 8px 12px; }
+  .bases-toolbar .bases-view-name { color: var(--text-normal); font-weight: 600; }
+  .bases-toolbar .bases-filter { color: var(--text-muted); }
+  .bases-table { width: 100%; }
+  .bases-table th, .bases-table td { padding: 0.45em 0.8em; text-align: left; }
+  .dataview.inline-field { display: inline-flex; margin: 0 0.3em 0.3em 0; }
+
+  .nono { display: grid; gap: 0.6rem; }
+  .nono .row { display: grid; grid-template-columns: 1.2rem 1fr 1fr; gap: 0.75rem; align-items: baseline; padding-bottom: 0.6rem; border-bottom: var(--g2-rule) solid var(--g2-border-faint); font-size: var(--g2-text-sm); }
+  .nono .x { color: var(--g2-signal-text); font-family: var(--g2-font-mono); font-weight: 700; }
+  .nono .no { color: var(--g2-muted); text-decoration: line-through; text-decoration-color: var(--g2-signal); }
+  .nono .yes strong { color: var(--g2-fg-bright); }
+  .colophon { display: grid; gap: 1.5rem; padding-top: 1.5rem; border-top: var(--g2-rule-strong) solid var(--g2-border); }
+  .colophon .ledger { font-family: var(--g2-font-mono); font-size: var(--g2-text-sm); border: var(--g2-rule) solid var(--g2-border); padding: 1rem 1.25rem; display: grid; gap: 0.3rem; max-width: 40rem; }
+  .colophon .ledger .row { display: flex; gap: 0.5rem; align-items: baseline; }
+  .colophon .ledger .k { color: var(--g2-muted); flex: none; }
+  .colophon .ledger .dots { flex: 1; border-bottom: 1px dotted var(--g2-faint); transform: translateY(-4px); }
+  .colophon .ledger .v { color: var(--g2-fg-bright); flex: none; }
+  .sig-block { font-family: var(--g2-font-mono); font-size: var(--g2-text-sm); color: var(--g2-muted); display: grid; gap: 0.25rem; }
+  .sig-block .name { color: var(--g2-fg-bright); font-style: italic; }
+
+  @media (max-width: 720px) {
+    .masthead { grid-template-columns: 1fr; padding-top: 3rem; }
+    .masthead .ob { display: none; }
+    .index ul { flex-wrap: nowrap; overflow-x: auto; }
+    .corner { top: 0.5rem; right: 0.5rem; font-size: 0.62rem; }
+    .nono .row { grid-template-columns: 1.2rem 1fr; } .nono .yes { grid-column: 2; }
+    .ob-window { grid-template-columns: 40px 1fr; }
+    .ob-window .mod-left-split { display: none; }
+    .metadata-property { grid-template-columns: 1fr; gap: 0.1rem; }
+  }
+  :root.theme-paper body, :root[data-theme="paper"] body { line-height: 1.65; }
+  @media print { .index, .toolbar { display: none !important; } body { padding: 0; } .masthead { margin-top: 0; } .sec { break-inside: avoid; } }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="sheet">
+
+  <header class="masthead">
+    <span class="tab label">СТАНДАРТ № 004 · OBSIDIAN</span>
+    <span class="corner">ДСП · Экз. № 1</span>
+    <div>
+      <div class="logo">СТАНДАРТ</div>
+      <div class="star">★</div>
+      <h1>Bureau of Computational Technology · Design Standard, Obsidian surface</h1>
+      <div class="meta"><span class="muted">Нирская Вычислительная Техника</span></div>
+      <div class="meta"><span class="muted">Директор:</span> Норман <span class="muted">· Дата:</span> 2026-10-25 <span class="muted">· Scope:</span> Obsidian 1.4+ · theme <code>Nirvytekh</code> · snippets for Kanban, Bases, Dataview</div>
+      <div class="toolbar">
+        <div class="toggle" role="group" aria-label="Theme">
+          <button class="btn" id="theme-bureau" aria-pressed="true" type="button">БЮРО · bureau</button>
+          <button class="btn" id="theme-paper" aria-pressed="false" type="button">БЛАНК · paper</button>
+        </div>
+        <a class="btn btn--ghost" href="#canon">Out of canon <kbd>§10</kbd></a>
+      </div>
+    </div>
+    <div class="ob theme-dark" aria-hidden="true">
+      <div class="view-content view-content--tight markdown-rendered">
+        <div class="metadata-container">
+          <div class="metadata-property"><div class="metadata-property-key"><span class="metadata-property-key-input">документ №</span></div><div class="metadata-property-value">004</div></div>
+          <div class="metadata-property"><div class="metadata-property-key"><span class="metadata-property-key-input">status</span></div><div class="metadata-property-value"><span class="multi-select-pill">approved</span></div></div>
+        </div>
+        <div class="callout" data-callout="approved"><div class="callout-title"><div class="callout-title-inner">Theme filed</div></div><div class="callout-content"><p>One vault, one voice.</p></div></div>
+      </div>
+    </div>
+  </header>
+
+  <nav class="index" aria-label="Sections">
+    <ul>
+      <li><a href="#svodka">§0 Сводка</a></li>
+      <li><a href="#contract">§1 Контракт</a></li>
+      <li><a href="#sheet">§2 Лист</a></li>
+      <li><a href="#notices">§3 Извещения</a></li>
+      <li><a href="#ledger">§4 Ведомость</a></li>
+      <li><a href="#marks">§5 Метки</a></li>
+      <li><a href="#archive">§6 Архив</a></li>
+      <li><a href="#board">§7 Доска</a></li>
+      <li><a href="#registry">§8 Реестр</a></li>
+      <li><a href="#paper">§9 Бланк</a></li>
+      <li><a href="#canon">§10 Вне канона</a></li>
+    </ul>
+  </nav>
+
+  <!-- ================================================================ §0 -->
+  <section class="sec" id="svodka">
+    <header>
+      <h2><span class="sec-no">§0</span> <span class="cyr">СВОДКА</span> · One vault, one voice</h2>
+      <p>This is the fourth surface of the g2 design system, after the GUI, the terminal and the wrist. Same seeds, same token names, same stamps, same label grammar. What changes is the host: Obsidian is the one surface that already has a token contract of its own, a few hundred CSS variables under <code>.theme-dark</code> and <code>.theme-light</code>. The theme maps the bureau's tokens onto that contract once, and the rest is a component layer the size of a long memo. Every example on this page is a real Obsidian class name with the real theme loaded on top, so the paper toggle above re-renders every window.</p>
+    </header>
+    <div class="grid">
+      <div class="frame frame--authority">
+        <span class="frame__title">ТРИ ПРАВИЛА · the three rules</span>
+        <div class="prose t-sm">
+          <p><strong>1. The contract first, selectors second.</strong> Whatever Obsidian exposes as a variable is set through the variable. A selector is written only where the contract has no slot (uppercase on a ledger key, the frame on a callout, the eyebrow on a stamp).</p>
+          <p><strong>2. Plugin DOM never enters the theme.</strong> Kanban, Bases and Dataview get a snippet each, defensive, installed separately. A plugin that changes its markup breaks one snippet, not the vault.</p>
+          <p><strong>3. The body is not mono.</strong> Reading is what a vault is for. Body text follows the system: PT Sans on the bureau, PT Serif on paper. Mono is the explorer, the tabs, the keys, the code and the status bar.</p>
+        </div>
+      </div>
+      <div class="frame">
+        <span class="frame__title">СЛОИ · the layers</span>
+<pre class="ledger-pre"><span class="k">tokens/tokens.obsidian.css</span>  <span class="c">generated</span>  tokens on .theme-dark / .theme-light,
+                            the contract mapped onto them
+<span class="k">obsidian/src/theme.css</span>      <span class="c">by hand</span>    the component layer, tokens only
+<span class="k">obsidian/theme.css</span>          <span class="c">generated</span>  the two above, bundled: what Obsidian loads
+<span class="k">obsidian/manifest.json</span>      <span class="c">by hand</span>    name Nirvytekh, minAppVersion 1.4.0
+<span class="k">obsidian/snippets/g2-*.css</span>  <span class="c">by hand</span>    one plugin each: kanban, bases, dataview
+<span class="k">tools/install_obsidian.py</span>   <span class="c">by hand</span>    copies theme and snippets into a vault</pre>
+      </div>
+    </div>
+    <div class="grid">
+      <div class="frame">
+        <span class="frame__title">УСТАНОВКА · install</span>
+<pre class="ledger-pre"><span class="c"># regenerate tokens, contrast report and the bundled theme</span>
+python3 tools/derive_tokens.py
+<span class="c"># copy theme + snippets into one vault, or every vault Obsidian knows</span>
+python3 tools/install_obsidian.py --vault ~/vault
+python3 tools/install_obsidian.py --all --dry-run
+<span class="c"># then in Obsidian: Settings › Appearance › Themes › Nirvytekh,</span>
+<span class="c"># and enable the g2-* snippets you want under CSS snippets</span></pre>
+      </div>
+      <div class="note-box">
+        <div class="label">ПРИМЕЧАНИЕ · note</div>
+        <p class="t-sm">The theme that ran in three vaults since June (the same <code>Nirvytekh</code> name, a hand-mixed palette, serif body, dark only) is superseded by this one. Hexes that differed from the generated tokens were the hand palette drifting, not decisions; the contrast gate now covers every pair the vault reads. The vault keeps its name, its folder icons and its plugins; only the sheet changes.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================================ §1 -->
+  <section class="sec" id="contract">
+    <header>
+      <h2><span class="sec-no">§1</span> <span class="cyr">КОНТРАКТ</span> · The contract map</h2>
+      <p>No new colour exists for Obsidian. <code>tokens.obsidian.css</code> puts the g2 tokens on <code>.theme-dark</code> (bureau) and <code>.theme-light</code> (paper), then assigns Obsidian's variables from them. Three things the app wants that the other emitters never needed are computed in Python: the accent as an HSL triple (<code>--accent-h/s/l</code>, which Obsidian uses to derive its own accent ramp), every token as an RGB triple (callouts and the canvas read <code>rgb(var(--callout-color))</code>), and the eight-colour extended palette folded onto the bureau's few hues.</p>
+    </header>
+    <div class="grid grid--wide">
+      <div class="tablewrap">
+        <table class="spec-table">
+          <thead><tr><th>g2 token</th><th>Obsidian variables it feeds</th></tr></thead>
+          <tbody>
+            <tr><td class="mono">bg · bg-alt</td><td><code>--background-primary</code>, <code>--background-primary-alt</code>, <code>--tab-background-active</code>, <code>--titlebar-background-focused</code></td></tr>
+            <tr><td class="mono">panel · panel-alt</td><td><code>--background-secondary</code>, <code>--background-secondary-alt</code>, <code>--interactive-normal</code>, <code>--interactive-hover</code>, <code>--modal-background</code>, <code>--table-header-background</code></td></tr>
+            <tr><td class="mono">well</td><td><code>--code-background</code>, <code>--background-modifier-form-field</code>, <code>--ribbon-background</code>, <code>--status-bar-background</code>, <code>--titlebar-background</code>, <code>--scrollbar-bg</code>, <code>--metadata-input-background-active</code></td></tr>
+            <tr><td class="mono">fg · fg-bright</td><td><code>--text-normal</code>, <code>--bold-color</code>, <code>--h1-color</code>, <code>--h2-color</code>, <code>--code-normal</code>, <code>--tab-text-color-active</code>, <code>--nav-item-color</code></td></tr>
+            <tr><td class="mono">muted · faint</td><td><code>--text-muted</code>, <code>--text-faint</code>, <code>--icon-color</code>, <code>--h5-color</code>, <code>--table-header-color</code>, <code>--metadata-label-text-color</code>, <code>--link-unresolved-color</code>, <code>--graph-text</code></td></tr>
+            <tr><td class="mono">accent · accent-bright</td><td><code>--interactive-accent</code>, <code>--text-accent</code>, <code>--link-color</code>, <code>--h3-color</code>, <code>--checkbox-color</code>, <code>--tag-color</code>, <code>--caret-color</code>, <code>--graph-node</code>, <code>--accent-h/s/l</code></td></tr>
+            <tr><td class="mono">accent-ink</td><td><code>--text-on-accent</code>, <code>--checkbox-marker-color</code>, <code>--tag-color-hover</code></td></tr>
+            <tr><td class="mono">border · border-faint</td><td><code>--background-modifier-border</code> (faint), <code>--background-modifier-border-hover</code>, <code>--table-border-color</code>, <code>--divider-color</code>, <code>--modal-border-color</code>, <code>--hr-color</code>, <code>--graph-line</code></td></tr>
+            <tr><td class="mono">selection</td><td><code>--text-selection</code>, <code>--background-modifier-hover</code>, <code>--nav-item-background-active</code>, <code>--table-row-background-hover</code></td></tr>
+            <tr><td class="mono">signal · signal-text</td><td><code>--color-red</code>, <code>--background-modifier-error-hover</code>, <code>--code-keyword</code>; <code>--text-error</code> takes <code>bad</code></td></tr>
+            <tr><td class="mono">note · note-bg</td><td><code>--blockquote-border-color</code>, <code>--blockquote-background-color</code>, <code>--color-purple</code>, <code>--code-tag</code>, <code>--graph-node-tag</code></td></tr>
+            <tr><td class="mono">ok · warn · bad · info</td><td><code>--text-success</code>, <code>--text-warning</code>, <code>--text-error</code>, <code>--color-green/orange/cyan/blue</code>, <code>--text-highlight-bg</code> (warn at 28 %)</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div style="display:grid; gap:1rem; align-content:start">
+        <div class="frame">
+          <span class="frame__title">ПАЛИТРА · the extended palette, folded</span>
+          <div class="tablewrap" style="border:0">
+            <table class="spec-table">
+              <thead><tr><th>Obsidian</th><th>bureau</th><th>why</th></tr></thead>
+              <tbody>
+                <tr><td class="mono">red</td><td><span class="swatch" style="background:var(--g2-signal)"></span>signal</td><td>a rejection</td></tr>
+                <tr><td class="mono">orange</td><td><span class="swatch" style="background:var(--g2-warn)"></span>warn</td><td>for review</td></tr>
+                <tr><td class="mono">yellow</td><td><span class="swatch" style="background:var(--g2-accent)"></span>accent</td><td>gold is the yellow</td></tr>
+                <tr><td class="mono">green</td><td><span class="swatch" style="background:var(--g2-ok)"></span>ok</td><td>approved</td></tr>
+                <tr><td class="mono">cyan · blue</td><td><span class="swatch" style="background:var(--g2-info)"></span>info</td><td>the one cool accent; an order</td></tr>
+                <tr><td class="mono">purple</td><td><span class="swatch" style="background:var(--g2-note)"></span>note</td><td>the second hue, not a third</td></tr>
+                <tr><td class="mono">pink</td><td><span class="swatch" style="background:var(--g2-signal-text)"></span>signal-text</td><td>red at body size</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="note-box">
+          <div class="label">ПРИМЕЧАНИЕ · note</div>
+          <p class="t-sm">Shape and depth are set through the contract too: every <code>--radius-*</code>, <code>--*-radius</code> and <code>--shadow-*</code> slot is zero or none. Fonts go through <code>--font-text-theme</code> (the body, which follows the system), <code>--font-interface-theme</code> (sans, so settings prose stays readable) and <code>--font-monospace-theme</code>. The chrome gets mono per selector in the component layer, not through the interface slot.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================================ §2 -->
+  <section class="sec" id="sheet">
+    <header>
+      <h2><span class="sec-no">§2</span> <span class="cyr">ЛИСТ</span> · The sheet is the GUI's rendered prose</h2>
+      <p>A note in reading view is the GUI page's "rendered prose" component with a frontmatter header on top. Headings are mono, the first two uppercase with a rule beneath, as in every document of the suite. Paragraphs are the body face. Links are gold and underlined in the frame colour; an unresolved link is muted and dashed, a form not yet filed. A blockquote is a note in the second hue, because a quotation is an annotation, not a decision.</p>
+    </header>
+    <div class="ob theme-dark">
+      <div class="view-content markdown-rendered">
+        <div class="metadata-container">
+          <div class="metadata-properties-heading">Properties</div>
+          <div class="metadata-property"><div class="metadata-property-key"><span class="metadata-property-icon">≡</span><span class="metadata-property-key-input">kind</span></div><div class="metadata-property-value">sintese</div></div>
+          <div class="metadata-property"><div class="metadata-property-key"><span class="metadata-property-icon">#</span><span class="metadata-property-key-input">tags</span></div><div class="metadata-property-value"><span class="multi-select-pill">design</span><span class="multi-select-pill">obsidian</span><span class="multi-select-pill">g2</span></div></div>
+          <div class="metadata-property"><div class="metadata-property-key"><span class="metadata-property-icon">◷</span><span class="metadata-property-key-input">created</span></div><div class="metadata-property-value">2026-10-25</div></div>
+          <div class="metadata-property"><div class="metadata-property-key"><span class="metadata-property-icon">★</span><span class="metadata-property-key-input">status</span></div><div class="metadata-property-value"><span class="multi-select-pill">approved</span></div></div>
+        </div>
+        <h1 class="inline-title">Standard 004 · the fourth surface</h1>
+        <p>The Directorate notes that a vault is read in long sessions, and that a long session in monospace is a cost the reader pays and the bureau does not refund. The body is therefore the <strong>system's body face</strong>, with <em>emphasis</em> in the same ink, <code>inline code</code> in a faint frame, and a <mark>highlight</mark> in amber at a quarter strength. Internal references are <a class="internal-link" href="#">filed documents</a>; a reference to a document not yet written is <a class="internal-link is-unresolved" href="#">pending</a>; an <a class="external-link" href="#">external source</a> is dotted.</p>
+        <h2>Procedure</h2>
+        <p>Every component below is drawn only with the tokens of §1. The list marker is muted, the checkbox is a square, and a completed item is struck through in the faint ink rather than removed: the ledger keeps its rows.</p>
+        <ul>
+          <li>Obsidian variables first, selectors second</li>
+          <li>Plugin DOM in snippets, never in the theme</li>
+          <li>Body text in the system's face</li>
+        </ul>
+        <ul class="contains-task-list">
+          <li class="task-list-item is-checked"><input type="checkbox" class="task-list-item-checkbox" checked disabled> Map the contract</li>
+          <li class="task-list-item is-checked"><input type="checkbox" class="task-list-item-checkbox" checked disabled> Write the component layer</li>
+          <li class="task-list-item"><input type="checkbox" class="task-list-item-checkbox" disabled> Install in three vaults</li>
+        </ul>
+        <h3>Annotation</h3>
+        <blockquote><p>A quotation is an annotation on the record, not a ruling on it. It takes the second hue and a left rule. Red is reserved for decisions, and a blockquote has decided nothing.</p></blockquote>
+        <hr>
+        <pre><button class="copy-code-button">Copy</button><code><span class="token keyword">def</span> <span class="token function">file_request</span>(form):
+    <span class="token comment"># the bureau does not review unannounced material</span>
+    <span class="token keyword">if</span> <span class="token keyword">not</span> form.<span class="token property">announced</span>:
+        <span class="token keyword">return</span> Stamp.<span class="token property">REJECTED</span>
+    <span class="token keyword">return</span> Stamp.<span class="token property">APPROVED</span></code></pre>
+        <div class="markdown-embed"><span class="markdown-embed-title">Standard 001 · GUI › rendered prose</span><div class="markdown-embed-content"><p>Lists, tasks, quotes and code are the four shapes prose takes on a sheet. The theme does not add a fifth.</p></div></div>
+      </div>
+    </div>
+    <div class="grid">
+      <figure><div class="ob theme-dark"><div class="view-content markdown-rendered"><h1>Heading one</h1><h2>Heading two</h2><h3>Heading three</h3><h4>Heading four</h4><p class="muted t-sm" style="margin:0">H5 and H6 take the muted ink and the same mono.</p></div></div><figcaption class="caption"><strong>Heading scale.</strong> Mono throughout; uppercase and a rule on the top two, gold on three and four, muted below. Sizes 1.75 · 1.35 · 1.1 · 1 em.</figcaption></figure>
+      <figure><div class="ob theme-dark"><div class="view-content markdown-rendered"><table><thead><tr><th>field</th><th>value</th><th style="text-align:right">sum</th></tr></thead><tbody><tr><td>treasury</td><td>rent</td><td style="text-align:right">1 850,00</td></tr><tr><td>treasury</td><td>power</td><td style="text-align:right">212,40</td></tr><tr><td>duties</td><td>open</td><td style="text-align:right">3</td></tr></tbody></table></div></div><figcaption class="caption"><strong>Table as ledger.</strong> Mono uppercase keys, a frame, faint row rules, alternate rows one step up, tabular figures.</figcaption></figure>
+    </div>
+  </section>
+
+  <!-- ================================================================ §3 -->
+  <section class="sec" id="notices">
+    <header>
+      <h2><span class="sec-no">§3</span> <span class="cyr">ИЗВЕЩЕНИЯ</span> · Callouts are stamped notices</h2>
+      <p>A callout is the GUI's frame panel with a title bar: one 1 px frame in its own colour, a mono uppercase title on a wash of the same colour at ten percent, the panel behind the content. Obsidian's fourteen callout types fold onto six colours. Four of them are the canon's decisions and carry the stamp word as an eyebrow, Cyrillic first, as every stamp in the suite. Writing <code>[!approved]</code>, <code>[!rejected]</code>, <code>[!order]</code> or <code>[!review]</code> in a note gives the stamp directly; the usual <code>success</code>, <code>failure</code>, <code>todo</code> and <code>warning</code> map onto the same four.</p>
+    </header>
+    <div class="ob theme-dark">
+      <div class="view-content markdown-rendered" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 1rem 1.25rem">
+        <div class="callout" data-callout="approved"><div class="callout-title"><div class="callout-title-inner">Request granted</div></div><div class="callout-content"><p>The treasury transfer of 2026-10-25 is filed. No further action is required of the citizen.</p></div></div>
+        <div class="callout" data-callout="rejected"><div class="callout-title"><div class="callout-title-inner">Returned to sender</div></div><div class="callout-content"><p>The form arrived without a document number. The Directorate does not review unannounced material.</p></div></div>
+        <div class="callout" data-callout="order"><div class="callout-title"><div class="callout-title-inner">Renew the certificate</div></div><div class="callout-content"><p>Before 2026-11-01. The bureau dictates; the citizen complies, or files an objection on form 12.</p></div></div>
+        <div class="callout" data-callout="review"><div class="callout-title"><div class="callout-title-inner">Awaiting the landlord</div></div><div class="callout-content"><p>The matter is out of the bureau's hands. It will be raised again on the fifth of the month.</p></div></div>
+        <div class="callout" data-callout="note"><div class="callout-title"><div class="callout-icon">✎</div><div class="callout-title-inner">Note</div></div><div class="callout-content"><p>The second hue. Also <code>abstract</code>, <code>tip</code>, <code>important</code>, <code>example</code>: things said beside the record.</p></div></div>
+        <div class="callout" data-callout="info"><div class="callout-title"><div class="callout-icon">i</div><div class="callout-title-inner">Info</div></div><div class="callout-content"><p>Steel, the one cool accent. Information, no decision attached.</p></div></div>
+        <div class="callout" data-callout="question"><div class="callout-title"><div class="callout-icon">?</div><div class="callout-title-inner">Question</div></div><div class="callout-content"><p>Amber, like a review, without the stamp: nobody has filed it yet.</p></div></div>
+        <div class="callout" data-callout="quote"><div class="callout-title"><div class="callout-icon">„</div><div class="callout-title-inner">Quote</div></div><div class="callout-content"><p>Muted. A quotation has the least authority of anything on the sheet.</p></div></div>
+        <div class="callout is-collapsible is-collapsed" data-callout="warning"><div class="callout-title"><div class="callout-icon">!</div><div class="callout-title-inner">Collapsed notice</div><div class="callout-fold">▸</div></div><div class="callout-content"><p>Hidden.</p></div></div>
+        <div class="callout" data-callout="success"><div class="callout-title"><div class="callout-icon">✓</div><div class="callout-title-inner">The usual name works too</div></div><div class="callout-content"><p><code>[!success]</code> keeps its icon and gains the eyebrow.</p></div></div>
+      </div>
+    </div>
+    <div class="note-box">
+      <div class="label">ПРИМЕЧАНИЕ · note</div>
+      <p class="t-sm">The Admonition plugin renders its blocks as the same <code>.callout</code> markup in current versions, so it inherits all of this without a snippet. Custom admonition types that are not in the list above fall back to Obsidian's default, which the contract paints in the <code>note</code> hue.</p>
+    </div>
+  </section>
+
+  <!-- ================================================================ §4 -->
+  <section class="sec" id="ledger">
+    <header>
+      <h2><span class="sec-no">§4</span> <span class="cyr">ВЕДОМОСТЬ</span> · Properties are the document header</h2>
+      <p>The frontmatter block is the bureau's numbered header, drawn as a framed ledger: mono uppercase keys in the muted ink, values in the body ink, one faint rule per row, list values as outline pills. It sits on the panel so the sheet below reads as the body of the form. Editing a value puts the well behind it and a gold rule under the row; nothing else moves.</p>
+    </header>
+    <div class="grid grid--wide">
+      <figure>
+        <div class="ob theme-dark">
+          <div class="view-content markdown-rendered">
+            <div class="metadata-container">
+              <div class="metadata-properties-heading">Properties</div>
+              <div class="metadata-property"><div class="metadata-property-key"><span class="metadata-property-icon">№</span><span class="metadata-property-key-input">документ</span></div><div class="metadata-property-value">2026-10-25 · 004</div></div>
+              <div class="metadata-property"><div class="metadata-property-key"><span class="metadata-property-icon">≡</span><span class="metadata-property-key-input">title</span></div><div class="metadata-property-value">Standard 004 · Obsidian surface</div></div>
+              <div class="metadata-property"><div class="metadata-property-key"><span class="metadata-property-icon">▲</span><span class="metadata-property-key-input">classification</span></div><div class="metadata-property-value">open · for all bureaus of the suite</div></div>
+              <div class="metadata-property"><div class="metadata-property-key"><span class="metadata-property-icon">#</span><span class="metadata-property-key-input">tags</span></div><div class="metadata-property-value"><span class="multi-select-pill">standard</span><span class="multi-select-pill is-active">obsidian</span></div></div>
+              <div class="metadata-property"><div class="metadata-property-key"><span class="metadata-property-icon">✓</span><span class="metadata-property-key-input">approved by</span></div><div class="metadata-property-value">Director Norman</div></div>
+              <div class="metadata-add-button">+ Add property</div>
+            </div>
+            <p class="muted t-sm" style="margin:0">The sheet begins here.</p>
+          </div>
+        </div>
+        <figcaption class="caption"><strong>Document header.</strong> Keys are ledger keys: mono, uppercase, tracked. The icon column stays faint; the key is the label, the icon is furniture.</figcaption>
+      </figure>
+      <figure>
+        <div class="ob theme-dark">
+          <div class="view-content markdown-rendered">
+            <table>
+              <thead><tr><th>№</th><th>document</th><th>stamp</th><th style="text-align:right">days</th></tr></thead>
+              <tbody>
+                <tr><td>001</td><td>Rent, October</td><td style="color:var(--g2-ok)">ОДОБРЕНО</td><td style="text-align:right">0</td></tr>
+                <tr><td>002</td><td>Certificate renewal</td><td style="color:var(--g2-info)">ПРИКАЗ</td><td style="text-align:right">6</td></tr>
+                <tr><td>003</td><td>Landlord's reply</td><td style="color:var(--g2-warn)">К СВЕДЕНИЮ</td><td style="text-align:right">11</td></tr>
+                <tr><td>004</td><td>Form without a number</td><td style="color:var(--g2-bad)">ОТКАЗАНО</td><td style="text-align:right">—</td></tr>
+              </tbody>
+            </table>
+            <div class="markdown-embed"><span class="markdown-embed-title">Treasury › 2026-10</span><div class="markdown-embed-content"><p>An embedded note is a framed excerpt with its title as a ledger key. It does not pretend to be part of the page.</p></div></div>
+          </div>
+        </div>
+        <figcaption class="caption"><strong>Ledger and embed.</strong> Stamp words in a table take the state colour and nothing else: no fill, no pill. The embed carries a left rule one step heavier than its frame.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ================================================================ §5 -->
+  <section class="sec" id="marks">
+    <header>
+      <h2><span class="sec-no">§5</span> <span class="cyr">МЕТКИ</span> · Tags, links and code marks</h2>
+      <p>The June theme filled every tag in gold. In a note with six tags that is six gold fields in running text, and the field is supposed to be quiet. A tag is now an outline chip, mono, gold text in a frame, filled only on hover. Links keep the GUI's three states. Inline code sits in the well with a faint frame; a code block takes the full frame and a mono copy button in the corner.</p>
+    </header>
+    <div class="ob theme-dark">
+      <div class="view-content markdown-rendered">
+        <p>Filed under <a class="tag" href="#">#treasury</a> <a class="tag" href="#">#october</a> <a class="tag" href="#">#bureau/standards</a> and cross-referenced to <a class="internal-link" href="#">Standard 001</a>, <a class="internal-link" href="#">Standard 003</a> and the <a class="internal-link is-unresolved" href="#">Standard 005</a> that does not exist yet. The generator is <code>tools/derive_tokens.py</code>; the install path is <code>tools/install_obsidian.py --all</code>. The sources are at <a class="external-link" href="#">github.com/niltonfrederico/glory-to-design</a>.</p>
+        <p style="margin:0"><span class="dataview inline-field"><span class="dataview inline-field-key">status</span><span class="dataview inline-field-value">approved</span></span> <span class="dataview inline-field"><span class="dataview inline-field-key">due</span><span class="dataview inline-field-value">2026-11-01</span></span> <span class="muted t-sm">← Dataview inline fields, from the <code>g2-dataview</code> snippet: a key and a value in the same well.</span></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================================ §6 -->
+  <section class="sec" id="archive">
+    <header>
+      <h2><span class="sec-no">§6</span> <span class="cyr">АРХИВ</span> · The window is the filing room</h2>
+      <p>Around the sheet, Obsidian is chrome: ribbon, explorer, tabs, status bar, menus, prompts, settings. All of it is mono and most of it is set by the contract alone. The ribbon, the title bar and the status bar sit on the well, the deepest surface; the explorer on the panel; the sheet on the field. Folders are ledger keys (uppercase, muted), files are entries. The active file carries a gold left rule, the active tab a gold top rule: a frame weight, not a fill.</p>
+    </header>
+    <div class="ob theme-dark">
+      <div class="ob-window">
+        <div class="workspace-ribbon mod-left">
+          <span class="side-dock-ribbon-action">⌕</span><span class="side-dock-ribbon-action">◫</span><span class="side-dock-ribbon-action is-active">▤</span><span class="side-dock-ribbon-action">◷</span><span class="side-dock-ribbon-action">⚙</span>
+        </div>
+        <div class="workspace-split mod-left-split">
+          <div class="nav-header"><span class="nav-action-button">+</span><span class="nav-action-button">▣</span><span class="nav-action-button">↕</span></div>
+          <div class="nav-files-container">
+            <div class="nav-folder"><div class="nav-folder-title"><span class="nav-folder-collapse-indicator">▾</span><span class="nav-folder-title-content">казна · treasury</span></div>
+              <div class="nav-folder-children">
+                <div class="nav-file"><div class="nav-file-title is-active"><span class="nav-file-title-content">2026-10 ledger</span></div></div>
+                <div class="nav-file"><div class="nav-file-title"><span class="nav-file-title-content">2026-09 ledger</span></div></div>
+                <div class="nav-file"><div class="nav-file-title"><span class="nav-file-title-content">receipts</span><span class="nav-file-tag">base</span></div></div>
+              </div>
+            </div>
+            <div class="nav-folder"><div class="nav-folder-title"><span class="nav-folder-collapse-indicator">▾</span><span class="nav-folder-title-content">дела · duties</span></div>
+              <div class="nav-folder-children">
+                <div class="nav-file"><div class="nav-file-title"><span class="nav-file-title-content">board</span><span class="nav-file-tag">kanban</span></div></div>
+                <div class="nav-file"><div class="nav-file-title"><span class="nav-file-title-content">certificate renewal</span></div></div>
+              </div>
+            </div>
+            <div class="nav-folder"><div class="nav-folder-title"><span class="nav-folder-collapse-indicator">▸</span><span class="nav-folder-title-content">архив · archive</span></div></div>
+            <div class="nav-folder"><div class="nav-folder-title"><span class="nav-folder-collapse-indicator">▸</span><span class="nav-folder-title-content">templates</span></div></div>
+          </div>
+        </div>
+        <div class="workspace-split mod-root">
+          <div class="workspace-tab-header-container">
+            <div class="workspace-tab-header is-active"><div class="workspace-tab-header-inner"><span class="workspace-tab-header-inner-title">2026-10 ledger</span></div></div>
+            <div class="workspace-tab-header"><div class="workspace-tab-header-inner"><span class="workspace-tab-header-inner-title">board</span></div></div>
+            <div class="workspace-tab-header"><div class="workspace-tab-header-inner"><span class="workspace-tab-header-inner-title">Standard 004</span></div></div>
+          </div>
+          <div class="view-header"><span class="view-header-title">2026-10 ledger</span><span class="view-actions"><span>⋯</span><span>✎</span></span></div>
+          <div class="view-content markdown-rendered">
+            <h1>October ledger</h1>
+            <p>Three items due, one filed. The month closes on the 31st; the Directorate reconciles on the 1st.</p>
+            <div class="callout" data-callout="review"><div class="callout-title"><div class="callout-title-inner">Landlord's reply pending</div></div><div class="callout-content"><p>Raised again on the fifth.</p></div></div>
+          </div>
+        </div>
+        <div class="status-bar"><span class="status-bar-item">3 backlinks</span><span class="status-bar-item">412 words</span><span class="status-bar-item">2 341 characters</span><span class="status-bar-item">synced 12:04</span></div>
+      </div>
+    </div>
+    <div class="grid">
+      <figure>
+        <div class="ob theme-dark"><div class="ob-stage">
+          <div class="menu">
+            <div class="menu-item"><span class="menu-item-icon">+</span>New note</div>
+            <div class="menu-item selected"><span class="menu-item-icon">✎</span>Rename</div>
+            <div class="menu-item"><span class="menu-item-icon">⇥</span>Move file to…</div>
+            <div class="menu-separator"></div>
+            <div class="menu-item"><span class="menu-item-icon">✗</span>Delete</div>
+          </div>
+        </div></div>
+        <figcaption class="caption"><strong>Menu.</strong> A framed list on the panel, no shadow, no radius. The hovered row takes the selection wash.</figcaption>
+      </figure>
+      <figure>
+        <div class="ob theme-dark"><div class="ob-stage">
+          <div class="prompt">
+            <input class="prompt-input" type="text" value="treas" placeholder="Find or create a note…">
+            <div class="prompt-results">
+              <div class="suggestion-item is-selected"><span>казна/2026-10 ledger</span><span class="muted">↩</span></div>
+              <div class="suggestion-item"><span>казна/2026-09 ledger</span></div>
+              <div class="suggestion-item"><span>казна/receipts</span><span class="muted">base</span></div>
+            </div>
+          </div>
+        </div></div>
+        <figcaption class="caption"><strong>Quick switcher.</strong> The prompt wears the 2 px frame of a form. Results in mono; the selected one on the wash.</figcaption>
+      </figure>
+      <figure>
+        <div class="ob theme-dark"><div class="ob-stage">
+          <div class="modal">
+            <h2 class="modal-title">Delete file</h2>
+            <div class="modal-content"><p>Are you sure you want to delete "Form without a number"? It will be moved to the system trash.</p></div>
+            <div class="modal-button-container"><button class="mod-warning">Delete</button><button>Cancel</button></div>
+          </div>
+        </div></div>
+        <figcaption class="caption"><strong>Dialog as a form.</strong> 2 px frame, mono uppercase title in gold, sentence-case buttons. The destructive one is an outline in the stamp red; filled gold is for the primary action.</figcaption>
+      </figure>
+      <figure>
+        <div class="ob theme-dark"><div class="ob-stage">
+          <div class="setting-item setting-item-heading"><div class="setting-item-name">Appearance</div></div>
+          <div class="setting-item"><div><div class="setting-item-name">Base color scheme</div><div class="setting-item-description">Dark is the bureau; light is the paper form.</div></div><select class="dropdown"><option>Dark</option><option>Light</option></select></div>
+          <div class="setting-item"><div><div class="setting-item-name">Show inline title</div><div class="setting-item-description">The document's name on the sheet.</div></div><div class="checkbox-container is-enabled"></div></div>
+          <div class="setting-item"><div><div class="setting-item-name">Readable line length</div><div class="setting-item-description">65 characters, as the GUI measures it.</div></div><div class="checkbox-container"></div></div>
+          <div style="display:flex; gap:0.6rem; flex-wrap:wrap"><button class="mod-cta">Save and reload</button><button>Restore defaults</button></div>
+        </div></div>
+        <figcaption class="caption"><strong>Settings controls.</strong> Toggles and dropdowns are square. The interface font is sans, so descriptions read as prose; headings and keys take mono.</figcaption>
+      </figure>
+      <figure>
+        <div class="ob theme-dark"><div class="ob-stage">
+          <div class="notice-container">
+            <div class="notice">Theme "Nirvytekh" applied.</div>
+            <div class="notice mod-warning">Vault sync paused: no network.</div>
+          </div>
+          <div class="empty-state"><div class="empty-state-title">No file is open</div><div class="empty-state-action">Create new file</div><div class="empty-state-action">Open quick switcher</div></div>
+        </div></div>
+        <figcaption class="caption"><strong>Notice and empty state.</strong> A notice is a filed slip: frame, gold top rule, mono. A fault turns the top rule red. The empty pane is a blank form with its title in the muted ink.</figcaption>
+      </figure>
+      <figure>
+        <div class="ob theme-dark"><div class="ob-stage" style="padding:0.5rem">
+          <div class="search-result"><div class="search-result-file-title"><span>казна/2026-10 ledger</span><span class="muted">2</span></div><div class="search-result-file-matches"><div class="search-result-file-match">Three items <span class="search-result-file-matched-text">due</span>, one filed.</div><div class="search-result-file-match">The certificate is <span class="search-result-file-matched-text">due</span> on the first.</div></div></div>
+          <div class="search-result"><div class="search-result-file-title"><span>дела/certificate renewal</span><span class="muted">1</span></div></div>
+        </div></div>
+        <figcaption class="caption"><strong>Search.</strong> File titles in mono; matches indented under a faint left rule, the hit in the amber highlight.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ================================================================ §7 -->
+  <section class="sec" id="board">
+    <header>
+      <h2><span class="sec-no">§7</span> <span class="cyr">ДОСКА</span> · Kanban is a despatch board</h2>
+      <p>The Kanban plugin draws floating cards in rounded lanes. The <code>g2-kanban</code> snippet makes a despatch board of it: lanes are framed sheets on the panel with a 3 px top rule, cards are slips on the field, titles are ledger keys. The snippet sets structure only. Which lane means what is a vault decision, so each lane exposes <code>--g2-lane</code> and the vault's own snippet colours its columns with the stamp grammar, as below. A hex in that vault snippet is the same bug as a hex here.</p>
+    </header>
+    <div class="ob theme-dark ob-hunt">
+      <div class="kanban-plugin">
+        <div class="kanban-plugin__board">
+          <div class="kanban-plugin__lane"><div class="kanban-plugin__lane-header-wrapper"><span class="kanban-plugin__lane-title-text">Researching</span><span class="kanban-plugin__lane-title-count">2</span></div><div class="kanban-plugin__lane-items">
+            <div class="kanban-plugin__item"><p class="kanban-plugin__item-title">Standards office · senior</p><div class="kanban-plugin__item-tags"><span class="kanban-plugin__item-tag">#remote</span></div><div class="kanban-plugin__item-metadata"><span>score 72</span><span>2026-10-22</span></div></div>
+            <div class="kanban-plugin__item"><p class="kanban-plugin__item-title">Ledger systems · staff</p><div class="kanban-plugin__item-metadata"><span>score —</span></div></div>
+          </div><button class="kanban-plugin__new-item-button">+ Add a card</button></div>
+          <div class="kanban-plugin__lane"><div class="kanban-plugin__lane-header-wrapper"><span class="kanban-plugin__lane-title-text">Applied</span><span class="kanban-plugin__lane-title-count">1</span></div><div class="kanban-plugin__lane-items">
+            <div class="kanban-plugin__item"><p class="kanban-plugin__item-title">Archive directorate · lead</p><div class="kanban-plugin__item-metadata"><span>score 81</span><span>2026-10-19</span></div></div>
+          </div></div>
+          <div class="kanban-plugin__lane"><div class="kanban-plugin__lane-header-wrapper"><span class="kanban-plugin__lane-title-text">Interview</span><span class="kanban-plugin__lane-title-count">1</span></div><div class="kanban-plugin__lane-items">
+            <div class="kanban-plugin__item"><p class="kanban-plugin__item-title">Public works · principal</p><div class="kanban-plugin__item-tags"><span class="kanban-plugin__item-tag">#tech-challenge</span></div><div class="kanban-plugin__item-metadata"><span>score 88</span><span>Thu 14:00</span></div></div>
+          </div></div>
+          <div class="kanban-plugin__lane"><div class="kanban-plugin__lane-header-wrapper"><span class="kanban-plugin__lane-title-text">Offer</span><span class="kanban-plugin__lane-title-count">0</span></div><div class="kanban-plugin__lane-items"></div></div>
+          <div class="kanban-plugin__lane"><div class="kanban-plugin__lane-header-wrapper"><span class="kanban-plugin__lane-title-text">Disqualified</span><span class="kanban-plugin__lane-title-count">1</span></div><div class="kanban-plugin__lane-items">
+            <div class="kanban-plugin__item is-complete"><p class="kanban-plugin__item-title">Ministry of forms · junior</p><div class="kanban-plugin__item-metadata"><span>hard filter: on-site</span></div></div>
+          </div></div>
+        </div>
+      </div>
+    </div>
+<pre class="ledger-pre"><span class="c">/* a vault snippet, e.g. the.hunt's: columns in the stamp grammar, tokens only */</span>
+.kanban-plugin__board > .kanban-plugin__lane:nth-of-type(1) { --g2-lane: var(--g2-muted); } <span class="c">/* researching */</span>
+.kanban-plugin__board > .kanban-plugin__lane:nth-of-type(2) { --g2-lane: var(--g2-info); }  <span class="c">/* applied · ПРИКАЗ */</span>
+.kanban-plugin__board > .kanban-plugin__lane:nth-of-type(3) { --g2-lane: var(--g2-warn); }  <span class="c">/* interview · К СВЕДЕНИЮ */</span>
+.kanban-plugin__board > .kanban-plugin__lane:nth-of-type(4) { --g2-lane: var(--g2-ok); }    <span class="c">/* offer · ОДОБРЕНО */</span>
+.kanban-plugin__board > .kanban-plugin__lane:nth-of-type(5) { --g2-lane: var(--g2-bad); }   <span class="c">/* disqualified · ОТКАЗАНО */</span></pre>
+  </section>
+
+  <!-- ================================================================ §8 -->
+  <section class="sec" id="registry">
+    <header>
+      <h2><span class="sec-no">§8</span> <span class="cyr">РЕЕСТР</span> · Bases and Dataview are filterable ledgers</h2>
+      <p>A Base is a ledger the reader can sort. The <code>g2-bases</code> snippet gives it the table grammar (mono uppercase keys, tabular figures, a frame, the selection wash on hover) and reads the cell values: a value that spells a decision in the canon's English takes the stamp colour, a negative number takes the red at body size, a false is faint. Dataview tables inherit the theme's ledger; the <code>g2-dataview</code> snippet covers inline fields and the error box, which is a rejected form.</p>
+    </header>
+    <div class="grid grid--wide">
+      <figure>
+        <div class="ob theme-dark">
+          <div class="bases-view">
+            <div class="bases-toolbar"><span class="bases-view-name">ladder</span><span class="bases-filter">filter: status ≠ archived</span><span class="bases-filter">sort: score ↓</span></div>
+            <table class="bases-table">
+              <thead><tr><th data-property="file.name">company</th><th data-property="state.status">status</th><th data-property="state.verdict">verdict</th><th data-property="state.score">score</th><th data-property="state.remote">remote</th></tr></thead>
+              <tbody>
+                <tr><td>Public works</td><td data-property="state.status" data-value="active">active</td><td data-property="state.verdict" data-value="strong">strong</td><td data-property="state.score" data-value="88">88</td><td data-property="state.remote" data-value="true">true</td></tr>
+                <tr><td>Archive directorate</td><td data-property="state.status" data-value="pending">pending</td><td data-property="state.verdict" data-value="partial">partial</td><td data-property="state.score" data-value="81">81</td><td data-property="state.remote" data-value="true">true</td></tr>
+                <tr><td>Standards office</td><td data-property="state.status" data-value="active">active</td><td data-property="state.verdict" data-value="partial">partial</td><td data-property="state.score" data-value="72">72</td><td data-property="state.remote" data-value="false">false</td></tr>
+                <tr><td>Ministry of forms</td><td data-property="state.status" data-value="rejected">rejected</td><td data-property="state.verdict" data-value="blocked">blocked</td><td data-property="state.score" data-value="-12">-12</td><td data-property="state.remote" data-value="false">false</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <figcaption class="caption"><strong>Base as ledger.</strong> <code>strong</code> and <code>true</code> read as approved, <code>pending</code> and <code>partial</code> as for review, <code>rejected</code> and <code>blocked</code> as rejected and struck through, a negative score in red. The words are the.hunt's; a vault with other words maps them in its own snippet.</figcaption>
+      </figure>
+      <figure>
+        <div class="ob theme-dark">
+          <div class="view-content markdown-rendered">
+            <table class="dataview table-view-table">
+              <thead><tr><th>note</th><th>due</th><th>stamp</th></tr></thead>
+              <tbody><tr><td><a class="internal-link" href="#">Rent, October</a></td><td>2026-10-05</td><td style="color:var(--g2-ok)">ОДОБРЕНО</td></tr><tr><td><a class="internal-link" href="#">Certificate renewal</a></td><td>2026-11-01</td><td style="color:var(--g2-info)">ПРИКАЗ</td></tr></tbody>
+            </table>
+            <p><span class="dataview inline-field"><span class="dataview inline-field-key">owner</span><span class="dataview inline-field-value">Director Norman</span></span> <span class="dataview inline-field"><span class="dataview inline-field-key">filed</span><span class="dataview inline-field-value">2026-10-25</span></span></p>
+            <div class="dataview-error">Dataview: unable to parse query. Line 2: unknown field "stamps" (did you mean "stamp"?)</div>
+          </div>
+        </div>
+        <figcaption class="caption"><strong>Dataview.</strong> The table is the theme's; the inline fields and the error box are the snippet's. A query error is a rejected form: stamp red frame, the wash, mono.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ================================================================ §9 -->
+  <section class="sec" id="paper">
+    <header>
+      <h2><span class="sec-no">§9</span> <span class="cyr">БЛАНК</span> · Light mode is the paper form</h2>
+      <p>The system's rule is that paper is chosen by the user, never by the clock or the operating system. In Obsidian the user chooses it in Settings › Appearance › Base color scheme, and that choice is <code>.theme-light</code>. The generated file puts the paper tokens there and the body switches to PT Serif, as the GUI does on paper. The June theme was dark only; this one is not, and "adapt to system" is the one Appearance setting the standard asks the reader to leave off. Export to PDF goes through <code>@media print</code>, which is paper on either theme.</p>
+    </header>
+    <div class="grid grid--wide">
+      <figure>
+        <div class="ob theme-dark" data-fixed>
+          <div class="view-content markdown-rendered">
+            <h2 style="margin-top:0">Бюро · bureau</h2>
+            <p>The field is the warm near-black. Gold marks focus; the stamp red marks a decision. Body in PT Sans.</p>
+            <div class="callout" data-callout="approved"><div class="callout-title"><div class="callout-title-inner">Filed</div></div><div class="callout-content"><p>The same notice, the same tokens.</p></div></div>
+            <p style="margin:0">Tags <a class="tag" href="#">#bureau</a> and <code>inline code</code> and a <a class="internal-link" href="#">link</a>.</p>
+          </div>
+        </div>
+        <figcaption class="caption"><strong>Dark, fixed.</strong> This window ignores the page toggle so the two can be compared.</figcaption>
+      </figure>
+      <figure>
+        <div class="ob theme-light" data-fixed>
+          <div class="view-content markdown-rendered">
+            <h2 style="margin-top:0">Бланк · paper</h2>
+            <p>The field is aged form paper. Gold darkens to a legible ink; the stamp red keeps its density. Body in PT Serif.</p>
+            <div class="callout" data-callout="approved"><div class="callout-title"><div class="callout-title-inner">Filed</div></div><div class="callout-content"><p>The same notice, the same tokens.</p></div></div>
+            <p style="margin:0">Tags <a class="tag" href="#">#bureau</a> and <code>inline code</code> and a <a class="internal-link" href="#">link</a>.</p>
+          </div>
+        </div>
+        <figcaption class="caption"><strong>Paper, fixed.</strong> Nothing in the component layer knows which theme it is on; the contract swaps underneath it.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ================================================================ §10 -->
+  <section class="sec" id="canon">
+    <header>
+      <h2><span class="sec-no">§10</span> <span class="cyr">ВНЕ КАНОНА</span> · What the theme does not do</h2>
+      <p>The GUI and TUI lists apply. These are the Obsidian-specific ways to turn the standard into a costume, or the vault into a maintenance burden.</p>
+    </header>
+    <div class="nono">
+      <div class="row"><span class="x">✗</span><span class="no">A hex in theme.css or a snippet</span><span class="yes"><strong>A token or nothing.</strong> Colours are born in <code>derive_tokens.py</code> and arrive through the contract.</span></div>
+      <div class="row"><span class="x">✗</span><span class="no">Plugin selectors inside the theme</span><span class="yes"><strong>One snippet per plugin,</strong> defensive, enabled by the vault that needs it.</span></div>
+      <div class="row"><span class="x">✗</span><span class="no">Monospace body text</span><span class="yes"><strong>PT Sans on the bureau, PT Serif on paper.</strong> Mono is the chrome and the code.</span></div>
+      <div class="row"><span class="x">✗</span><span class="no">Gold-filled tags in running text</span><span class="yes"><strong>Outline chips.</strong> The field stays quiet; gold fills on hover and on the primary button only.</span></div>
+      <div class="row"><span class="x">✗</span><span class="no">Red on a blockquote</span><span class="yes"><strong>A quotation is a note,</strong> the second hue. Red is a rejection.</span></div>
+      <div class="row"><span class="x">✗</span><span class="no">Uppercase buttons</span><span class="yes"><strong>Sentence case.</strong> Uppercase is for stamps, keys and frame titles.</span></div>
+      <div class="row"><span class="x">✗</span><span class="no">"Adapt to system" for the colour scheme</span><span class="yes"><strong>The user picks dark or light.</strong> Paper is opt-in, by canon.</span></div>
+      <div class="row"><span class="x">✗</span><span class="no">Embedded font files</span><span class="yes"><strong>Font stacks with fallbacks.</strong> Install PT Sans, PT Serif and JetBrains Mono for the full set.</span></div>
+      <div class="row"><span class="x">✗</span><span class="no">Styling make.md spaces and stickers</span><span class="yes"><strong>The vault's own gold icon set stays the vault's.</strong> The theme does not reach into make.md's DOM.</span></div>
+      <div class="row"><span class="x">✗</span><span class="no">Editing <code>obsidian/theme.css</code> by hand</span><span class="yes"><strong>Edit <code>obsidian/src/theme.css</code></strong> and run the generator; the bundle is overwritten.</span></div>
+    </div>
+  </section>
+
+  <footer class="colophon">
+    <div class="ledger">
+      <div class="row"><span class="k">СТАНДАРТ №</span><span class="dots"></span><span class="v">004 · OBSIDIAN</span></div>
+      <div class="row"><span class="k">COMPANIONS</span><span class="dots"></span><span class="v">№ 001 GUI · № 002 TUI · № 003 WATCH</span></div>
+      <div class="row"><span class="k">HOST</span><span class="dots"></span><span class="v">Obsidian 1.4+ · theme Nirvytekh 1.0.0</span></div>
+      <div class="row"><span class="k">TOKENS</span><span class="dots"></span><span class="v">tokens/tokens.obsidian.css · generated 2026-10-25</span></div>
+      <div class="row"><span class="k">APPROVED BY</span><span class="dots"></span><span class="v">Director Norman</span></div>
+      <div class="row"><span class="k">LICENSE</span><span class="dots"></span><span class="v">AGPL-3.0-or-later</span></div>
+    </div>
+    <div class="sig-block">
+      <span class="name">— Director Norman</span>
+      <span class="t-xs">glory-to-design · showcase/obsidian.html · 2026-10-25 · С честью, Генсек</span>
+    </div>
+  </footer>
+</div>
+
+<script>
+(function () {
+  var root = document.documentElement;
+  function setTheme(paper) {
+    root.classList.toggle('theme-paper', paper);
+    document.getElementById('theme-bureau').setAttribute('aria-pressed', String(!paper));
+    document.getElementById('theme-paper').setAttribute('aria-pressed', String(paper));
+    // every mock window follows, except the two fixed ones in §9
+    Array.prototype.forEach.call(document.querySelectorAll('.ob:not([data-fixed])'), function (w) {
+      w.classList.toggle('theme-dark', !paper);
+      w.classList.toggle('theme-light', paper);
+    });
+    try { localStorage.setItem('g2-theme', paper ? 'paper' : 'bureau'); } catch (e) {}
+  }
+  document.getElementById('theme-bureau').addEventListener('click', function () { setTheme(false); });
+  document.getElementById('theme-paper').addEventListener('click', function () { setTheme(true); });
+  var saved = null; try { saved = localStorage.getItem('g2-theme'); } catch (e) {}
+  setTheme(saved === 'paper');
+
+  var links = Array.prototype.slice.call(document.querySelectorAll('.index a'));
+  var secs = links.map(function (a) { return document.querySelector(a.getAttribute('href')); });
+  function markActive() {
+    var y = window.scrollY + 120, cur = 0;
+    secs.forEach(function (s, i) { if (s && s.offsetTop <= y) cur = i; });
+    links.forEach(function (a, i) { a.classList.toggle('is-active', i === cur); });
+  }
+  window.addEventListener('scroll', markActive, { passive: true }); markActive();
+})();
+</script>

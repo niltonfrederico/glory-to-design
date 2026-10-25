@@ -1,0 +1,23 @@
+/* g2-dataview.css · Dataview output in the ledger grammar (dataview plugin)
+ *
+ * Defensive. Tables inherit the theme's ledger rules; this file covers what is
+ * Dataview's own: inline fields as KEY: value chips, list/task views, the error box. */
+
+.dataview.inline-field { font-family: var(--g2-font-mono); font-size: 0.85em; }
+.dataview.inline-field-key {
+  text-transform: uppercase; letter-spacing: 0.06em; color: var(--g2-muted);
+  background: var(--g2-well); border: 1px solid var(--g2-border-faint); border-right: 0; padding: 0 0.4em; border-radius: 0;
+}
+.dataview.inline-field-value { color: var(--g2-fg-bright); background: var(--g2-well); border: 1px solid var(--g2-border-faint); padding: 0 0.4em; border-radius: 0; }
+.dataview.inline-field-standalone-value { color: var(--g2-fg-bright); border: 1px solid var(--g2-border-faint); padding: 0 0.4em; border-radius: 0; }
+
+.table-view-table { border: 1px solid var(--g2-border); font-variant-numeric: tabular-nums; }
+.table-view-table > thead > tr > th { font-family: var(--g2-font-mono); font-size: var(--g2-text-xs); text-transform: uppercase; letter-spacing: 0.08em; color: var(--g2-muted); border-bottom: 1px solid var(--g2-border); }
+.table-view-table > tbody > tr > td { border-bottom: 1px solid var(--g2-border-faint); }
+.table-view-table .dataview.small-text { font-family: var(--g2-font-mono); font-size: var(--g2-text-xs); color: var(--g2-faint); }
+
+.dataview.list-view-ul > li::marker, .dataview.result-group > li::marker { color: var(--g2-muted); }
+.dataview.task-list-item.is-checked { color: var(--g2-faint); }
+
+/* a query error is a rejected form: the stamp red, the wash, mono */
+.dataview-error, .dataview-error-box { border: 1px solid var(--g2-signal); background: var(--g2-signal-bg); color: var(--g2-signal-text); font-family: var(--g2-font-mono); font-size: var(--g2-text-sm); padding: 0.5em 0.9em; border-radius: 0; }

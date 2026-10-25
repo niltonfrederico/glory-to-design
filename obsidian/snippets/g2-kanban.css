@@ -1,0 +1,53 @@
+/* g2-kanban.css · the Kanban board as a despatch board (obsidian-kanban plugin)
+ *
+ * Defensive: every selector degrades to a no-op if the plugin changes its markup.
+ * Structure only: lanes are framed sheets, cards are slips, titles are ledger keys.
+ * The colour of a lane is a vault decision, set through --g2-lane on the lane, so
+ * a vault snippet can colour its own columns with the stamp grammar, e.g.
+ *
+ *   .kanban-plugin__board > .kanban-plugin__lane:nth-of-type(3) { --g2-lane: var(--g2-info); } // ПРИКАЗ · in progress
+ *   .kanban-plugin__board > .kanban-plugin__lane:nth-of-type(7) { --g2-lane: var(--g2-ok); }   // ОДОБРЕНО · offer
+ *   .kanban-plugin__board > .kanban-plugin__lane:nth-of-type(9) { --g2-lane: var(--g2-bad); }  // ОТКАЗАНО · disqualified
+ *
+ * Tokens only. A hex in a vault snippet is the same bug as a hex here. */
+
+.kanban-plugin { background: var(--g2-bg); }
+.kanban-plugin__board { gap: var(--g2-space-4); }
+.kanban-plugin__lane {
+  --g2-lane: var(--g2-border);
+  border: 1px solid var(--g2-border-faint);
+  border-top: 3px solid var(--g2-lane);
+  background: var(--g2-panel);
+  border-radius: 0;
+  box-shadow: none;
+}
+.kanban-plugin__lane-header-wrapper { border-bottom: 1px solid var(--g2-border-faint); background: transparent; }
+.kanban-plugin__lane-title, .kanban-plugin__lane-title-text {
+  font-family: var(--g2-font-mono);
+  font-size: var(--g2-text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+  color: var(--g2-fg-bright);
+}
+.kanban-plugin__lane-title-count { font-family: var(--g2-font-mono); font-size: var(--g2-text-xs); color: var(--g2-muted); font-variant-numeric: tabular-nums; }
+.kanban-plugin__lane-items { gap: var(--g2-space-2); }
+.kanban-plugin__item {
+  border: 1px solid var(--g2-border-faint);
+  background: var(--g2-bg);
+  border-radius: 0;
+  box-shadow: none;
+}
+.kanban-plugin__item:hover { border-color: var(--g2-accent); box-shadow: none; }
+.kanban-plugin__item-title-wrapper { border-radius: 0; }
+.kanban-plugin__item-title { font-family: var(--g2-font-body); font-size: var(--g2-text-sm); color: var(--g2-fg); }
+.kanban-plugin__item-metadata { font-family: var(--g2-font-mono); font-size: var(--g2-text-xs); color: var(--g2-muted); border-top: 1px solid var(--g2-border-faint); }
+.kanban-plugin__item-tags .tag, .kanban-plugin__item-tag { border: 1px solid var(--g2-border); background: transparent; color: var(--g2-accent); border-radius: 0; font-family: var(--g2-font-mono); font-size: 0.7rem; }
+.kanban-plugin__item-button-wrapper button,
+.kanban-plugin__new-item-button,
+.kanban-plugin__new-lane-button { font-family: var(--g2-font-mono); font-size: var(--g2-text-xs); border: 1px solid var(--g2-border-faint); background: transparent; color: var(--g2-muted); border-radius: 0; box-shadow: none; }
+.kanban-plugin__item-button-wrapper button:hover,
+.kanban-plugin__new-item-button:hover,
+.kanban-plugin__new-lane-button:hover { color: var(--g2-fg-bright); border-color: var(--g2-accent); }
+.kanban-plugin__lane.is-collapsed, .kanban-plugin__item.is-complete { opacity: 0.7; }
+.kanban-plugin__item.is-complete .kanban-plugin__item-title { color: var(--g2-faint); text-decoration: line-through; }

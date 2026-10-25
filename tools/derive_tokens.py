@@ -5,7 +5,8 @@ Mirrors the derivation in glory-to-gensek/src/theme/derive.rs and the blog's
 tokens.css: a theme is a master trio (bg, fg, accent) plus a few fixed overrides;
 every other token is mixed in OKLab and lifted until it clears its contrast target.
 
-    python3 tools/derive_tokens.py          # writes tokens/*.css, *.toml, *.kt, report
+    python3 tools/derive_tokens.py          # writes tokens/*.css, *.toml, *.kt, report,
+                                            # and bundles obsidian/theme.css
     python3 tools/derive_tokens.py --check  # same math, writes nothing, exit 1 on fail
 
 The generated files are the only place downstream repos read colors from. The seeds
@@ -432,6 +433,317 @@ def write_kotlin(themes: dict[str, dict[str, str]], seeds: list[Seed]) -> str:
     return "\n".join(out)
 
 
+def hex_to_hsl(h: str) -> tuple[int, int, int]:
+    r, g, b = hex_to_rgb(h)
+    hi, lo = max(r, g, b), min(r, g, b)
+    light = (hi + lo) / 2
+    if hi == lo:
+        return (0, 0, round(light * 100))
+    d = hi - lo
+    sat = d / (2 - hi - lo) if light > 0.5 else d / (hi + lo)
+    if hi == r:
+        hue = ((g - b) / d) % 6
+    elif hi == g:
+        hue = (b - r) / d + 2
+    else:
+        hue = (r - g) / d + 4
+    return (round(hue * 60) % 360, round(sat * 100), round(light * 100))
+
+
+def hex_to_rgb_triple(h: str) -> str:
+    return ", ".join(str(round(c * 255)) for c in hex_to_rgb(h))
+
+
+# Obsidian's extended palette, folded onto the bureau's few hues. Callouts, canvas
+# cards and highlights read these; an Obsidian "purple" becomes the second hue.
+OBSIDIAN_EXTENDED = [
+    ("red", "signal"),
+    ("orange", "warn"),
+    ("yellow", "accent"),
+    ("green", "ok"),
+    ("cyan", "info"),
+    ("blue", "info"),
+    ("purple", "note"),
+    ("pink", "signal_text"),
+]
+
+# The Obsidian CSS variable contract (app.css, 1.x), mapped onto the g2 tokens once.
+# Same block serves .theme-dark and .theme-light because the g2 tokens switch above it.
+OBSIDIAN_CONTRACT = """
+  /* fonts: body follows the system (sans on the bureau, serif on paper); the chrome
+     gets mono per selector in theme.css, not through the interface slot */
+  --font-text-theme: var(--g2-font-body);
+  --font-interface-theme: var(--g2-font-sans);
+  --font-monospace-theme: var(--g2-font-mono);
+
+  /* backgrounds */
+  --background-primary: var(--g2-bg);
+  --background-primary-alt: var(--g2-bg-alt);
+  --background-secondary: var(--g2-panel);
+  --background-secondary-alt: var(--g2-panel-alt);
+  --background-modifier-border: var(--g2-border-faint);
+  --background-modifier-border-hover: var(--g2-border);
+  --background-modifier-border-focus: var(--g2-border-focus);
+  --background-modifier-hover: var(--g2-selection);
+  --background-modifier-active-hover: var(--g2-selection);
+  --background-modifier-form-field: var(--g2-well);
+  --background-modifier-message: var(--g2-panel-alt);
+  --background-modifier-success: var(--g2-ok);
+  --background-modifier-error: var(--g2-bad);
+  --background-modifier-error-hover: var(--g2-signal);
+  --background-modifier-cover: color-mix(in srgb, var(--g2-well) 72%, transparent);
+
+  /* text */
+  --text-normal: var(--g2-fg);
+  --text-muted: var(--g2-muted);
+  --text-faint: var(--g2-faint);
+  --text-accent: var(--g2-accent);
+  --text-accent-hover: var(--g2-accent-bright);
+  --text-on-accent: var(--g2-accent-ink);
+  --text-on-accent-inverted: var(--g2-fg-bright);
+  --text-selection: var(--g2-selection);
+  --text-highlight-bg: color-mix(in srgb, var(--g2-warn) 28%, transparent);
+  --text-error: var(--g2-bad);
+  --text-success: var(--g2-ok);
+  --text-warning: var(--g2-warn);
+  --bold-color: var(--g2-fg-bright);
+  --italic-color: var(--g2-fg);
+  --caret-color: var(--g2-accent);
+
+  /* interactive and accent */
+  --interactive-normal: var(--g2-panel);
+  --interactive-hover: var(--g2-panel-alt);
+  --interactive-accent: var(--g2-accent);
+  --interactive-accent-hover: var(--g2-accent-bright);
+  --interactive-accent-hsl: var(--g2-accent-hsl);
+  --accent-h: var(--g2-accent-h);
+  --accent-s: var(--g2-accent-s);
+  --accent-l: var(--g2-accent-l);
+  --color-accent: var(--g2-accent);
+  --color-accent-1: var(--g2-accent-bright);
+  --color-accent-2: var(--g2-border);
+
+  /* links: internal underlined in gold, unresolved dashed in muted */
+  --link-color: var(--g2-accent);
+  --link-color-hover: var(--g2-accent-bright);
+  --link-decoration: underline;
+  --link-decoration-hover: underline;
+  --link-decoration-color: var(--g2-border);
+  --link-external-color: var(--g2-accent);
+  --link-external-color-hover: var(--g2-accent-bright);
+  --link-external-decoration: underline dotted;
+  --link-unresolved-color: var(--g2-muted);
+  --link-unresolved-decoration-style: dashed;
+  --link-unresolved-decoration-color: var(--g2-faint);
+  --link-unresolved-opacity: 1;
+
+  /* shape: the bureau has no rounded corners and no shadows */
+  --radius-s: 0; --radius-m: 0; --radius-l: 0; --radius-xl: 0;
+  --input-radius: 0; --button-radius: 0; --tab-radius: 0; --tab-radius-active: 0;
+  --toggle-radius: 0; --slider-thumb-radius: 0; --checkbox-radius: 0; --tag-radius: 0;
+  --callout-radius: 0; --modal-radius: 0; --clickable-icon-radius: 0; --pill-radius: 0;
+  --metadata-property-radius: 0; --embed-radius: 0;
+  --shadow-s: none; --shadow-l: none; --input-shadow: none; --input-shadow-hover: none;
+
+  /* headings: bright ink on the top two, gold on the next two, muted below */
+  --h1-color: var(--g2-fg-bright); --h2-color: var(--g2-fg-bright);
+  --h3-color: var(--g2-accent); --h4-color: var(--g2-accent);
+  --h5-color: var(--g2-muted); --h6-color: var(--g2-muted);
+
+  /* code */
+  --code-background: var(--g2-well);
+  --code-normal: var(--g2-fg-bright);
+  --code-comment: var(--g2-faint);
+  --code-function: var(--g2-accent);
+  --code-important: var(--g2-warn);
+  --code-keyword: var(--g2-signal-text);
+  --code-operator: var(--g2-muted);
+  --code-property: var(--g2-accent-bright);
+  --code-punctuation: var(--g2-muted);
+  --code-string: var(--g2-fg);
+  --code-tag: var(--g2-note);
+  --code-value: var(--g2-fg-bright);
+
+  /* tables as ledgers */
+  --table-header-background: var(--g2-panel-alt);
+  --table-header-background-hover: var(--g2-panel-alt);
+  --table-header-color: var(--g2-muted);
+  --table-border-color: var(--g2-border);
+  --table-border-width: 1px;
+  --table-row-alt-background: var(--g2-bg-alt);
+  --table-row-background-hover: var(--g2-selection);
+  --table-selection: var(--g2-selection);
+  --table-selection-border-color: var(--g2-accent);
+
+  /* tags as outline chips */
+  --tag-color: var(--g2-accent);
+  --tag-color-hover: var(--g2-accent-ink);
+  --tag-background: transparent;
+  --tag-background-hover: var(--g2-accent);
+  --tag-border-color: var(--g2-border);
+  --tag-border-color-hover: var(--g2-accent);
+  --tag-border-width: 1px;
+  --tag-weight: 600;
+
+  /* blockquote is a note, the second hue; red is for decisions */
+  --blockquote-border-color: var(--g2-note);
+  --blockquote-border-thickness: 3px;
+  --blockquote-color: var(--g2-fg);
+  --blockquote-background-color: var(--g2-note-bg);
+  --hr-color: var(--g2-border);
+  --hr-thickness: 1px;
+  --embed-border-left: 2px solid var(--g2-border);
+  --indentation-guide-color: var(--g2-border-faint);
+  --indentation-guide-color-active: var(--g2-border);
+
+  /* checkbox: a square, checked in gold */
+  --checkbox-color: var(--g2-accent);
+  --checkbox-color-hover: var(--g2-accent-bright);
+  --checkbox-border-color: var(--g2-border);
+  --checkbox-border-color-hover: var(--g2-accent);
+  --checkbox-marker-color: var(--g2-accent-ink);
+  --checklist-done-color: var(--g2-faint);
+
+  /* callouts: one frame, per-type colour in theme.css */
+  --callout-border-width: 1px;
+  --callout-border-opacity: 1;
+  --callout-blend-mode: normal;
+  --callout-title-color: inherit;
+
+  /* properties: a document header */
+  --metadata-label-text-color: var(--g2-muted);
+  --metadata-label-text-color-hover: var(--g2-fg-bright);
+  --metadata-input-text-color: var(--g2-fg);
+  --metadata-background: transparent;
+  --metadata-border-color: var(--g2-border-faint);
+  --metadata-input-background-active: var(--g2-well);
+  --metadata-label-font: var(--g2-font-mono);
+
+  /* window chrome: wells for the ribbon, title and status bars */
+  --titlebar-background: var(--g2-well);
+  --titlebar-background-focused: var(--g2-bg);
+  --titlebar-text-color: var(--g2-muted);
+  --titlebar-text-color-focused: var(--g2-accent);
+  --tab-text-color: var(--g2-muted);
+  --tab-text-color-active: var(--g2-fg-bright);
+  --tab-text-color-focused: var(--g2-fg);
+  --tab-text-color-focused-active: var(--g2-accent);
+  --tab-text-color-focused-active-current: var(--g2-accent);
+  --tab-background-active: var(--g2-bg);
+  --tab-outline-color: var(--g2-border-faint);
+  --ribbon-background: var(--g2-well);
+  --ribbon-background-collapsed: var(--g2-well);
+  --status-bar-background: var(--g2-well);
+  --status-bar-text-color: var(--g2-muted);
+  --status-bar-border-color: var(--g2-border-faint);
+  --divider-color: var(--g2-border-faint);
+  --divider-color-hover: var(--g2-border);
+  --divider-width: 1px;
+  --scrollbar-bg: var(--g2-well);
+  --scrollbar-thumb-bg: var(--g2-border);
+  --scrollbar-active-thumb-bg: var(--g2-accent);
+
+  /* navigation (file explorer, outline, search) */
+  --nav-item-color: var(--g2-fg);
+  --nav-item-color-hover: var(--g2-fg-bright);
+  --nav-item-color-active: var(--g2-accent);
+  --nav-item-color-selected: var(--g2-fg-bright);
+  --nav-item-color-highlighted: var(--g2-accent);
+  --nav-item-background-active: var(--g2-selection);
+  --nav-item-background-hover: var(--g2-bg-alt);
+  --nav-item-background-selected: var(--g2-selection);
+  --nav-indentation-guide-color: var(--g2-border-faint);
+  --nav-collapse-icon-color: var(--g2-muted);
+  --nav-collapse-icon-color-collapsed: var(--g2-faint);
+
+  /* modals and prompts carry the authority frame */
+  --modal-background: var(--g2-panel);
+  --modal-border-color: var(--g2-border);
+  --modal-border-width: 2px;
+  --prompt-border-color: var(--g2-border);
+  --prompt-border-width: 2px;
+
+  /* icons */
+  --icon-color: var(--g2-muted);
+  --icon-color-hover: var(--g2-fg-bright);
+  --icon-color-active: var(--g2-accent);
+  --icon-color-focused: var(--g2-accent);
+
+  /* graph view: gold nodes on the field, tags in the second hue */
+  --graph-node: var(--g2-accent);
+  --graph-node-unresolved: var(--g2-faint);
+  --graph-node-focused: var(--g2-accent-bright);
+  --graph-node-tag: var(--g2-note);
+  --graph-node-attachment: var(--g2-info);
+  --graph-line: var(--g2-border);
+  --graph-text: var(--g2-muted);
+""".rstrip("\n")
+
+
+def obsidian_theme_block(t: dict[str, str], indent: str = "  ") -> str:
+    h, s, l = hex_to_hsl(t["accent"])
+    lines = [css_block(t, indent), NON_COLOR_CSS.replace("\n  ", "\n" + indent)]
+    lines.append(f"{indent}--g2-accent-h: {h}; --g2-accent-s: {s}%; --g2-accent-l: {l}%;")
+    lines.append(f"{indent}--g2-accent-hsl: {h}, {s}%, {l}%;")
+    for k in ORDER:
+        lines.append(f"{indent}--g2-{k.replace('_', '-')}-rgb: {hex_to_rgb_triple(t[k])};")
+    for name, token in OBSIDIAN_EXTENDED:
+        lines.append(f"{indent}--color-{name}: var(--g2-{token.replace('_', '-')});")
+        lines.append(f"{indent}--color-{name}-rgb: var(--g2-{token.replace('_', '-')}-rgb);")
+    for i, (_name, token) in enumerate(OBSIDIAN_EXTENDED[:6], start=1):
+        lines.append(f"{indent}--canvas-color-{i}: var(--g2-{token.replace('_', '-')}-rgb);")
+    return "\n".join(lines)
+
+
+def write_obsidian(themes: dict[str, dict[str, str]]) -> str:
+    """Obsidian consumer: the g2 tokens under Obsidian's own theme classes, then the
+    app's CSS variable contract mapped onto them. `.theme-light` is the paper theme:
+    the user picks it in Settings > Appearance, which is the system's opt-in rule.
+    """
+    bureau, paper = themes["bureau"], themes["paper"]
+    return f"""/* GENERATED by tools/derive_tokens.py. Do not edit; edit the seeds there.
+ * g2 design tokens for Obsidian. The bureau theme lives on .theme-dark, paper on
+ * .theme-light (chosen by the user in Settings > Appearance). Below the tokens, the
+ * Obsidian CSS variable contract is mapped onto them once; obsidian/theme.css adds
+ * the component layer on top and is bundled from this file by the same script. */
+
+.theme-dark {{
+  color-scheme: dark;
+{obsidian_theme_block(bureau)}
+}}
+
+.theme-light {{
+  color-scheme: light;
+{obsidian_theme_block(paper)}
+  --g2-font-body: var(--g2-font-serif);
+}}
+
+/* print is paper, on either theme */
+@media print {{
+  .theme-dark, .theme-light {{
+    color-scheme: light;
+{obsidian_theme_block(paper, "    ")}
+    --g2-font-body: var(--g2-font-serif);
+  }}
+}}
+
+.theme-dark, .theme-light {{{OBSIDIAN_CONTRACT}
+}}
+"""
+
+
+def bundle_obsidian(generated: str) -> str:
+    """The installable theme is one theme.css: generated contract + hand-written layer."""
+    src = (ROOT / "obsidian" / "src" / "theme.css").read_text()
+    head = (
+        "/* GENERATED by tools/derive_tokens.py: tokens/tokens.obsidian.css followed by\n"
+        " * obsidian/src/theme.css. Edit those two; this file is overwritten on the next run.\n"
+        " * Install: copy this file and manifest.json into <vault>/.obsidian/themes/Nirvytekh/\n"
+        " * (tools/install_obsidian.py does it, snippets included). */\n\n"
+    )
+    return head + generated + "\n" + src
+
+
 def write_report(themes: dict[str, dict[str, str]], failures: list[str]) -> str:
     lines = [
         "# Contrast report",
@@ -471,6 +783,15 @@ def main(argv: list[str]) -> int:
         (ROOT / "showcase" / "tokens.css").write_text(css)  # same file, so showcase pages link it relatively
         (OUT / "tokens.toml").write_text(write_toml(themes, SEEDS))
         (OUT / "tokens.kt").write_text(write_kotlin(themes, SEEDS))
+        obsidian = write_obsidian(themes)
+        (OUT / "tokens.obsidian.css").write_text(obsidian)
+        if (ROOT / "obsidian" / "src" / "theme.css").exists():
+            theme = bundle_obsidian(obsidian)
+            (ROOT / "obsidian" / "theme.css").write_text(theme)
+            snippets = sorted((ROOT / "obsidian" / "snippets").glob("*.css"))
+            # the showcase exercises the real theme on mock markup: theme + every snippet
+            showcase = theme + "".join("\n/* snippet: " + p.name + " */\n" + p.read_text() for p in snippets)
+            (ROOT / "showcase" / "obsidian.css").write_text(showcase)
         (OUT / "contrast-report.md").write_text(write_report(themes, failures))
     for name, t in themes.items():
         print(f"[{name}]")

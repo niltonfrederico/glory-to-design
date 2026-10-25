@@ -1,0 +1,44 @@
+/* g2-bases.css · Bases as a filterable ledger (Obsidian core plugin, 1.9+)
+ *
+ * Defensive: attribute hooks degrade to a no-op when a property or value is absent.
+ * Structure: mono uppercase column keys, tabular figures, a frame. Values that spell
+ * a decision in the canon's English take the stamp colour:
+ *
+ *   approved · done · ok · strong · true     → ok      (ОДОБРЕНО)
+ *   rejected · blocked · failed · false      → bad     (ОТКАЗАНО)
+ *   review · pending · partial · waiting     → warn    (К СВЕДЕНИЮ)
+ *   order · active · in-progress            → info    (ПРИКАЗ)
+ *   a negative number                        → signal text
+ *
+ * A vault whose vocabulary differs maps its own words in its own snippet, with tokens. */
+
+.bases-view, .bases-table-container { background: var(--g2-bg); }
+.bases-toolbar, .bases-toolbar button, .bases-toolbar input { font-family: var(--g2-font-mono); font-size: var(--g2-text-xs); border-radius: 0; }
+.bases-toolbar { border-bottom: 1px solid var(--g2-border-faint); }
+.bases-table { border: 1px solid var(--g2-border); border-collapse: collapse; font-variant-numeric: tabular-nums; font-size: var(--g2-text-sm); }
+.bases-table th, .bases-th {
+  font-family: var(--g2-font-mono);
+  font-size: var(--g2-text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+  color: var(--g2-muted);
+  background: var(--g2-panel-alt);
+  border-bottom: 1px solid var(--g2-border);
+  text-align: left;
+}
+.bases-table td, .bases-td { border-bottom: 1px solid var(--g2-border-faint); vertical-align: top; }
+.bases-table tr:hover td { background: var(--g2-selection); }
+.bases-table td[data-property] { font-variant-numeric: tabular-nums; }
+
+/* decisions */
+.bases-table td[data-value="approved" i], .bases-table td[data-value="done" i], .bases-table td[data-value="ok" i], .bases-table td[data-value="strong" i], .bases-table td[data-value="true" i] { color: var(--g2-ok); font-weight: 600; }
+.bases-table td[data-value="rejected" i], .bases-table td[data-value="blocked" i], .bases-table td[data-value="failed" i], .bases-table td[data-value="disqualified" i] { color: var(--g2-bad); text-decoration: line-through; }
+.bases-table td[data-value="false" i] { color: var(--g2-faint); }
+.bases-table td[data-value="review" i], .bases-table td[data-value="pending" i], .bases-table td[data-value="partial" i], .bases-table td[data-value="waiting" i] { color: var(--g2-warn); }
+.bases-table td[data-value="order" i], .bases-table td[data-value="active" i], .bases-table td[data-value="in-progress" i], .bases-table td[data-value="in progress" i] { color: var(--g2-info); }
+.bases-table td[data-value^="-"]:not([data-value="-"]) { color: var(--g2-signal-text); }
+
+/* cards view, when used: slips, not cards */
+.bases-cards-item, .bases-card { border: 1px solid var(--g2-border-faint); background: var(--g2-panel); border-radius: 0; box-shadow: none; }
+.bases-cards-item:hover, .bases-card:hover { border-color: var(--g2-accent); }
